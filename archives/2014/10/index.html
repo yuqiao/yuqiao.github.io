@@ -5,15 +5,15 @@
   
   <title>Archives: 2014/10 | Joe&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
+  <meta name="description" content="enjoy life">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Joe's Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2014/10/">
+<meta property="og:url" content="http://yuqiao.github.io/archives/2014/10/">
 <meta property="og:site_name" content="Joe's Blog">
-<meta property="og:description">
+<meta property="og:description" content="enjoy life">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Joe's Blog">
-<meta name="twitter:description">
+<meta name="twitter:description" content="enjoy life">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -59,7 +59,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yuqiao.github.io"></form>
       </div>
     </div>
   </div>
@@ -70,7 +70,7 @@
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/28/hello-world/" class="article-date">
-  <time datetime="2014-10-28T00:54:15.000Z" itemprop="datePublished">Oct 28 2014</time>
+  <time datetime="2014-10-28T00:54:15.000Z" itemprop="datePublished">10月 28 2014</time>
 </a>
     
   </div>
@@ -111,7 +111,204 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/28/hello-world/" data-id="hk28xo2mr7djo4i3" class="article-share-link">Share</a>
+      <a data-url="http://yuqiao.github.io/2014/10/28/hello-world/" data-id="hk28xo2mr7djo4i3" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-think-in-java" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/10/think-in-java/" class="article-date">
+  <time datetime="2014-10-10T05:30:43.000Z" itemprop="datePublished">10月 10 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/10/think-in-java/">java编程思想</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="7_复用类">7 复用类</h1>
+<p>复用代码是Java众多引人注目的功能之一.</p>
+<h2 id="7-1_组合语法">7.1 组合语法</h2>
+<p>引用初始化的地方:</p>
+<ol>
+<li>定义对象的地方.</li>
+<li>在类的构造器中</li>
+<li>惰性初始化, 在正要使用这些对象至二千.</li>
+<li>使用实例初始化</li>
+</ol>
+<h2 id="7-3_代理">7.3 代理</h2>
+<h2 id="7-7_向上转型">7.7 向上转型</h2>
+<p>使用继承还是组合?</p>
+<p>一个清晰的判断方法是问一问自己是否需要从新类向基类进行向上转型. 若需要, 则继承是必须的.</p>
+<h2 id="7-8_final关键字">7.8 final关键字</h2>
+<p>final通常指:”这是无法改变的”.</p>
+<h3 id="数据">数据</h3>
+<ul>
+<li>对于基本类型, final使数值恒定不变</li>
+<li>对于引用, 无法再改为指向另一个对象</li>
+</ul>
+<h1 id="8_多态">8 多态</h1>
+<p>在面向对象的程序设计语言中, 多态是继数据对象和继承之后的第三种基本特征.</p>
+<p>多态通过分离<strong>做什么</strong>和<strong>怎么做</strong>, 从另一个角度将接口和实现分离开来.</p>
+<p><strong>封装</strong>通过合并特征和行为来创建新的数据类型.</p>
+<p>多态的作用则是消除<strong>类型</strong>之间的耦合关系.</p>
+<p>绑定:</p>
+<ul>
+<li>前期绑定</li>
+<li>后期绑定</li>
+</ul>
+<p>可扩展性. 多态是一项让程序员”将改变的事物与未变的事务分离开来”</p>
+<p>只有非private方法才可以被覆盖, 当时还需要密切注意覆盖private方法的现象.</p>
+<p>在导出类主体中,若没有明确指定调用某个基类构造器,它就会”默默”地调用默认构造器.</p>
+<p>编写构造器准则: 用尽可能简单的方法使对象进入正常状态, 若干可以的话,避免调用其他方法.</p>
+<p>在构造器内唯一能够按期调用的方法是基类中的final方法.</p>
+<p>协变返回类型: 导出类中的被覆盖放客运返回基类方法的返回类型的某种导出类型. </p>
+<p>优先选择组合.</p>
+<p>通用的准则: 用继承表达行为间的差异,并用字段表达状态上的变化.</p>
+<h1 id="9_接口">9 接口</h1>
+<p>接口和内部类为我们提供了一种将接口和实现分离的更加结构化的方法.</p>
+<h1 id="12_通过异常处理错误">12 通过异常处理错误</h1>
+<p>java的基本理念: 结构不佳的代码不能运行.</p>
+<p>java的异常处理的目的在于通过使用少于目前数量的代码来简化大型,可靠的程序的生成,并通过这种方式使你更加自信:你的应用中没有未处理的错误.</p>
+<h2 id="12-1_概念">12.1 概念</h2>
+<p>c以及其他语言错误处理模式的问题.</p>
+<p>解决的办法: 用强制规定的形式来消除错误处理中随心所欲的因素.</p>
+<p>另一个好处: 降低错误处理的复杂度.可以把”描述在正常执行过程中做什么事”和”出了问题怎么办”的代码分离.</p>
+<h2 id="12-2_基本异常">12.2 基本异常</h2>
+<p>异常情形(exceptional condition)是指阻止当前方法或作用域继续执行的问题.</p>
+<p>异常最重要的方面之一是: 如果发生问题, 它们将不允许程序沿着其正常的路径继续走下去.</p>
+<p>例子:</p>
+<pre><code><span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"t = null"</span>);
+</code></pre><h2 id="12-3_捕获异常">12.3 捕获异常</h2>
+<p>try块:</p>
+<pre><code><span class="keyword">try</span>{
+    <span class="comment">// code that might generate exceptions</span>
+}<span class="keyword">catch</span>(Type1 id1){
+    <span class="comment">// Handle exptions of Type1</span>
+}<span class="keyword">catch</span>(Type2 id2){
+    <span class="comment">// Handle exception of Type2 </span>
+}
+</code></pre><p>异常处理两种基本模型:</p>
+<ul>
+<li>终止模型</li>
+<li>恢复模型. 修正错误,然后重新尝试调用出问题的方法.</li>
+</ul>
+<p>最终采用类似”终止模型”的代码. 恢复性的处理程序需要了解异常抛出的地点,势必要包含依赖于抛出位置的非通用性代码.增加了代码编写和维护的困难.</p>
+<h2 id="12-4_创建自定义异常">12.4 创建自定义异常</h2>
+<p>例子:</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">SimpleException</span> <span class="inheritance"><span class="keyword">extends</span></span> <span class="title">Exception</span> </span>{}
+
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InheritingExceptions</span></span>{
+    <span class="keyword">public</span> <span class="keyword">void</span> f() throws SimpleException {
+        System.out.println(<span class="string">"Throw Exception from f()"</span>);
+        <span class="keyword">throw</span> <span class="keyword">new</span> SimpleException();
+    }
+    <span class="keyword">public</span> <span class="keyword">static</span> main(String[] args){
+        <span class="keyword">try</span>{
+            f();
+        }<span class="keyword">catch</span>(SimpleException e){
+            System.out.println(<span class="string">"Caugth it!"</span>);
+        }
+    }
+</code></pre><h2 id="12-12_其它可选方式">12.12 其它可选方式</h2>
+<p>异常处理的原则之一: 只有在你知道如何处理时才捕获异常.</p>
+<p>异常处理的目标之一: 把错误处理的代码和错误发生的地点分离开. 让两部分代码各专注各的.</p>
+<p>#</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/10/10/think-in-java/" data-id="ji7pqqt6ud6yvc4q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/program/">program</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-how-to-use-hexo" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/09/how-to-use-hexo/" class="article-date">
+  <time datetime="2014-10-09T07:03:30.000Z" itemprop="datePublished">10月 9 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/09/how-to-use-hexo/">使用 hexo</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_安装">1. 安装</h1>
+<ol>
+<li>安装node.js : <a href="http://nodejs.org/#download" target="_blank" rel="external">http://nodejs.org/#download</a></li>
+<li><p>安装npm: </p>
+<ul>
+<li>git clone —recursive git://github.com/isaacs/npm.git</li>
+<li>cd npm</li>
+<li>sudo node cli.js install npm -gf</li>
+</ul>
+</li>
+<li><p>安装hexo: npm install hexo -g</p>
+</li>
+<li>git clone <a href="https://github.com/yuqiao/yuqiao.github.io.git" target="_blank" rel="external">https://github.com/yuqiao/yuqiao.github.io.git</a></li>
+<li>cd yuqiao.github.io</li>
+<li>hexo init</li>
+<li>npm install</li>
+<li><p>vi _config.yml  # 配置git deploy</p>
+<p>  deploy:</p>
+<pre><code><span class="attribute">type</span>: <span class="string">github</span>
+<span class="attribute">repository</span>: <span class="string">https://github.com/yuqiao/yuqiao.github.io.git</span>
+<span class="attribute">branch</span>: <span class="string">master</span>
+</code></pre></li>
+<li><p>hexo generate</p>
+</li>
+<li>hexo deploy</li>
+</ol>
+<h1 id="2-_使用">2. 使用</h1>
+<ol>
+<li>修改_config.yml</li>
+<li>hexo new “xxxx”</li>
+</ol>
+<h1 id="参考">参考</h1>
+<ol>
+<li><a href="http://zipperary.com/2013/05/28/hexo-guide-2/" target="_blank" rel="external">http://zipperary.com/2013/05/28/hexo-guide-2/</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/10/09/how-to-use-hexo/" data-id="i4pep39cwh2svg6z" class="article-share-link">Share</a>
       
       
     </footer>
@@ -129,14 +326,28 @@
     
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/program/">program</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/java/" style="font-size: NaNpx;">java</a><a href="/tags/program/" style="font-size: NaNpx;">program</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -151,6 +362,14 @@
             <a href="/2014/10/28/hello-world/">Hello World</a>
           </li>
         
+          <li>
+            <a href="/2014/10/10/think-in-java/">java编程思想</a>
+          </li>
+        
+          <li>
+            <a href="/2014/10/09/how-to-use-hexo/">使用 hexo</a>
+          </li>
+        
       </ul>
     </div>
   </div>
@@ -163,7 +382,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2014 Qiao Yu<br>
+      &copy; 2014 Peter Yu<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
