@@ -5,21 +5,24 @@
   
   <title>Git子模块 | Joe&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="子模块
+  <meta name="description" content="参考
+子模块
 经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。
-Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。">
+Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git子模块">
 <meta property="og:url" content="http://yuqiao.github.io/2014/10/29/Git子模块/">
 <meta property="og:site_name" content="Joe's Blog">
-<meta property="og:description" content="子模块
+<meta property="og:description" content="参考
+子模块
 经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。
-Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。">
+Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git子模块">
-<meta name="twitter:description" content="子模块
+<meta name="twitter:description" content="参考
+子模块
 经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。
-Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。">
+Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -95,7 +98,8 @@ Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库�
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="子模块">子模块</h1>
+        <p><a href="http://git-scm.com/book/zh/v1/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97" target="_blank" rel="external">参考</a></p>
+<h1 id="子模块">子模块</h1>
 <p>经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。</p>
 <p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
 <h1 id="初步">初步</h1>
@@ -104,6 +108,22 @@ Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库�
 </ol>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ git submodule add git:<span class="comment">//github.com/chneukirchen/rack.git rack</span></div><div class="line">Initialized empty Git repository <span class="keyword">in</span> /opt/subtest/rack/.git/</div><div class="line">remote: Counting objects: <span class="number">3181</span>, <span class="keyword">done</span>.</div><div class="line">remote: Compressing objects: <span class="number">100</span>% (<span class="number">1534</span>/<span class="number">1534</span>), <span class="keyword">done</span>.</div><div class="line">remote: Total <span class="number">3181</span> (delta <span class="number">1951</span>), reused <span class="number">2623</span> (delta <span class="number">1603</span>)</div><div class="line">Receiving objects: <span class="number">100</span>% (<span class="number">3181</span>/<span class="number">3181</span>), <span class="number">675.42</span> KiB | <span class="number">422</span> KiB/s, <span class="keyword">done</span>.</div><div class="line">Resolving deltas: <span class="number">100</span>% (<span class="number">1951</span>/<span class="number">1951</span>), <span class="keyword">done</span>.</div></pre></td></tr></table></figure>
 
+<p>加入子模块后，运行git status, 会看到以下两项。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ git status</div><div class="line"><span class="preprocessor"># On branch master</span></div><div class="line"><span class="preprocessor"># Changes to be committed:</span></div><div class="line"><span class="preprocessor">#   (use "git reset HEAD &lt;file&gt;..." to unstage)</span></div><div class="line"><span class="preprocessor">#</span></div><div class="line"><span class="preprocessor">#      new file:   .gitmodules</span></div><div class="line"><span class="preprocessor">#      new file:   rack</span></div><div class="line"><span class="preprocessor">#</span></div></pre></td></tr></table></figure>
+
+<p>会生成一个.gitmodules文件。这是一个配置文件，保存了项目 URL 和你拉取到的本地子目录。</p>
+<p>这个文件跟其他文件一样也是处于版本控制之下的，就像你的.gitignore文件一样。它跟项目里的其他文件一样可以被推送和拉取。这是其他克隆此项目的人获知子模块项目来源的途径。</p>
+<p>在看文件rack:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ git diff <span class="comment">--cached rack</span></div><div class="line">diff <span class="comment">--git a/rack b/rack</span></div><div class="line"><span class="built_in">new</span> <span class="built_in">file</span> mode <span class="number">160000</span></div><div class="line">index <span class="number">0000000.</span><span class="number">.08</span>d709f</div><div class="line"><span class="comment">--- /dev/null</span></div><div class="line">+++ b/rack</div><div class="line">@@ -<span class="number">0</span>,<span class="number">0</span> +<span class="number">1</span> @@</div><div class="line">+Subproject commit <span class="number">08</span>d709f78b8c5b0fbeb7821e37fa53e69afcf433</div></pre></td></tr></table></figure>
+
+<p>尽管rack是你工作目录里的子目录，但 Git 把它视作一个子模块，当你不在那个目录里时并不记录它的内容。取而代之的是，Git 将它记录成来自那个仓库的一个特殊的提交。当你在那个子目录里修改并提交时，子项目会通知那里的 HEAD 已经发生变更并记录你当前正在工作的那个提交；通过那样的方法，当其他人克隆此项目，他们可以重新创建一致的环境。</p>
+<p>这是关于子模块的重要一点：你记录他们当前确切所处的提交。你不能记录一个子模块的master或者其他的符号引用。</p>
+<ol>
+<li>克隆一个带子模块的项目<br>这里你将克隆一个带子模块的项目。当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件：</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">$ git clone git:<span class="comment">//github.com/schacon/myproject.git</span></div><div class="line">Initialized empty Git repository <span class="keyword">in</span> /opt/myproject/.git/</div><div class="line">remote: Counting objects: <span class="number">6</span>, <span class="keyword">done</span>.</div><div class="line">remote: Compressing objects: <span class="number">100</span>% (<span class="number">4</span>/<span class="number">4</span>), <span class="keyword">done</span>.</div><div class="line">remote: Total <span class="number">6</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>)</div><div class="line">Receiving objects: <span class="number">100</span>% (<span class="number">6</span>/<span class="number">6</span>), <span class="keyword">done</span>.</div><div class="line">$ cd myproject</div><div class="line">$ ls -l</div><div class="line">total <span class="number">8</span></div><div class="line">-rw-r--r--  <span class="number">1</span> schacon  admin   <span class="number">3</span> Apr  <span class="number">9</span> <span class="number">09</span>:<span class="number">11</span> README</div><div class="line">drwxr-xr-x  <span class="number">2</span> schacon  admin  <span class="number">68</span> Apr  <span class="number">9</span> <span class="number">09</span>:<span class="number">11</span> rack</div><div class="line">$ ls rack/</div><div class="line">$</div></pre></td></tr></table></figure>
+
+<p>rack目录存在了，但是是空的。你必须运行两个命令：git submodule init来初始化你的本地配置文件，git submodule update来从那个项目拉取所有数据并检出你上层项目里所列的合适的提交</p>
 
       
     </div>
