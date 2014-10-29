@@ -5,15 +5,51 @@
   
   <title>Understanding the JVM | Joe&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="enjoy life">
+  <meta name="description" content="1. 走进Java
+2. Java内存区域与内存溢出异常
+3. 垃圾收集器与内存分配策略
+4. 虚拟机性能监控与故障处理工具
+5. 调优案例分析与实战
+6. 类文件结构
+7. 虚拟机加载机制
+8. 虚拟机字节码执行引擎
+9. 类加载及执行子系统的案例与实战
+10. 早期（编译期）优化
+11. 晚期（运行期）优化
+12. java内存模型与线程
+13. 线程安全与锁优化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Understanding the JVM">
 <meta property="og:url" content="http://yuqiao.github.io/2014/10/29/Understanding-the-JVM/">
 <meta property="og:site_name" content="Joe's Blog">
-<meta property="og:description" content="enjoy life">
+<meta property="og:description" content="1. 走进Java
+2. Java内存区域与内存溢出异常
+3. 垃圾收集器与内存分配策略
+4. 虚拟机性能监控与故障处理工具
+5. 调优案例分析与实战
+6. 类文件结构
+7. 虚拟机加载机制
+8. 虚拟机字节码执行引擎
+9. 类加载及执行子系统的案例与实战
+10. 早期（编译期）优化
+11. 晚期（运行期）优化
+12. java内存模型与线程
+13. 线程安全与锁优化">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Understanding the JVM">
-<meta name="twitter:description" content="enjoy life">
+<meta name="twitter:description" content="1. 走进Java
+2. Java内存区域与内存溢出异常
+3. 垃圾收集器与内存分配策略
+4. 虚拟机性能监控与故障处理工具
+5. 调优案例分析与实战
+6. 类文件结构
+7. 虚拟机加载机制
+8. 虚拟机字节码执行引擎
+9. 类加载及执行子系统的案例与实战
+10. 早期（编译期）优化
+11. 晚期（运行期）优化
+12. java内存模型与线程
+13. 线程安全与锁优化">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -89,18 +125,42 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="1-_走进Java">1. 走进Java</h1>
+<h1 id="2-_Java内存区域与内存溢出异常">2. Java内存区域与内存溢出异常</h1>
+<h1 id="3-_垃圾收集器与内存分配策略">3. 垃圾收集器与内存分配策略</h1>
+<h1 id="4-_虚拟机性能监控与故障处理工具">4. 虚拟机性能监控与故障处理工具</h1>
+<h1 id="5-_调优案例分析与实战">5. 调优案例分析与实战</h1>
+<h1 id="6-_类文件结构">6. 类文件结构</h1>
+<h1 id="7-_虚拟机加载机制">7. 虚拟机加载机制</h1>
+<h1 id="8-_虚拟机字节码执行引擎">8. 虚拟机字节码执行引擎</h1>
+<h1 id="9-_类加载及执行子系统的案例与实战">9. 类加载及执行子系统的案例与实战</h1>
+<h1 id="10-_早期（编译期）优化">10. 早期（编译期）优化</h1>
+<h1 id="11-_晚期（运行期）优化">11. 晚期（运行期）优化</h1>
+<h1 id="12-_java内存模型与线程">12. java内存模型与线程</h1>
+<h1 id="13-_线程安全与锁优化">13. 线程安全与锁优化</h1>
+
       
     </div>
     <footer class="article-footer">
       <a data-url="http://yuqiao.github.io/2014/10/29/Understanding-the-JVM/" data-id="bnh0d21ucjrmas8m" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+
     </footer>
   </div>
   
     
 <nav id="article-nav">
+  
+    <a href="/2014/10/29/Git子模块/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Git子模块
+        
+      </div>
+    </a>
   
   
     <a href="/2014/10/28/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
@@ -123,7 +183,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/java/" style="font-size: NaNpx;">java</a><a href="/tags/program/" style="font-size: NaNpx;">program</a>
+      <a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 10.00px;">tool</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -132,7 +192,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">4</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -142,6 +202,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2014/10/29/Git子模块/">Git子模块</a>
+          </li>
         
           <li>
             <a href="/2014/10/29/Understanding-the-JVM/">Understanding the JVM</a>

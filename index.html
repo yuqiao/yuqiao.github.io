@@ -69,6 +69,53 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Git子模块" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/29/Git子模块/" class="article-date">
+  <time datetime="2014-10-29T01:46:39.000Z" itemprop="datePublished">10月 29 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/29/Git子模块/">Git子模块</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="子模块">子模块</h1>
+<p>经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。</p>
+<p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
+<h1 id="初步">初步</h1>
+<ol>
+<li><p>添加子模块。 通过git submodule add将外部项目加为子模块:</p>
+<p> $ git submodule add git://github.com/chneukirchen/rack.git rack<br> Initialized empty Git repository in /opt/subtest/rack/.git/<br> remote: Counting objects: 3181, done.<br> remote: Compressing objects: 100% (1534/1534), done.<br> remote: Total 3181 (delta 1951), reused 2623 (delta 1603)<br> Receiving objects: 100% (3181/3181), 675.42 KiB | 422 KiB/s, done.<br> Resolving deltas: 100% (1951/1951), done.</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/10/29/Git子模块/" data-id="zuzr02a3ba2shyf2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Understanding-the-JVM" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/29/Understanding-the-JVM/" class="article-date">
@@ -91,13 +138,28 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="1-_走进Java">1. 走进Java</h1>
+<h1 id="2-_Java内存区域与内存溢出异常">2. Java内存区域与内存溢出异常</h1>
+<h1 id="3-_垃圾收集器与内存分配策略">3. 垃圾收集器与内存分配策略</h1>
+<h1 id="4-_虚拟机性能监控与故障处理工具">4. 虚拟机性能监控与故障处理工具</h1>
+<h1 id="5-_调优案例分析与实战">5. 调优案例分析与实战</h1>
+<h1 id="6-_类文件结构">6. 类文件结构</h1>
+<h1 id="7-_虚拟机加载机制">7. 虚拟机加载机制</h1>
+<h1 id="8-_虚拟机字节码执行引擎">8. 虚拟机字节码执行引擎</h1>
+<h1 id="9-_类加载及执行子系统的案例与实战">9. 类加载及执行子系统的案例与实战</h1>
+<h1 id="10-_早期（编译期）优化">10. 早期（编译期）优化</h1>
+<h1 id="11-_晚期（运行期）优化">11. 晚期（运行期）优化</h1>
+<h1 id="12-_java内存模型与线程">12. java内存模型与线程</h1>
+<h1 id="13-_线程安全与锁优化">13. 线程安全与锁优化</h1>
+
       
     </div>
     <footer class="article-footer">
       <a data-url="http://yuqiao.github.io/2014/10/29/Understanding-the-JVM/" data-id="bnh0d21ucjrmas8m" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+
     </footer>
   </div>
   
@@ -367,7 +429,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/java/" style="font-size: NaNpx;">java</a><a href="/tags/program/" style="font-size: NaNpx;">program</a>
+      <a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 10.00px;">tool</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -376,7 +438,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">4</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -386,6 +448,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2014/10/29/Git子模块/">Git子模块</a>
+          </li>
         
           <li>
             <a href="/2014/10/29/Understanding-the-JVM/">Understanding the JVM</a>
