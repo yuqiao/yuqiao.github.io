@@ -96,10 +96,10 @@
 <p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
 <h1 id="初步">初步</h1>
 <ol>
-<li><p>添加子模块。 通过git submodule add将外部项目加为子模块:</p>
-<p> $ git submodule add git://github.com/chneukirchen/rack.git rack<br> Initialized empty Git repository in /opt/subtest/rack/.git/<br> remote: Counting objects: 3181, done.<br> remote: Compressing objects: 100% (1534/1534), done.<br> remote: Total 3181 (delta 1951), reused 2623 (delta 1603)<br> Receiving objects: 100% (3181/3181), 675.42 KiB | 422 KiB/s, done.<br> Resolving deltas: 100% (1951/1951), done.</p>
-</li>
+<li>添加子模块。 通过git submodule add将外部项目加为子模块:</li>
 </ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ git submodule add git:<span class="comment">//github.com/chneukirchen/rack.git rack</span></div><div class="line">Initialized empty Git repository <span class="keyword">in</span> /opt/subtest/rack/.git/</div><div class="line">remote: Counting objects: <span class="number">3181</span>, <span class="keyword">done</span>.</div><div class="line">remote: Compressing objects: <span class="number">100</span>% (<span class="number">1534</span>/<span class="number">1534</span>), <span class="keyword">done</span>.</div><div class="line">remote: Total <span class="number">3181</span> (delta <span class="number">1951</span>), reused <span class="number">2623</span> (delta <span class="number">1603</span>)</div><div class="line">Receiving objects: <span class="number">100</span>% (<span class="number">3181</span>/<span class="number">3181</span>), <span class="number">675.42</span> KiB | <span class="number">422</span> KiB/s, <span class="keyword">done</span>.</div><div class="line">Resolving deltas: <span class="number">100</span>% (<span class="number">1951</span>/<span class="number">1951</span>), <span class="keyword">done</span>.</div></pre></td></tr></table></figure>
+
 
       
     </div>
