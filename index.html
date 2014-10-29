@@ -108,20 +108,32 @@
 </code></pre></li>
 </ol>
 <p>加入子模块后，运行git status, 会看到以下两项。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ git status</div><div class="line"><span class="preprocessor"># On branch master</span></div><div class="line"><span class="preprocessor"># Changes to be committed:</span></div><div class="line"><span class="preprocessor">#   (use "git reset HEAD &lt;file&gt;..." to unstage)</span></div><div class="line"><span class="preprocessor">#</span></div><div class="line"><span class="preprocessor">#      new file:   .gitmodules</span></div><div class="line"><span class="preprocessor">#      new file:   rack</span></div><div class="line"><span class="preprocessor">#</span></div></pre></td></tr></table></figure>
-
-<p>会生成一个.gitmodules文件。这是一个配置文件，保存了项目 URL 和你拉取到的本地子目录。</p>
+<pre><code>$ git status
+<span class="preprocessor"># On branch master</span>
+<span class="preprocessor"># Changes to be committed:</span>
+<span class="preprocessor">#   (use "git reset HEAD &lt;file&gt;..." to unstage)</span>
+<span class="preprocessor">#</span>
+<span class="preprocessor">#      new file:   .gitmodules</span>
+<span class="preprocessor">#      new file:   rack</span>
+<span class="preprocessor">#</span>
+</code></pre><p>会生成一个.gitmodules文件。这是一个配置文件，保存了项目 URL 和你拉取到的本地子目录。</p>
 <p>这个文件跟其他文件一样也是处于版本控制之下的，就像你的.gitignore文件一样。它跟项目里的其他文件一样可以被推送和拉取。这是其他克隆此项目的人获知子模块项目来源的途径。</p>
 <p>在看文件rack:</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ git diff <span class="comment">--cached rack</span></div><div class="line">diff <span class="comment">--git a/rack b/rack</span></div><div class="line"><span class="built_in">new</span> <span class="built_in">file</span> mode <span class="number">160000</span></div><div class="line">index <span class="number">0000000.</span><span class="number">.08</span>d709f</div><div class="line"><span class="comment">--- /dev/null</span></div><div class="line">+++ b/rack</div><div class="line">@@ -<span class="number">0</span>,<span class="number">0</span> +<span class="number">1</span> @@</div><div class="line">+Subproject commit <span class="number">08</span>d709f78b8c5b0fbeb7821e37fa53e69afcf433</div></pre></td></tr></table></figure>
-
-<p>尽管rack是你工作目录里的子目录，但 Git 把它视作一个子模块，当你不在那个目录里时并不记录它的内容。取而代之的是，Git 将它记录成来自那个仓库的一个特殊的提交。当你在那个子目录里修改并提交时，子项目会通知那里的 HEAD 已经发生变更并记录你当前正在工作的那个提交；通过那样的方法，当其他人克隆此项目，他们可以重新创建一致的环境。</p>
+<pre><code>$ git diff <span class="comment">--cached rack</span>
+diff <span class="comment">--git a/rack b/rack</span>
+<span class="built_in">new</span> <span class="built_in">file</span> mode <span class="number">160000</span>
+index <span class="number">0000000.</span><span class="number">.08</span>d709f
+<span class="comment">--- /dev/null</span>
++++ b/rack
+@@ -<span class="number">0</span>,<span class="number">0</span> +<span class="number">1</span> @@
++Subproject commit <span class="number">08</span>d709f78b8c5b0fbeb7821e37fa53e69afcf433
+</code></pre><p>尽管rack是你工作目录里的子目录，但 Git 把它视作一个子模块，当你不在那个目录里时并不记录它的内容。取而代之的是，Git 将它记录成来自那个仓库的一个特殊的提交。当你在那个子目录里修改并提交时，子项目会通知那里的 HEAD 已经发生变更并记录你当前正在工作的那个提交；通过那样的方法，当其他人克隆此项目，他们可以重新创建一致的环境。</p>
 <p>这是关于子模块的重要一点：你记录他们当前确切所处的提交。你不能记录一个子模块的master或者其他的符号引用。</p>
 <ol>
-<li>克隆一个带子模块的项目<br>这里你将克隆一个带子模块的项目。当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件：</li>
+<li><p>克隆一个带子模块的项目<br>这里你将克隆一个带子模块的项目。当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件：</p>
+<p> $ git clone git://github.com/schacon/myproject.git<br> Initialized empty Git repository in /opt/myproject/.git/<br> remote: Counting objects: 6, done.<br> remote: Compressing objects: 100% (4/4), done.<br> remote: Total 6 (delta 0), reused 0 (delta 0)<br> Receiving objects: 100% (6/6), done.<br> $ cd myproject<br> $ ls -l<br> total 8<br> -rw-r—r—  1 schacon  admin   3 Apr  9 09:11 README<br> drwxr-xr-x  2 schacon  admin  68 Apr  9 09:11 rack<br> $ ls rack/<br> $</p>
+</li>
 </ol>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">$ git clone git:<span class="comment">//github.com/schacon/myproject.git</span></div><div class="line">Initialized empty Git repository <span class="keyword">in</span> /opt/myproject/.git/</div><div class="line">remote: Counting objects: <span class="number">6</span>, <span class="keyword">done</span>.</div><div class="line">remote: Compressing objects: <span class="number">100</span>% (<span class="number">4</span>/<span class="number">4</span>), <span class="keyword">done</span>.</div><div class="line">remote: Total <span class="number">6</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>)</div><div class="line">Receiving objects: <span class="number">100</span>% (<span class="number">6</span>/<span class="number">6</span>), <span class="keyword">done</span>.</div><div class="line">$ cd myproject</div><div class="line">$ ls -l</div><div class="line">total <span class="number">8</span></div><div class="line">-rw-r--r--  <span class="number">1</span> schacon  admin   <span class="number">3</span> Apr  <span class="number">9</span> <span class="number">09</span>:<span class="number">11</span> README</div><div class="line">drwxr-xr-x  <span class="number">2</span> schacon  admin  <span class="number">68</span> Apr  <span class="number">9</span> <span class="number">09</span>:<span class="number">11</span> rack</div><div class="line">$ ls rack/</div><div class="line">$</div></pre></td></tr></table></figure>
-
 <p>rack目录存在了，但是是空的。你必须运行两个命令：git submodule init来初始化你的本地配置文件，git submodule update来从那个项目拉取所有数据并检出你上层项目里所列的合适的提交</p>
 
       
