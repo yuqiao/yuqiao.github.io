@@ -103,50 +103,92 @@ git clone https://gi">
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="<%= post.layout %>-<%= post.slug %>" class="article article-type-<%= post.layout %>" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-how-to-use-hexo" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <%- partial('post/date', {class_name: 'article-date', date_format: null}) %>
-    <%- partial('post/category') %>
+    <a href="/2014/10/09/how-to-use-hexo/" class="article-date">
+  <time datetime="2014-10-09T07:03:30.000Z" itemprop="datePublished">10月 9 2014</time>
+</a>
+    
   </div>
   <div class="article-inner">
-    <%- partial('post/gallery') %>
-    <% if (post.link || post.title){ %>
+    
+    
       <header class="article-header">
-        <%- partial('post/title', {class_name: 'article-title'}) %>
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用 hexo
+    </h1>
+  
+
       </header>
-    <% } %>
+    
     <div class="article-entry" itemprop="articleBody">
-      <% if (post.excerpt && index){ %>
-        <%- post.excerpt %>
-        <% if (theme.excerpt_link){ %>
-          <p class="article-more-link">
-            <a href="<%- url_for(post.path) %>#more"><%= theme.excerpt_link %></a>
-          </p>
-        <% } %>
-      <% } else { %>
-        <%- post.content %>
-      <% } %>
+      
+        <h1 id="1-_安装">1. 安装</h1>
+<ol>
+<li>安装node.js : <a href="http://nodejs.org/#download" target="_blank" rel="external">http://nodejs.org/#download</a></li>
+<li><p>安装npm: </p>
+<ul>
+<li>git clone —recursive git://github.com/isaacs/npm.git</li>
+<li>cd npm</li>
+<li>sudo node cli.js install npm -gf</li>
+</ul>
+</li>
+<li><p>安装hexo: npm install hexo -g</p>
+</li>
+<li>git clone <a href="https://github.com/yuqiao/yuqiao.github.io.git" target="_blank" rel="external">https://github.com/yuqiao/yuqiao.github.io.git</a></li>
+<li>cd yuqiao.github.io</li>
+<li>hexo init</li>
+<li>npm install</li>
+<li><p>vi _config.yml  # 配置git deploy</p>
+<p>  deploy:</p>
+<pre><code><span class="attribute">type</span>: <span class="string">github</span>
+<span class="attribute">repository</span>: <span class="string">https://github.com/yuqiao/yuqiao.github.io.git</span>
+<span class="attribute">branch</span>: <span class="string">master</span>
+</code></pre></li>
+<li><p>hexo generate</p>
+</li>
+<li>hexo deploy</li>
+</ol>
+<h1 id="2-_使用">2. 使用</h1>
+<ol>
+<li>修改_config.yml</li>
+<li>hexo new “xxxx”</li>
+</ol>
+<h1 id="参考">参考</h1>
+<ol>
+<li><a href="http://zipperary.com/2013/05/28/hexo-guide-2/" target="_blank" rel="external">http://zipperary.com/2013/05/28/hexo-guide-2/</a></li>
+</ol>
+
+      
     </div>
     <footer class="article-footer">
-      <a data-url="<%- post.permalink %>" data-id="<%= post._id %>" class="article-share-link">Share</a>
-      <% if (post.comments && config.disqus_shortname){ %>
-        <a href="<%- post.permalink %>#disqus_thread" class="article-comment-link">Comments</a>
-      <% } %>
-      <%- partial('post/tag') %>
+      <a data-url="http://yuqiao.github.io/2014/10/09/how-to-use-hexo/" data-id="i4pep39cwh2svg6z" class="article-share-link">Share</a>
+      
+      
     </footer>
   </div>
-  <% if (!index){ %>
-    <%- partial('post/nav') %>
-  <% } %>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/10/10/think-in-java/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          java编程思想
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
 </article>
 
-<% if (!index && post.comments && config.disqus_shortname){ %>
-<section id="comments">
-  <div id="disqus_thread">
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-  </div>
 </section>
-<% } %></section>
         
           <aside id="sidebar">
   
@@ -236,6 +278,6 @@ git clone https://gi">
 
 
   </div>
-  <a href="https://github.com/you"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
 </body>
+  <a href="https://github.com/you"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
 </html>
