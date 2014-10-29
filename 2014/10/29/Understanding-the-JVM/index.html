@@ -6,50 +6,44 @@
   <title>Understanding the JVM | Joe&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1. 走进Java
+java技术体系
 2. Java内存区域与内存溢出异常
-3. 垃圾收集器与内存分配策略
-4. 虚拟机性能监控与故障处理工具
-5. 调优案例分析与实战
-6. 类文件结构
-7. 虚拟机加载机制
-8. 虚拟机字节码执行引擎
-9. 类加载及执行子系统的案例与实战
-10. 早期（编译期）优化
-11. 晚期（运行期）优化
-12. java内存模型与线程
-13. 线程安全与锁优化">
+运行时数据区域
+
+程序计数器: 当前线程所执行的字节码的行号指示器。
+Java虚拟机栈：存储局部变量表，操作数栈，动态链接，方法出口等信息
+本地方法栈。
+Java堆: 存放对象实例
+方法区: 各个线程共享的内存区域，用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器编译后的代码等数据。
+运行时常量池：是方法区的一部">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Understanding the JVM">
 <meta property="og:url" content="http://yuqiao.github.io/2014/10/29/Understanding-the-JVM/">
 <meta property="og:site_name" content="Joe's Blog">
 <meta property="og:description" content="1. 走进Java
+java技术体系
 2. Java内存区域与内存溢出异常
-3. 垃圾收集器与内存分配策略
-4. 虚拟机性能监控与故障处理工具
-5. 调优案例分析与实战
-6. 类文件结构
-7. 虚拟机加载机制
-8. 虚拟机字节码执行引擎
-9. 类加载及执行子系统的案例与实战
-10. 早期（编译期）优化
-11. 晚期（运行期）优化
-12. java内存模型与线程
-13. 线程安全与锁优化">
+运行时数据区域
+
+程序计数器: 当前线程所执行的字节码的行号指示器。
+Java虚拟机栈：存储局部变量表，操作数栈，动态链接，方法出口等信息
+本地方法栈。
+Java堆: 存放对象实例
+方法区: 各个线程共享的内存区域，用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器编译后的代码等数据。
+运行时常量池：是方法区的一部">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Understanding the JVM">
 <meta name="twitter:description" content="1. 走进Java
+java技术体系
 2. Java内存区域与内存溢出异常
-3. 垃圾收集器与内存分配策略
-4. 虚拟机性能监控与故障处理工具
-5. 调优案例分析与实战
-6. 类文件结构
-7. 虚拟机加载机制
-8. 虚拟机字节码执行引擎
-9. 类加载及执行子系统的案例与实战
-10. 早期（编译期）优化
-11. 晚期（运行期）优化
-12. java内存模型与线程
-13. 线程安全与锁优化">
+运行时数据区域
+
+程序计数器: 当前线程所执行的字节码的行号指示器。
+Java虚拟机栈：存储局部变量表，操作数栈，动态链接，方法出口等信息
+本地方法栈。
+Java堆: 存放对象实例
+方法区: 各个线程共享的内存区域，用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器编译后的代码等数据。
+运行时常量池：是方法区的一部">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -126,7 +120,20 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1-_走进Java">1. 走进Java</h1>
+<p><a href="/img/jdk7.png">java技术体系</a></p>
 <h1 id="2-_Java内存区域与内存溢出异常">2. Java内存区域与内存溢出异常</h1>
+<h2 id="运行时数据区域">运行时数据区域</h2>
+<ol>
+<li>程序计数器: 当前线程所执行的字节码的行号指示器。</li>
+<li>Java虚拟机栈：存储局部变量表，操作数栈，动态链接，方法出口等信息</li>
+<li>本地方法栈。</li>
+<li>Java堆: 存放对象实例</li>
+<li>方法区: 各个线程共享的内存区域，用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器编译后的代码等数据。</li>
+<li>运行时常量池：是方法区的一部分。</li>
+<li>直接内存</li>
+</ol>
+<h2 id="HotSpot虚拟机对象探秘">HotSpot虚拟机对象探秘</h2>
+<h3 id="对象的创建">对象的创建</h3>
 <h1 id="3-_垃圾收集器与内存分配策略">3. 垃圾收集器与内存分配策略</h1>
 <h1 id="4-_虚拟机性能监控与故障处理工具">4. 虚拟机性能监控与故障处理工具</h1>
 <h1 id="5-_调优案例分析与实战">5. 调优案例分析与实战</h1>
