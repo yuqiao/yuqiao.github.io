@@ -11,7 +11,8 @@
 减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A
 使移动可以重复： ;命令会重复上次f命令查找的字符
 执行，重复，回退
-做出一个修改                 {edit}                 .     u在行内操作下一指定字符       f{char}/t{char}        ;     ,执行替">
+用途                     |   操作                 |重复 | 回退
+做出一个修改             |   {edit}               | .">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Pratical Vim">
 <meta property="og:url" content="http://yuqiao.github.io/2014/11/17/Pratical-Vim/">
@@ -22,7 +23,8 @@
 减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A
 使移动可以重复： ;命令会重复上次f命令查找的字符
 执行，重复，回退
-做出一个修改                 {edit}                 .     u在行内操作下一指定字符       f{char}/t{char}        ;     ,执行替">
+用途                     |   操作                 |重复 | 回退
+做出一个修改             |   {edit}               | .">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pratical Vim">
 <meta name="twitter:description" content="1. Vim解决问题的方式
@@ -31,7 +33,8 @@
 减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A
 使移动可以重复： ;命令会重复上次f命令查找的字符
 执行，重复，回退
-做出一个修改                 {edit}                 .     u在行内操作下一指定字符       f{char}/t{char}        ;     ,执行替">
+用途                     |   操作                 |重复 | 回退
+做出一个修改             |   {edit}               | .">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -113,7 +116,8 @@
 <p>减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A</p>
 <p>使移动可以重复： ;命令会重复上次f命令查找的字符</p>
 <h2 id="执行，重复，回退">执行，重复，回退</h2>
-<p>做出一个修改                 {edit}                 .     u<br>在行内操作下一指定字符       f{char}/t{char}        ;     ,<br>执行替换                     :s/target/replacement  &amp;     u<br>执行一系列修改               qx{changes}q           @x    u</p>
+<h2 id="用途_|_操作_|重复_|_回退">用途                     |   操作                 |重复 | 回退</h2>
+<p>做出一个修改             |   {edit}               | .   | u<br>在行内操作下一指定字符   |   f{char}/t{char}      | ;   | ,<br>执行替换                 |   :s/target/replacement| &amp;   | u<br>执行一系列修改           |   qx{changes}q         | @x  | u</p>
 <h1 id="2-_普通模式">2. 普通模式</h1>
 <h2 id="停顿时请移开画笔">停顿时请移开画笔</h2>
 <p>就像画家只花一小部分时间涂色一样， 程序员也只花一小部分时间编写代码。绝大多数时间用来思考，阅读已经在代码中穿梭浏览。<br>而且当确定需要修改时，也不一定要切换到插入模式，我们可以重新调整代码的格式，复制它们，移动其位置或是删除它们。<br>在普通模式中， 我们有众多的工具可以利用。</p>
@@ -163,10 +167,12 @@ gU
 <p>不离开插入模式，粘贴寄存器中的文本： <c-r>0<br>问题：会出现不必要的缩进或换行。 —&gt; <c-r><c-p>{register}</c-p></c-r></c-r></p>
 <p>随时随地做计算：<c-r>=6*35<cr></cr></c-r></p>
 <p>用字符编码插入非常用字符:</p>
-<pre><code>&lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span> 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
-&lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span> 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
-&lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span> 按原意插入非数字字符
-&lt;<span class="keyword">C</span>-k&gt;<span class="list">{char1}</span><span class="list">{char2}</span> 插入以二合字母表示的字符. &lt;<span class="keyword">C</span>-k&gt;<span class="number">12</span> ½
+<pre><code>按键               | 用途
+--------------------------------------------------------
+&lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span>         | 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
+&lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span>       | 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
+&lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span>    | 按原意插入非数字字符
+&lt;<span class="keyword">C</span>-k&gt;<span class="list">{char1}</span><span class="list">{char2}</span>| 插入以二合字母表示的字符. &lt;<span class="keyword">C</span>-k&gt;<span class="number">12</span> ½
 </code></pre><p>c查询字符编码： 在字符上按命令ga</p>
 <p>二合字符集：h digraphs-default</p>
 <p>命令：:digraphs查看可用的二合字母列表。 :h digraphs-table</p>
@@ -176,11 +182,24 @@ gU
 <h1 id="4-_可视模式">4. 可视模式</h1>
 <p>三种不同的可视模式： 操作字符文本， 行文本，块文本。</p>
 <p>激活可视模式：</p>
-<pre><code><span class="input"><span class="prompt">v       激活面向字符的可视模式
-V       激活面向行的可视模式
-&lt;C-v&gt;</span>   激活面向列块的可视模式</span>
-gv      重选上次的高亮选区
-</code></pre>
+<pre><code><span class="header">按键  | 用途
+-------------------------------</span>
+v     | 激活面向字符的可视模式
+V     | 激活面向行的可视模式
+&lt;C-v&gt; | 激活面向列块的可视模式
+gv    | 重选上次的高亮选区
+</code></pre><p>在可视模式间切换</p>
+<pre><code><span class="header">按键          | 用途
+-------------------------------</span>
+&lt;Esc&gt; / &lt;C-[&gt; | 回到普通模式
+v / V / &lt;C-v&gt; | 切换到普通模式
+v             | 
+V             |
+&lt;C-v&gt;         |
+o             | 切换高亮选区的活动端
+</code></pre><p>vit 选择标签里的内容, gUit</p>
+<p>只要可能，最好用操作符命令，而不是可视命令。</p>
+
       
     </div>
     <footer class="article-footer">
