@@ -69,6 +69,117 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Pratical-Vim" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/17/Pratical-Vim/" class="article-date">
+  <time datetime="2014-11-17T13:33:49.000Z" itemprop="datePublished">11月 17 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/17/Pratical-Vim/">Pratical Vim</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_Vim解决问题的方式">1. Vim解决问题的方式</h1>
+<h2 id="不要自我重复">不要自我重复</h2>
+<p>使用.命令</p>
+<p>减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A</p>
+<p>使移动可以重复： ;命令会重复上次f命令查找的字符</p>
+<h2 id="执行，重复，回退">执行，重复，回退</h2>
+<p>做出一个修改                 {edit}                 .     u<br>在行内操作下一指定字符       f{char}/t{char}        ;     ,<br>执行替换                     :s/target/replacement  &amp;     u<br>执行一系列修改               qx{changes}q           @x    u</p>
+<h1 id="2-_普通模式">2. 普通模式</h1>
+<h2 id="停顿时请移开画笔">停顿时请移开画笔</h2>
+<p>就像画家只花一小部分时间涂色一样， 程序员也只花一小部分时间编写代码。绝大多数时间用来思考，阅读已经在代码中穿梭浏览。<br>而且当确定需要修改时，也不一定要切换到插入模式，我们可以重新调整代码的格式，复制它们，移动其位置或是删除它们。<br>在普通模式中， 我们有众多的工具可以利用。</p>
+<h2 id="把撤销单元切成块">把撤销单元切成块</h2>
+<p>更喜欢用<esc>o, 而不是<cr></cr></esc></p>
+<h2 id="构造可重复的修改">构造可重复的修改</h2>
+<p>删除单词： dbx bdw daw</p>
+<p>daw 可以发挥.命令的最大威力， 推荐用daw.</p>
+<h2 id="用次数做简单的算术运算">用次数做简单的算术运算</h2>
+<p>180<c-x></c-x></p>
+<h2 id="能够重复，就别用次数">能够重复，就别用次数</h2>
+<p>删除两单词：d2w 2dw dw.</p>
+<p>只在必要时采用次数</p>
+<h2 id="双剑合璧，天下无敌">双剑合璧，天下无敌</h2>
+<p>vim的请打很多程度上源自操作符与动作命令相结合。</p>
+<p>操作符 + 动作命令 = 操作 </p>
+<pre><code>d<span class="list">{motion}</span>: dl daw dap
+c<span class="list">{motion}</span>:
+y<span class="list">{motion}</span>
+
+g~ gu gU
+</code></pre><p>vim的语法有个额外规则：当一个操作符命令被连续调用两次时，它会作用于当前行， 如dd, &gt;&gt;.<br>gU有个特殊的情况， gUU作用于当前行，而不用gUgU.</p>
+<p>操作符命令：</p>
+<pre><code>c
+d
+y
+g~
+gu
+gU
+&gt;
+&lt;
+<span class="header">=   自动缩进</span>
+!   使用外部程序过滤{motion}所跨越的行
+</code></pre><p>可以定义自己的操作符， Tim Pope的commentary.vim定义新的操作符\<br>参考： h :map-operator</p>
+<p>自定义动作命令, 参考Kana Natsuno的textobj-entire插件，增加了两文本对象ie和ae.<br>参考：h omap-info</p>
+<p>操作符待决模式</p>
+<h1 id="3-_插入模式">3. 插入模式</h1>
+<p>在插入模式中即时更正错误：</p>
+<pre><code><span class="input"><span class="prompt">&lt;C-h&gt;</span> 删除前一个字符</span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> 删除前一个单词</span>
+<span class="input"><span class="prompt">&lt;C-u&gt;</span> 删到行首</span>
+</code></pre><p>返回普通模式：</p>
+<pre><code><span class="input"><span class="prompt">&lt;Esc&gt;</span> </span>
+<span class="input"><span class="prompt">&lt;C-[&gt;</span> 切换到普通模式</span>
+<span class="input"><span class="prompt">&lt;C-o&gt;</span> 切换到插入-普通模式</span>
+</code></pre><p>插入普通模式：能让我妈执行一次普通模式的命令. (重新回到插入模式）</p>
+<p>不离开插入模式，粘贴寄存器中的文本： <c-r>0<br>问题：会出现不必要的缩进或换行。 —&gt; <c-r><c-p>{register}</c-p></c-r></c-r></p>
+<p>随时随地做计算：<c-r>=6*35<cr></cr></c-r></p>
+<p>用字符编码插入非常用字符:</p>
+<pre><code>&lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span> 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
+&lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span> 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
+&lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span> 按原意插入非数字字符
+&lt;<span class="keyword">C</span>-k&gt;<span class="list">{char1}</span><span class="list">{char2}</span> 插入以二合字母表示的字符. &lt;<span class="keyword">C</span>-k&gt;<span class="number">12</span> ½
+</code></pre><p>c查询字符编码： 在字符上按命令ga</p>
+<p>二合字符集：h digraphs-default</p>
+<p>命令：:digraphs查看可用的二合字母列表。 :h digraphs-table</p>
+<p>t替换模式替换又有文本: R命令（由普通模式进入替换模式）</p>
+<p>虚拟替换模式：gR命令。会把制表符当做一组空格进行处理。</p>
+<p>单次版本：r和gr.</p>
+<h1 id="4-_可视模式">4. 可视模式</h1>
+<p>三种不同的可视模式： 操作字符文本， 行文本，块文本。</p>
+<p>激活可视模式：</p>
+<pre><code><span class="input"><span class="prompt">v       激活面向字符的可视模式
+V       激活面向行的可视模式
+&lt;C-v&gt;</span>   激活面向列块的可视模式</span>
+gv      重选上次的高亮选区
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/11/17/Pratical-Vim/" data-id="8eby20mex83fqb1i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vim/">Vim</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Git子模块" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/29/Git子模块/" class="article-date">
@@ -477,7 +588,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 10.00px;">tool</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 20.00px;">tool</a><a href="/tags/笔记/" style="font-size: 10.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -486,7 +597,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -496,6 +607,10 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2014/11/17/Pratical-Vim/">Pratical Vim</a>
+          </li>
         
           <li>
             <a href="/2014/10/29/Git子模块/">Git子模块</a>
@@ -511,10 +626,6 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
         
           <li>
             <a href="/2014/10/10/think-in-java/">java编程思想</a>
-          </li>
-        
-          <li>
-            <a href="/2014/10/09/how-to-use-hexo/">使用 hexo</a>
           </li>
         
       </ul>
