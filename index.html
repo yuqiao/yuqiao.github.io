@@ -183,7 +183,7 @@ gU
 <p>随时随地做计算：<c-r>=6*35<cr></cr></c-r></p>
 <p>用字符编码插入非常用字符:</p>
 <pre><code>按键               | 用途
---------------------------------------------------------
+-------------------|------------------------------------
 &lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span>         | 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
 &lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span>       | 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
 &lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span>    | 按原意插入非数字字符
@@ -197,21 +197,21 @@ gU
 <h1 id="4-_可视模式">4. 可视模式</h1>
 <p>三种不同的可视模式： 操作字符文本， 行文本，块文本。</p>
 <p>激活可视模式：</p>
-<pre><code><span class="header">按键  | 用途
--------------------------------</span>
-v     | 激活面向字符的可视模式
-V     | 激活面向行的可视模式
-&lt;C-v&gt; | 激活面向列块的可视模式
-gv    | 重选上次的高亮选区
+<pre><code>按键  <span class="string">| 用途</span>
+------<span class="string">|------------------------</span>
+v     <span class="string">| 激活面向字符的可视模式</span>
+V     <span class="string">| 激活面向行的可视模式</span>
+&lt;C-v&gt; <span class="string">| 激活面向列块的可视模式</span>
+gv    <span class="string">| 重选上次的高亮选区</span>
 </code></pre><p>在可视模式间切换</p>
-<pre><code><span class="header">按键          | 用途
--------------------------------</span>
-&lt;Esc&gt; / &lt;C-[&gt; | 回到普通模式
-v / V / &lt;C-v&gt; | 切换到普通模式
-v             | 
+<pre><code><span class="input"><span class="prompt">按键          | 用途
+--------------|----------------
+&lt;Esc&gt;</span> / &lt;<span class="constant">C</span>-[&gt; | 回到普通模式</span>
+<span class="input"><span class="prompt">v / V / &lt;C-v&gt;</span> | 切换到普通模式</span>
+<span class="input"><span class="prompt">v             | 
 V             |
-&lt;C-v&gt;         |
-o             | 切换高亮选区的活动端
+&lt;C-v&gt;</span>         |
+o             | 切换高亮选区的活动端</span>
 </code></pre><p>vit 选择标签里的内容, gUit</p>
 <p>只要可能，最好用操作符命令，而不是可视命令。</p>
 
