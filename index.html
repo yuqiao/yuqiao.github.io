@@ -182,13 +182,33 @@ gU
 <p>不离开插入模式，粘贴寄存器中的文本： <c-r>0<br>问题：会出现不必要的缩进或换行。 —&gt; <c-r><c-p>{register}</c-p></c-r></c-r></p>
 <p>随时随地做计算：<c-r>=6*35<cr></cr></c-r></p>
 <p>用字符编码插入非常用字符:</p>
-<pre><code>按键               | 用途
--------------------|------------------------------------
-&lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span>         | 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
-&lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span>       | 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
-&lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span>    | 按原意插入非数字字符
-&lt;<span class="keyword">C</span>-k&gt;<span class="list">{char1}</span><span class="list">{char2}</span>| 插入以二合字母表示的字符. &lt;<span class="keyword">C</span>-k&gt;<span class="number">12</span> ½
-</code></pre><p>c查询字符编码： 在字符上按命令ga</p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><c-v>{123}</c-v></td>
+<td>以十进制编码插入字符 例如: <c-v>65 A</c-v></td>
+</tr>
+<tr>
+<td><c-v>u{1234}</c-v></td>
+<td>以十六进制编码插入字符 例如: <c-v>u00bf  ¿ </c-v></td>
+</tr>
+<tr>
+<td><c-v>{nondigit}</c-v></td>
+<td>按原意插入非数字字符</td>
+</tr>
+<tr>
+<td><c-k>{char1}{char2}</c-k></td>
+<td>插入以二合字母表示的字符. <c-k>12 ½</c-k></td>
+</tr>
+</tbody>
+</table>
+<p>c查询字符编码： 在字符上按命令ga</p>
 <p>二合字符集：h digraphs-default</p>
 <p>命令：:digraphs查看可用的二合字母列表。 :h digraphs-table</p>
 <p>t替换模式替换又有文本: R命令（由普通模式进入替换模式）</p>
@@ -197,23 +217,70 @@ gU
 <h1 id="4-_可视模式">4. 可视模式</h1>
 <p>三种不同的可视模式： 操作字符文本， 行文本，块文本。</p>
 <p>激活可视模式：</p>
-<pre><code>按键  <span class="string">| 用途</span>
-------<span class="string">|------------------------</span>
-v     <span class="string">| 激活面向字符的可视模式</span>
-V     <span class="string">| 激活面向行的可视模式</span>
-&lt;C-v&gt; <span class="string">| 激活面向列块的可视模式</span>
-gv    <span class="string">| 重选上次的高亮选区</span>
-</code></pre><p>在可视模式间切换</p>
-<pre><code><span class="input"><span class="prompt">按键          | 用途
---------------|----------------
-&lt;Esc&gt;</span> / &lt;<span class="constant">C</span>-[&gt; | 回到普通模式</span>
-<span class="input"><span class="prompt">v / V / &lt;C-v&gt;</span> | 切换到普通模式</span>
-<span class="input"><span class="prompt">v             | 
-V             |
-&lt;C-v&gt;</span>         |
-o             | 切换高亮选区的活动端</span>
-</code></pre><p>vit 选择标签里的内容, gUit</p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v</td>
+<td>激活面向字符的可视模式</td>
+</tr>
+<tr>
+<td>V</td>
+<td>激活面向行的可视模式</td>
+</tr>
+<tr>
+<td><c-v></c-v></td>
+<td>激活面向列块的可视模式</td>
+</tr>
+<tr>
+<td>gv</td>
+<td>重选上次的高亮选区</td>
+</tr>
+</tbody>
+</table>
+<p>在可视模式间切换:</p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><esc> / <c-[></c-[></esc></td>
+<td>回到普通模式</td>
+</tr>
+<tr>
+<td>v / V / <c-v></c-v></td>
+<td>切换到普通模式</td>
+</tr>
+<tr>
+<td>v</td>
+<td></td>
+</tr>
+<tr>
+<td>V</td>
+<td></td>
+</tr>
+<tr>
+<td><c-v></c-v></td>
+<td></td>
+</tr>
+<tr>
+<td>o</td>
+<td>切换高亮选区的活动端</td>
+</tr>
+</tbody>
+</table>
+<p>vit 选择标签里的内容, gUit</p>
 <p>只要可能，最好用操作符命令，而不是可视命令。</p>
+<p>用面向内部的可视模式编辑表格数据。</p>
 
       
     </div>
