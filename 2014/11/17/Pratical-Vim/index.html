@@ -306,6 +306,35 @@ o             | 切换高亮选区的活动端</span>
 </code></pre><p>vit 选择标签里的内容, gUit</p>
 <p>只要可能，最好用操作符命令，而不是可视命令。</p>
 <p>用面向内部的可视模式编辑表格数据。</p>
+<h1 id="5-_命令行模式">5. 命令行模式</h1>
+<p>Ex命令， :h ex-cmd-index 可获取完整列表</p>
+<p>特殊按键: <c-w>, <c-u>, <c-v>, <c-k>, <c-r>{register}</c-r></c-k></c-v></c-u></c-w></p>
+<p>使用’:t’和’:m’命令复制和移动行</p>
+<p>在指定范围上执行普通模式命令. :%normal A;</p>
+<p>重复上次的Ex命令： @：</p>
+<p>把当前单词插入到命令行中：<c-r><c-w></c-w></c-r></p>
+<p>回溯历史命令。 在.vimrc可以设置保存的上限： set history=200</p>
+<h1 id="6-_管理多个文件">6. 管理多个文件</h1>
+<p>缓冲区相关命令:</p>
+<pre><code><span class="symbol">:ls</span> 列出载入到内存中的缓冲区的列表。
+<span class="symbol">:bn</span>  切换到下一个缓冲区
+<span class="symbol">:bprev</span> 
+<span class="symbol">:bfirst</span>
+<span class="symbol">:blast</span>
+<span class="symbol">:b</span> <span class="constant">N</span>
+<span class="symbol">:bd</span> 
+</code></pre><p>用参数列表将缓冲区分组： :args</p>
+<pre><code>:args <span class="keyword">*</span><span class="keyword">*</span>/<span class="keyword">*</span>.md
+</code></pre><p>将工作区切分成窗口：</p>
+<pre><code><span class="input"><span class="prompt">&lt;C-w&gt;</span> s  水平切分</span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> v  垂直切分</span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> c  g关闭当前窗口. <span class="symbol">:clo</span>[se] </span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> o  只保留当前窗口. <span class="symbol">:on</span>[ly]</span>
+<span class="symbol">:sp</span> {file} 水平切分，并在新窗口载入{file}
+<span class="symbol">:vsp</span> {file} 垂直切分，并在新窗口载入{file}
+</code></pre><p>用标签页将窗口分组</p>
+<h1 id="7-_打开和保存文件">7. 打开和保存文件</h1>
+<p>使用netrw管理文件系统.</p>
 
       
     </div>
