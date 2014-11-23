@@ -117,10 +117,42 @@ Erlang是函数式编程语言，在Erlang里，改变进程的状态是允许�
 <li>清晰性</li>
 </ol>
 <h1 id="2-_Erlang速览">2. Erlang速览</h1>
-<p>例子：</p>
+<h2 id="进程，m模块和编译">进程，m模块和编译</h2>
+<p>例子(hello.erl)：</p>
 <figure class="highlight erlang"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(hello)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([start/<span class="number">0</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">start</span><span class="params">()</span> -&gt;</span></div><div class="line">    <span class="function_name">io:format</span>(<span class="string">"Hello world~n"</span>).</div></pre></td></tr></table></figure>
 
-<h1 id="3-_基本概念">3. 基本概念</h1>
+<p>shell运行：</p>
+<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">hello</span>).
+{<span class="ok">ok</span>,<span class="function_or_atom">hello</span>}
+<span class="prompt">2&gt; </span><span class="function_or_atom">hello:start</span>().
+<span class="variable">Hello</span> <span class="function_or_atom">world</span>
+<span class="ok">ok</span>
+<span class="prompt">3&gt; </span>
+</code></pre><p>c(hello)命令编译hello.erl文件里的代码。</p>
+<p>编译:</p>
+<pre><code>$ erlc hello.erl                                                                                                  
+$ erl -noshell <span class="operator">-s</span> hello start <span class="operator">-s</span> init stop                                                                       
+Hello world
+</code></pre><p>$erl … 命令加载hello模块并执行hello:start()函数， 随后执行了init:stop(), 这个表达式终止了Erlang会话。</p>
+<p>Erlang的基本并发单元：进程。<br>一个进程是一个轻量级的虚拟机，只能通过发送和接收消息来与其他进程通信。</p>
+<h2 id="你好，并发">你好，并发</h2>
+<h3 id="文件服务器进程">文件服务器进程</h3>
+<p>文件服务器：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">-<span class="built_in">module</span>(afile_server).</div><div class="line">-<span class="reserved">export</span>([start/<span class="number">1</span>,<span class="keyword">loop</span>/<span class="number">1</span>]).</div><div class="line"></div><div class="line">start<span class="function"><span class="params">(Dir)</span> -&gt;</span> spawn(afile_server, <span class="keyword">loop</span>, [Dir]).</div><div class="line"></div><div class="line"><span class="keyword">loop</span><span class="function"><span class="params">(Dir)</span> -&gt;</span></div><div class="line">    receive</div><div class="line">        {Client, list_dir}<span class="function"> -&gt;</span></div><div class="line">            Client ! {self(), <span class="attribute">file</span>:list_dir(Dir)};</div><div class="line">        {Client, {get_file, File} }<span class="function"> -&gt;</span></div><div class="line">            Full = <span class="attribute">filename</span>:join(Dir, File),</div><div class="line">            Client ! {self(), <span class="attribute">file</span>:read_file(Full)}</div><div class="line">    end,</div><div class="line">    <span class="keyword">loop</span>(Dir).</div></pre></td></tr></table></figure>
+
+<p>shell测试：</p>
+<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">afile_server</span>).
+{<span class="ok">ok</span>,<span class="function_or_atom">afile_server</span>}
+<span class="prompt">2&gt; </span><span class="variable">FileServer</span> = <span class="function_or_atom">afile_server:start</span>(<span class="string">"."</span>)
+<span class="prompt">2&gt; </span>.
+&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;
+<span class="prompt">3&gt; </span><span class="variable">FileServer</span> <span class="exclamation_mark">!</span> {<span class="function_or_atom">self</span>(), <span class="function_or_atom">list_dir</span>}.
+{&lt;<span class="number">0.32</span>.<span class="number">0</span>&gt;,<span class="function_or_atom">list_dir</span>}
+<span class="prompt">4&gt; </span><span class="function_or_atom">receive</span> <span class="variable">X</span> <span class="arrow">-&gt;</span> <span class="variable">X</span> <span class="function_or_atom">end</span>.
+{&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;,
+{<span class="ok">ok</span>,[<span class="string">"afile_server.beam"</span>,<span class="string">"afile_server.erl"</span>,<span class="string">"hello.beam"</span>,
+    <span class="string">"hello.erl"</span>]}
+</code></pre><h1 id="3-_基本概念">3. 基本概念</h1>
 <h1 id="4-_模块和函数">4. 模块和函数</h1>
 <h1 id="5-_记录与映射组">5. 记录与映射组</h1>
 <h1 id="6-_顺序程序的错误处理">6. 顺序程序的错误处理</h1>
