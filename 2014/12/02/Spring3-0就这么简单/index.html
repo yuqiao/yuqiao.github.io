@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring3.0就这么简单 | Joe&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. 快速入门
+spring是分层的Java SE/EE应用一站式的轻量级开源框架，以 反转控制(IOC) 和  面向切片(AOP)  为内核,提供了展现层Spring MVC, 持久层Spring JDBC以及业务层事务管理等众多的企业级应用技术。
+好的设计优于具体实现，代码应易于测试。
+Spring好处：
+
+方便解耦，简化开发
+AOP编程的支持
+声明式事务的支持
+方便程序的测试
+方便集成各种优">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring3.0就这么简单">
+<meta property="og:url" content="http://yuqiao.github.io/2014/12/02/Spring3-0就这么简单/">
+<meta property="og:site_name" content="Joe's Blog">
+<meta property="og:description" content="1. 快速入门
+spring是分层的Java SE/EE应用一站式的轻量级开源框架，以 反转控制(IOC) 和  面向切片(AOP)  为内核,提供了展现层Spring MVC, 持久层Spring JDBC以及业务层事务管理等众多的企业级应用技术。
+好的设计优于具体实现，代码应易于测试。
+Spring好处：
+
+方便解耦，简化开发
+AOP编程的支持
+声明式事务的支持
+方便程序的测试
+方便集成各种优">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring3.0就这么简单">
+<meta name="twitter:description" content="1. 快速入门
+spring是分层的Java SE/EE应用一站式的轻量级开源框架，以 反转控制(IOC) 和  面向切片(AOP)  为内核,提供了展现层Spring MVC, 持久层Spring JDBC以及业务层事务管理等众多的企业级应用技术。
+好的设计优于具体实现，代码应易于测试。
+Spring好处：
+
+方便解耦，简化开发
+AOP编程的支持
+声明式事务的支持
+方便程序的测试
+方便集成各种优">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Joe&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Carpe Diem</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">存档</a>
+        
+          <a class="main-nav-link" href="/about">关于</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yuqiao.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Spring3-0就这么简单" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/12/02/Spring3-0就这么简单/" class="article-date">
+  <time datetime="2014-12-02T03:08:56.000Z" itemprop="datePublished">12月 2 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring3.0就这么简单
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_快速入门">1. 快速入门</h1>
+<p>spring是分层的Java SE/EE应用一站式的轻量级开源框架，以<strong> 反转控制(IOC) </strong>和 <strong> 面向切片(AOP) </strong> 为内核,<br>提供了展现层Spring MVC, 持久层Spring JDBC以及业务层事务管理等众多的企业级应用技术。</p>
+<p>好的设计优于具体实现，代码应易于测试。</p>
+<p>Spring好处：</p>
+<ul>
+<li>方便解耦，简化开发</li>
+<li>AOP编程的支持</li>
+<li>声明式事务的支持</li>
+<li>方便程序的测试</li>
+<li>方便集成各种优秀的框架</li>
+<li>降低Java EE API的使用难度。</li>
+<li>java源码是经典的学习范例。</li>
+</ul>
+<h3 id="Spring体系结构">Spring体系结构</h3>
+<p>5个主要模块:</p>
+<ol>
+<li>IOC</li>
+<li>AOP</li>
+<li>数据访问和集成</li>
+<li>web及远程操作</li>
+<li>web及远程访问(Spring MVC)</li>
+</ol>
+<h1 id="2-_Spring_IoC容器">2. Spring IoC容器</h1>
+<p>Ioc: 通过容器来控制业务对象之间的依赖关系，而非传统实现中， 由代码直接操控。</p>
+<p>控制反转：控制权由应用代码中转到了外部容器。</p>
+<p>优点：降低了业务对象之间的依赖程度。</p>
+<p>BeanFactory是Spring框架最核心的接口，提供了高级Ioc的配置机制。<br>ApplicationContext建立在BeanFactory基础之上， 提供了更多面向应用的功能。(应用上下文）</p>
+<h3 id="BeanFactory">BeanFactory</h3>
+<p>spring 配置文件:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;?xml <span class="variable">version=</span><span class="string">"1.0"</span> <span class="variable">encoding=</span><span class="string">"UTF-8"</span> ?&gt;</div><div class="line">&lt;beans <span class="variable">xmlns=</span><span class="string">"http://www.springframework.org/schema/beans"</span></div><div class="line">    xmlns:<span class="variable">xsi=</span><span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">    xmlns:<span class="variable">p=</span><span class="string">"http://www.springframework.org/schema/p"</span></div><div class="line">    xsi:<span class="variable">schemaLocation=</span><span class="string">"http://www.springframework.org/schema/beans</span></div><div class="line">       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"&gt;</div><div class="line">   &lt;bean <span class="variable">id=</span><span class="string">"car"</span> <span class="variable">class=</span><span class="string">"com.smart.Car"</span></div><div class="line">         p:<span class="variable">brand=</span><span class="string">"红旗CA72"</span></div><div class="line">         p:<span class="variable">maxSpeed=</span><span class="string">"200"</span>/&gt;</div><div class="line">   &lt;bean <span class="variable">id=</span><span class="string">"myBeanPostProcessor"</span> <span class="variable">class=</span><span class="string">"com.smart.context.MyBeanPostProcessor"</span>/&gt;</div><div class="line">   &lt;bean <span class="variable">id=</span><span class="string">"myBeanFactoryPostProcessor"</span> <span class="variable">class=</span><span class="string">"com.smart.context.MyBeanFactoryPostProcessor"</span>/&gt;</div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure>
+
+<p>使用BeanFactory:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> BeanFactoryTest {</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(String[] args) throws Throwable{</div><div class="line">       ResourcePatternResolver resolver = <span class="keyword">new</span> PathMatchingResourcePatternResolver();</div><div class="line">       Resource res = resolver.getResource(<span class="string">"classpath:com/smart/beanfactory/beans.xml"</span>);</div><div class="line">       System.<span class="keyword">out</span>.println(res.getURL());</div><div class="line">       BeanFactory bf = <span class="keyword">new</span> XmlBeanFactory(res);</div><div class="line">       System.<span class="keyword">out</span>.println(<span class="string">"init BeanFactory."</span>);</div><div class="line"></div><div class="line">       Car car = bf.getBean(<span class="string">"car"</span>,Car.class);</div><div class="line">       System.<span class="keyword">out</span>.println(<span class="string">"car bean is ready for use!"</span>);</div><div class="line">       car.introduce();</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="ApplicationContext">ApplicationContext</h3>
+<p>相对BeanFactory, ApplicationContext初始化比较简单:</p>
+<pre><code>ApplicationContext ctx = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"com/smart/context/beans.xml"</span>);
+</code></pre><p>还可以指定一组配置文件:</p>
+<pre><code>ApplicationContext ctx = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="keyword">new</span> <span class="built_in">String</span>[]{<span class="string">"conf/beans1.xml"</span>,<span class="string">"conf/beans2.xml"</span>});
+</code></pre><p>BeanFactory在初始化容器时，并未初始化Bean, 直到第一次访问某个Bean才实例化Bean.<br>而ApplicationContext在初始化应用上下文时就实例化所有单实例的Bean.</p>
+<h3 id="WebApplicationContext">WebApplicationContext</h3>
+<p>WebApplicationContext是专门为Web应用准备的，允许从Web根目录的路径中装载配置文件，完成初始化工作。</p>
+<p>它需要ServletContext实例。 在web.xml中配置自启动的Servlet或Web容器监听器(ServletContextListener), 借助它们任何一个<br>完成Spring WEb应用上下文的工作。</p>
+<p>配置监听器引导：</p>
+<pre><code><span class="tag">&lt;<span class="title">context-param</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="title">param-name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">param-value</span>&gt;</span>classpath:spring-config.xml<span class="tag">&lt;/<span class="title">param-value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">context-param</span>&gt;</span>
+<span class="tag">&lt;<span class="title">listener</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">listener-class</span>&gt;</span>
+        org.springframework.web.context.ContextLoaderListener
+    <span class="tag">&lt;/<span class="title">listener-class</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">listener</span>&gt;</span>
+</code></pre><p>配置自启动的Servlet引导：</p>
+<h3 id="集合类型属性">集合类型属性</h3>
+<pre><code><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"boss1"</span> <span class="attribute">class</span>=<span class="value">"com.smart.attr.Boss"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"car"</span> <span class="attribute">ref</span>=<span class="value">"car"</span> /&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"favorites"</span>&gt;</span>
+        <span class="comment">&lt;!-- list&gt;
+            &lt;value&gt;看报&lt;/value&gt;
+            &lt;value&gt;赛车&lt;/value&gt;
+            &lt;value&gt;高尔夫&lt;/value&gt;
+            &lt;/list --&gt;</span>
+        <span class="tag">&lt;<span class="title">set</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>看报<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>赛车<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>高尔夫<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">set</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"jobs"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">map</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">entry</span> &gt;</span>
+                <span class="tag">&lt;<span class="title">key</span>&gt;</span> <span class="tag">&lt;<span class="title">value</span>&gt;</span>AM<span class="tag">&lt;/<span class="title">value</span>&gt;</span> <span class="tag">&lt;/<span class="title">key</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">value</span>&gt;</span>会见客户<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">entry</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">key</span>&gt;</span> <span class="tag">&lt;<span class="title">value</span>&gt;</span>PM<span class="tag">&lt;/<span class="title">value</span>&gt;</span> <span class="tag">&lt;/<span class="title">key</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">value</span>&gt;</span>公司内部会议<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">map</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"mails"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">props</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"jobMail"</span>&gt;</span>john-office@baobaotao.com<span class="tag">&lt;/<span class="title">prop</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"lifeMail"</span>&gt;</span>john-life@baobaotao.com<span class="tag">&lt;/<span class="title">prop</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">props</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"jobTime"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">map</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">entry</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">key</span>&gt;</span> <span class="tag">&lt;<span class="title">value</span>&gt;</span>会见客户<span class="tag">&lt;/<span class="title">value</span>&gt;</span> <span class="tag">&lt;/<span class="title">key</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">value</span>&gt;</span>124<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">map</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+</code></pre><p>对应Boss类：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">class</span> Boss {
+    <span class="keyword">private</span> String name ;
+    <span class="keyword">private</span> <span class="keyword">int</span> age;
+    <span class="keyword">private</span> Car car = <span class="keyword">new</span> Car();
+    <span class="keyword">private</span> Map jobs = <span class="keyword">new</span> HashMap();
+    <span class="keyword">private</span> Properties mails = <span class="keyword">new</span> Properties();
+    <span class="keyword">private</span> Map&lt;String,Integer&gt; jobTime = <span class="keyword">new</span> HashMap&lt;String,Integer&gt;();
+    <span class="keyword">public</span> String <span class="title">getName</span>() {
+        <span class="keyword">return</span> name;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span>(String name) {
+        <span class="keyword">this</span>.name = name;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span>() {
+        <span class="keyword">return</span> age;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span>(<span class="keyword">int</span> age) {
+        <span class="keyword">this</span>.age = age;
+    }
+    <span class="keyword">public</span> Map&lt;String, Integer&gt; <span class="title">getJobTime</span>() {
+        <span class="keyword">return</span> jobTime;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setJobTime</span>(Map&lt;String, Integer&gt; jobTime) {
+        <span class="keyword">this</span>.jobTime = jobTime;
+    }
+    <span class="keyword">public</span> Properties <span class="title">getMails</span>() {
+        <span class="keyword">return</span> mails;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMails</span>(Properties mails) {
+        <span class="keyword">this</span>.mails = mails;
+    }
+    <span class="keyword">public</span> Map <span class="title">getJobs</span>() {
+        <span class="keyword">return</span> jobs;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setJobs</span>(Map jobs) {
+        <span class="keyword">this</span>.jobs = jobs;
+    }
+<span class="comment">//  private List favorites = new ArrayList();</span>
+<span class="comment">//</span>
+<span class="comment">//  public List getFavorites() {</span>
+<span class="comment">//      return favorites;</span>
+<span class="comment">//  }</span>
+<span class="comment">//  public void setFavorites(List favorites) {</span>
+<span class="comment">//      this.favorites = favorites;</span>
+<span class="comment">//  }</span>
+    <span class="keyword">private</span> Set favorites = <span class="keyword">new</span> HashSet();
+    <span class="keyword">public</span> Car <span class="title">getCar</span>() {
+        <span class="keyword">return</span> car;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCar</span>(Car car) {
+        <span class="keyword">this</span>.car = car;
+    }
+    <span class="keyword">public</span> String <span class="title">toString</span>(){
+        String temp =<span class="string">"car:"</span>+car+<span class="string">"\n"</span>;
+        temp += <span class="string">"favorites.size:"</span>+favorites.size()+<span class="string">"\n"</span>;
+        temp += <span class="string">"jobs.size:"</span>+jobs.size();
+        <span class="keyword">return</span> temp;
+    }
+    <span class="keyword">public</span> Set <span class="title">getFavorites</span>() {
+        <span class="keyword">return</span> favorites;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFavorites</span>(Set favorites) {
+        <span class="keyword">this</span>.favorites = favorites;
+    }
+}
+</code></pre><h3 id="配置集合类型的Bean">配置集合类型的Bean</h3>
+<pre><code><span class="tag">&lt;<span class="title">util:list</span> <span class="attribute">id</span>=<span class="value">"favoriteList1"</span> <span class="attribute">list-class</span>=<span class="value">"java.util.LinkedList"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>看报<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>赛车<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>高尔夫<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">util:list</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">util:set</span> <span class="attribute">id</span>=<span class="value">"favoriteSet1"</span>  &gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>看报<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>赛车<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>高尔夫<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">util:set</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">util:map</span> <span class="attribute">id</span>=<span class="value">"emails1"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">entry</span> <span class="attribute">key</span>=<span class="value">"AM"</span> <span class="attribute">value</span>=<span class="value">"会见客户"</span> /&gt;</span>
+    <span class="tag">&lt;<span class="title">entry</span> <span class="attribute">key</span>=<span class="value">"PM"</span> <span class="attribute">value</span>=<span class="value">"公司内部会议"</span> /&gt;</span>
+<span class="tag">&lt;/<span class="title">util:map</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">util:properties</span> <span class="attribute">id</span>=<span class="value">"emailProps1"</span>
+<span class="attribute">location</span>=<span class="value">"classpath:com/smart/fb/mails.properties"</span> /&gt;</span>
+</code></pre><h3 id="自动装配">自动装配</h3>
+<p><bean>元素提供自动装配的属性：autowire=”&lt;自动装配类型&gt;”</bean></p>
+<p>4种自动装配类型：</p>
+<ul>
+<li>byName</li>
+<li>byType</li>
+<li>constructor</li>
+<li>autodetect</li>
+</ul>
+<p><beans>元素标签中的default-autowire属性可以配置全局自动装配。</beans></p>
+<h3 id="Bean作用域">Bean作用域</h3>
+<ol>
+<li>singleton</li>
+<li>prototype</li>
+<li>request</li>
+<li>session</li>
+<li>globalSession</li>
+</ol>
+<h3 id="基于注解的配置">基于注解的配置</h3>
+<ul>
+<li>@Component</li>
+<li>@Repository: 用于对DAO实现类进行标注</li>
+<li>@Service: 用于对Service实现类进行标注</li>
+<li>@Controller: 用于对Controller实现类进行标注</li>
+</ul>
+<p>使用注解配置信息启动Spring容器：</p>
+<pre><code>&lt;<span class="keyword">context</span>:<span class="keyword">component</span>-scan base-<span class="keyword">package</span>=<span class="string">"com.yuqiao.hellomvc.dao"</span>/&gt;
+&lt;<span class="keyword">context</span>:<span class="keyword">component</span>-scan base-<span class="keyword">package</span>=<span class="string">"com.yuqiao.hellomvc.dao"</span> resorce-pattern=<span class="string">"anno/*.class"</span>/&gt;
+</code></pre><p>默认情况下, resorce-pattern=”<em>*/</em>.class”</p>
+<p>Spring通过@Autowired注解实现Bean的依赖注入。<br>若容器没有一个和标注变量类型匹配的Bean， Spring容器启动时讲抛出NoSuchBeanDefinitionException异常，<br>若希望不抛出该异常，那么就可以使用@Autowired(require=false)进行标注。</p>
+<p>使用@Qualifier指定注入Bean名称。</p>
+<h1 id="3-_Spring_AOP">3. Spring AOP</h1>
+<h2 id="aop_概述">aop 概述</h2>
+<p>aop应用场景受限, 一般只适用于那些具有横切逻辑的应用场景：性能监测，访问控制， 事务管理及日志记录。</p>
+<h3 id="aop术语">aop术语</h3>
+<ul>
+<li>连接点(JoinPoint)</li>
+<li>切点(PointCut)</li>
+<li>增强(Advice)</li>
+<li>目标对象(Target)</li>
+<li>引介(introduce)</li>
+<li>织入(Weaving)</li>
+<li>代理(Proxy)</li>
+<li>切面(Aspect) </li>
+</ul>
+<h2 id="创建增强类">创建增强类</h2>
+<p>Spring支持5种类型的增强:</p>
+<ul>
+<li>前置增强(org.springframework.aop.BeforeAdvice)</li>
+<li>后置增强(org.springframework.aop.AfterReturningAdvice)</li>
+<li>环绕增强(org.springframework.intercept.MethodInterceptor)</li>
+<li>异常抛出增强(org.springframework.aop.ThrowsAdvice)</li>
+<li>引介增强(org.springframework.aop.INtroductionInterceptor)</li>
+</ul>
+<h2 id="创建切面">创建切面</h2>
+<p>支持两种方法配置器:</p>
+<ul>
+<li>静态方法配置器</li>
+<li>动态方法配置器</li>
+</ul>
+<h3 id="切点类型">切点类型</h3>
+<ul>
+<li>静态方法切点</li>
+<li>动态方法切点</li>
+<li>注解切点</li>
+<li>表达式切点</li>
+<li>流程切点</li>
+<li>复合切点</li>
+</ul>
+<h3 id="切面类型">切面类型</h3>
+<ul>
+<li>Advisor(一般切面)</li>
+<li>PointcutAdvisor(切点切面)</li>
+<li>IntroductionAdvisor(引介切面)</li>
+</ul>
+<h3 id="静态普通方法名匹配切面">静态普通方法名匹配切面</h3>
+<p>在Waiter#greetTo()织入增强，切面类实现：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreetingAdvisor</span> <span class="keyword">extends</span> <span class="title">StaticMethodMatcherPointcutAdvisor</span> </span>{</div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span>(Method method, Class&lt;?&gt; targetClass) {</div><div class="line">        <span class="keyword">return</span> <span class="string">"greetTo"</span>.equals(method.getName());</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> ClassFilter <span class="title">getClassFilter</span>() {</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ClassFilter() {</div><div class="line">            <span class="annotation">@Override</span></div><div class="line">            <span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span>(Class&lt;?&gt; clazz) {</div><div class="line">                <span class="keyword">return</span> Waiter.class.isAssignableFrom(clazz);</div><div class="line">            }</div><div class="line">        };</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>配置切面:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"greetingAdvisor"</span> class=<span class="string">"com.yuqiao.advice.GreetingAdvisor"</span></div><div class="line">        p:advice-<span class="keyword">ref</span>=<span class="string">"greetingBeforeAdvice"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"parent"</span> abstract=<span class="string">"true"</span></div><div class="line">        class=<span class="string">"org.springframework.aop.framework.ProxyFactoryBean"</span></div><div class="line">        p:interceptorNames=<span class="string">"greetingAdvisor"</span></div><div class="line">        p:proxyTargetClass=<span class="string">"true"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"waiter2"</span> parent=<span class="string">"parent"</span> p:target-<span class="keyword">ref</span>=<span class="string">"nativeWaiter"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"seller1"</span> parent=<span class="string">"parent"</span> p:target-<span class="keyword">ref</span>=<span class="string">"seller"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<h3 id="静态正则表达式方法匹配切面">静态正则表达式方法匹配切面</h3>
+<p>为seller定义切面：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"regexAdvisor"</span> class=<span class="string">"org.springframework.aop.support.RegexpMethodPointcutAdvisor"</span></div><div class="line">        p:advice-<span class="keyword">ref</span>=<span class="string">"greetingBeforeAdvice"</span>&gt;</div><div class="line">    &lt;property name=<span class="string">"patterns"</span>&gt;</div><div class="line">        &lt;list&gt;</div><div class="line">            &lt;value&gt;.*greet.*&lt;/value&gt;</div><div class="line">        &lt;/list&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line">&lt;bean id=<span class="string">"seller2"</span> class=<span class="string">"org.springframework.aop.framework.ProxyFactoryBean"</span></div><div class="line">        p:interceptorNames=<span class="string">"regexAdvisor"</span></div><div class="line">        p:target-<span class="keyword">ref</span>=<span class="string">"seller"</span></div><div class="line">        p:proxyTargetClass=<span class="string">"true"</span>/&gt;&lt;ap</div></pre></td></tr></table></figure>
+
+<h2 id="自动创建代理">自动创建代理</h2>
+<p>前面都是使用ProxyFactoryBean创建织入切面的代理， 每个bean都需要该配置， 比较麻烦。</p>
+<p>spring提供了自动代理机制。 使用BeanPostProcessor， 根据一定规则自动在容器实例化Bean时为匹配的Bean生成代理实例. 分类：</p>
+<ul>
+<li>基于Bean配置名规则的自动代理创建器。实现类为BeanNameAutoProxyCreator.</li>
+<li>基于Advisor陪陪机制。DefaultAdvisorAutoProxyCreator.</li>
+<li>基于Bean中AspectJ注解标签的自动代理创建器。</li>
+</ul>
+<h3 id="BeanNameAutoProxyCreator">BeanNameAutoProxyCreator</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;bean <span class="variable">class=</span><span class="string">"org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator"</span></div><div class="line">        p:<span class="variable">beanNames=</span><span class="string">"*er"</span></div><div class="line">        p:<span class="variable">interceptorNames=</span><span class="string">"greetingBeforeAdvice"</span></div><div class="line">        p:<span class="variable">optimize=</span><span class="string">"true"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<h1 id="4-_使用Spring_JDBC访问数据库">4. 使用Spring JDBC访问数据库</h1>
+<h1 id="5-_集成Hibernate">5. 集成Hibernate</h1>
+<h1 id="6-_Spring的事务管理">6. Spring的事务管理</h1>
+<h1 id="7-_Spring_MVC">7. Spring MVC</h1>
+<h1 id="8-_单元测试">8. 单元测试</h1>
+<h1 id="9-_敏捷开发技术">9. 敏捷开发技术</h1>
+<h1 id="10-_自己动手打造服务平台框架">10. 自己动手打造服务平台框架</h1>
+<h1 id="11-_实战案例开发">11. 实战案例开发</h1>
+<pre><code>      p:<span class="variable">proxyTargetClass=</span><span class="string">"true"</span>/&gt;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/12/02/Spring3-0就这么简单/" data-id="vnksoj35p9u4whw3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2014/11/21/Programming-Erlang/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Programming Erlang</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/笔记/" style="font-size: 15.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/12/02/Spring3-0就这么简单/">Spring3.0就这么简单</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/17/Pratical-Vim/">Pratical Vim</a>
+          </li>
+        
+          <li>
+            <a href="/2014/10/29/Git子模块/">Git子模块</a>
+          </li>
+        
+          <li>
+            <a href="/2014/10/29/Understanding-the-JVM/">Understanding the JVM</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 Peter Yu<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">存档</a>
+  
+    <a href="/about" class="mobile-nav-link">关于</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

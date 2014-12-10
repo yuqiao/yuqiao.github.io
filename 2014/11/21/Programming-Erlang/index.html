@@ -160,7 +160,29 @@ Hello world
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(afile_client)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([ls/<span class="number">1</span>,get_file/<span class="number">2</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">ls</span><span class="params">(<span class="variable">Server</span>)</span>-&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), list_dir}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">FileList</span>}</span> -&gt;</div><div class="line">            <span class="variable">FileList</span></div><div class="line">    <span class="keyword">end</span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">get_file</span><span class="params">(<span class="variable">Server</span>, <span class="variable">File</span>)</span> -&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), <span class="tuple">{get_file, <span class="variable">File</span>}</span>}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">Content</span>}</span> -&gt;</div><div class="line">            <span class="variable">Content</span></div><div class="line">    <span class="keyword">end</span>.</div></pre></td></tr></table></figure>
 
 <h1 id="3-_基本概念">3. 基本概念</h1>
+<p>Erlang的遍历不可变，一次性赋值变量。</p>
+<h2 id="停止Erlang_shell">停止Erlang shell</h2>
+<p>q().</p>
+<h2 id="简单的整数运算">简单的整数运算</h2>
+<h2 id="变量">变量</h2>
+<p>变量名必须以<strong>大写字母</strong>开头.</p>
+<p>Erlang的变量不会变。</p>
+<p>变量绑定和模式匹配。</p>
+<p>没有副作用意味着可以让程序并行。</p>
+<h2 id="浮点数">浮点数</h2>
+<h2 id="原子">原子</h2>
+<h2 id="元组">元组</h2>
+<h2 id="列表">列表</h2>
+<h2 id="字符串">字符串</h2>
+<h2 id="模式匹配">模式匹配</h2>
 <h1 id="4-_模块和函数">4. 模块和函数</h1>
+<h2 id="模块是存放代码的地方">模块是存放代码的地方</h2>
+<ul>
+<li>逗号(,)分隔函数调用，数据构造和模式中的参数。</li>
+<li>分号(;)分隔子句。</li>
+<li>句号(.)分各个函数整体。</li>
+</ul>
+<h2 id="fun:_基本的抽象单元">fun: 基本的抽象单元</h2>
 <h1 id="5-_记录与映射组">5. 记录与映射组</h1>
 <h1 id="6-_顺序程序的错误处理">6. 顺序程序的错误处理</h1>
 <h1 id="7-_二进制与位语法">7. 二进制与位语法</h1>
@@ -199,6 +221,15 @@ Hello world
     
 <nav id="article-nav">
   
+    <a href="/2014/12/02/Spring3-0就这么简单/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spring3.0就这么简单
+        
+      </div>
+    </a>
+  
   
     <a href="/2014/11/17/Pratical-Vim/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
@@ -220,7 +251,7 @@ Hello world
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 20.00px;">tool</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/笔记/" style="font-size: 15.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -229,7 +260,7 @@ Hello world
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -239,6 +270,10 @@ Hello world
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2014/12/02/Spring3-0就这么简单/">Spring3.0就这么简单</a>
+          </li>
         
           <li>
             <a href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
@@ -254,10 +289,6 @@ Hello world
         
           <li>
             <a href="/2014/10/29/Understanding-the-JVM/">Understanding the JVM</a>
-          </li>
-        
-          <li>
-            <a href="/2014/10/28/hello-world/">Hello World</a>
           </li>
         
       </ul>
