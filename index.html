@@ -371,10 +371,107 @@
 <h3 id="BeanNameAutoProxyCreator">BeanNameAutoProxyCreator</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;bean <span class="variable">class=</span><span class="string">"org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator"</span></div><div class="line">        p:<span class="variable">beanNames=</span><span class="string">"*er"</span></div><div class="line">        p:<span class="variable">interceptorNames=</span><span class="string">"greetingBeforeAdvice"</span></div><div class="line">        p:<span class="variable">optimize=</span><span class="string">"true"</span>/&gt;</div></pre></td></tr></table></figure>
 
+<h3 id="DefaultAdvisorAutoProxyCreator">DefaultAdvisorAutoProxyCreator</h3>
+<pre><code>&lt;bean <span class="keyword">class</span>=<span class="string">"org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"</span>/&gt;
+</code></pre><h2 id="基于@AspectJ配置切面">基于@AspectJ配置切面</h2>
+<h3 id="@AspectJ语法基础">@AspectJ语法基础</h3>
+<p>Spring支持9个@AspectJ切点表达函数</p>
+<ul>
+<li>execution()</li>
+<li>@annotation()</li>
+<li>args()</li>
+<li>@args()</li>
+<li>within()</li>
+<li>target()</li>
+<li>@within()</li>
+</ul>
 <h1 id="4-_使用Spring_JDBC访问数据库">4. 使用Spring JDBC访问数据库</h1>
+<p>由于JDBC api过于底层，开发者不但要编写数据操作代码，还需要编写JDBC连接，处理异常，释放资源等的代码。</p>
+<p>Spring JDBC通过模板和回调机制大大降低了JDBC的复杂度。</p>
+<p>创建一张表:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">DriverManagerDataSource <span class="keyword">ds</span> = <span class="keyword">new</span> DriverManagerDataSource();</div><div class="line"><span class="keyword">ds</span>.setDriverClassName(<span class="string">"com.mysql.jdbc.Driver"</span>);</div><div class="line"><span class="keyword">ds</span>.setUrl(<span class="string">"jdbc:mysql://localhost:3306/sampledb"</span>);</div><div class="line"><span class="keyword">ds</span>.setUsername(<span class="string">"root"</span>);</div><div class="line"></div><div class="line">JdbcTemplate jdbcTemplate = <span class="keyword">new</span> JdbcTemplate();</div><div class="line">jdbcTemplate.setDataSource(<span class="keyword">ds</span>);</div><div class="line"></div><div class="line">String sql = <span class="string">"create table t_user(user_id int primary key, user_name varchar(60))"</span>;</div><div class="line">jdbcTemplate.<span class="keyword">execute</span>(sql);</div></pre></td></tr></table></figure>
+
+<p>一般情况下，在DAO类中使用JdbcTemplate, 在XML配置文件中配置好JdbcTemplate,然后直接在DAO中注入即可。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.yuqiao.hellomvc.dao;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="annotation">@Repository</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginLogDao</span> </span>{</div><div class="line">    <span class="annotation">@Autowired</span></div><div class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertLoginLog</span>(LoginLog loginLog) {</div><div class="line">        String sqlStr = <span class="string">"INSERT INTO t_login_log(user_id,ip,login_datetime) "</span></div><div class="line">                + <span class="string">"VALUES(?,?,?)"</span>;</div><div class="line">        Object[] args = {loginLog.getUserId(), loginLog.getIp(),</div><div class="line">                loginLog.getLoginDate()};</div><div class="line">        jdbcTemplate.update(sqlStr, args);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>在Spring配置文件定义jdbcTemplate:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"dataSource"</span> class=<span class="string">"org.apache.commons.dbcp.BasicDataSource"</span></div><div class="line">      destroy-<span class="keyword">method</span>=<span class="string">"close"</span></div><div class="line">      p:driverClassName=<span class="string">"com.mysql.jdbc.Driver"</span></div><div class="line">      p:url=<span class="string">"jdbc:mysql://localhost:3306/sampledb31"</span></div><div class="line">      p:username=<span class="string">"root"</span></div><div class="line">      p:password=<span class="string">""</span>/&gt;</div><div class="line"></div><div class="line">&lt;bean id=<span class="string">"jdbcTemplate"</span> class=<span class="string">"org.springframework.jdbc.core.JdbcTemplate"</span></div><div class="line">      p:dataSource-<span class="keyword">ref</span>=<span class="string">"dataSource"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<p>配置一般分为4个步骤:</p>
+<ol>
+<li><p>定义DataSource.</p>
+</li>
+<li><p>定义JdbcTemplate. 可以控制JDBC api的属性.</p>
+<ul>
+<li>queryTimeout. 查询数据的最大超时时间。</li>
+<li>fetchSize. ResultSet每次返回的行数.</li>
+<li>maxRows:</li>
+<li>ignoreWarnings:</li>
+</ul>
+</li>
+<li><p>声明一个抽象的<bean>，以便所有DAO复用配置。</bean></p>
+</li>
+<li><p>配置具体的DAO.</p>
+</li>
+</ol>
+<h2 id="基本的数据操作">基本的数据操作</h2>
+<h3 id="返回数据库的表自增主键值">返回数据库的表自增主键值</h3>
+<p>KeyHolder是一个回调接口，Spring用他保存新增记录对应的主键。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewSpace</span>(<span class="keyword">final</span> ViewSpace viewSpace){</div><div class="line">    <span class="keyword">final</span> String sql = <span class="string">"INSERT INTO t_view_space (space_name, description, address, user_id) VALUES(?,?,?,?)"</span>;</div><div class="line">    KeyHolder keyHolder = <span class="keyword">new</span> GeneratedKeyHolder();</div><div class="line">    jdbcTemplate.update(<span class="keyword">new</span> PreparedStatementCreator() {</div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> PreparedStatement <span class="title">createPreparedStatement</span>(Connection connection) <span class="keyword">throws</span> SQLException {</div><div class="line">            PreparedStatement ps = connection.prepareStatement(sql);</div><div class="line">            ps.setString(<span class="number">1</span>, viewSpace.getSpaceName());</div><div class="line">            ps.setString(<span class="number">2</span>, viewSpace.getDescription());</div><div class="line">            ps.setString(<span class="number">3</span>, viewSpace.getAddress());</div><div class="line">            ps.setInt(<span class="number">4</span>, viewSpace.getUser());</div><div class="line">            <span class="keyword">return</span> ps;</div><div class="line">        }</div><div class="line">    },keyHolder);</div><div class="line">    viewSpace.setSpaceId(keyHolder.getKey().intValue());</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>在jdbc3.0之前， PreparedStatement不能绑定主键。用户必须在插入数据库后马上执行另一条获取新增主键的查询语句。<br>mysql: SELECT LAST_INSERT_ID();</p>
+<h3 id="批量更改数据">批量更改数据</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewSpaces</span>(<span class="keyword">final</span> List&lt;ViewSpace&gt; viewSpaceList){</div><div class="line">    <span class="keyword">final</span> String sql = <span class="string">"INSERT INTO t_view_space (space_name, description, address, user_id) VALUES(?,?,?,?)"</span>;</div><div class="line">    jdbcTemplate.batchUpdate(sql, <span class="keyword">new</span> BatchPreparedStatementSetter() {</div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValues</span>(PreparedStatement ps, <span class="keyword">int</span> i) <span class="keyword">throws</span> SQLException {</div><div class="line">            ViewSpace viewSpace = viewSpaceList.get(i);</div><div class="line">            ps.setString(<span class="number">1</span>, viewSpace.getSpaceName());</div><div class="line">            ps.setString(<span class="number">2</span>, viewSpace.getDescription());</div><div class="line">            ps.setString(<span class="number">3</span>, viewSpace.getAddress());</div><div class="line">            ps.setInt(<span class="number">4</span>, viewSpace.getUser());</div><div class="line"></div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getBatchSize</span>() {</div><div class="line">            <span class="keyword">return</span> viewSpaceList.size();</div><div class="line">        }</div><div class="line">    });</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="查询数据">查询数据</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> ViewSpace <span class="title">getViewSpace</span>(<span class="keyword">final</span> <span class="keyword">int</span> id){</div><div class="line">    <span class="keyword">final</span> String sql = <span class="string">"SELECT space_name, description, address, user_id from t_view_space where space_id=?"</span>;</div><div class="line">    <span class="keyword">final</span> ViewSpace vs = <span class="keyword">new</span> ViewSpace();</div><div class="line">    jdbcTemplate.query(sql, <span class="keyword">new</span> Object[]{id}, <span class="keyword">new</span> RowCallbackHandler() {</div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processRow</span>(ResultSet resultSet) <span class="keyword">throws</span> SQLException {</div><div class="line">            vs.setSpaceId(id);</div><div class="line">            vs.setSpaceName(resultSet.getString(<span class="string">"space_name"</span>));</div><div class="line">            vs.setDescription(resultSet.getString(<span class="string">"description"</span>));</div><div class="line">            vs.setAddress(resultSet.getString(<span class="string">"address"</span>));</div><div class="line">            vs.setUser(resultSet.getInt(<span class="string">"user_id"</span>));</div><div class="line">        }</div><div class="line">    });</div><div class="line">    <span class="keyword">return</span> vs;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>RowCallbackHandler 和RowMapper<t>比较。</t></p>
+<p>单值查询接口：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getViewSpaceNum</span>(){</div><div class="line">    String sql = <span class="string">"select COUNT(*) FROM  t_view_space"</span>;</div><div class="line">    <span class="keyword">return</span> jdbcTemplate.queryForInt(sql);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>编写sql语句时，用大写方式编写SQL的关键字和函数， 用小写的形式编写表名，字段名等非语义的元素。</p>
+<p>调用存储过程： execute</p>
+<h2 id="BLOB/CLOB类型数据的操作">BLOB/CLOB类型数据的操作</h2>
 <h1 id="5-_集成Hibernate">5. 集成Hibernate</h1>
 <h1 id="6-_Spring的事务管理">6. Spring的事务管理</h1>
+<h2 id="数据库事务基础知识">数据库事务基础知识</h2>
+<p>一荣俱荣，一损俱损。体现事务的思想，很多复杂的事务要分步进行，但他们组成一个整体，要么整体生效，要么整体失效。</p>
+<p>数据库事务需要满足4个特性（ACID):原子性(Atomic), 一致性(Consistency), 隔离性(Isolation)和持久性(Durability).</p>
+<p>一致性是目标，其它都是达到这个目标的措施或者手段。</p>
+<p>数据库系统一般采用重执行日志保证原子性，一致性和持久性。重执行日志记录了数据库变化的每一个动作，数据库在一个事务中执行一部分操作后发生错误退出，数据库即可根据重执行日志车险已经执行的操作。<br>数据库管理系统采用数据库锁机制保证事务的隔离性。</p>
+<p>Connection#getMetaData()获取DatbaMataData对象，该对象的supportsTransactions(), supportsTransactionIsolationLevel(int level)查看底层数据库的事务支持情况。</p>
+<h3 id="Jdbc对事务的处理">Jdbc对事务的处理</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="type">Connection</span> conn;</div><div class="line"><span class="keyword">try</span>{</div><div class="line">    conn = <span class="type">DriverManager</span>.getConnection();</div><div class="line">    conn.setAutoCommit(<span class="literal">false</span>);</div><div class="line">    conn.setTransactionIsolation(<span class="type">Connection</span>.<span class="type">TRANSACTION_SERIALIZABLE</span>);</div><div class="line">    <span class="type">Statement</span> <span class="type">stmt</span> = conn.createStatement();</div><div class="line">    <span class="type">int</span> rows = <span class="type">stmt</span>.executeUpdate(<span class="string">"INSERT INTO t_viewspace VALUES(1,'XXXX')"</span>);</div><div class="line">    rows = <span class="type">stmt</span>.executeUpdate(<span class="string">"UPDATE t_viewpoint set ticket = ticket +10"</span>);</div><div class="line">    conn.commit();</div><div class="line">}catch (<span class="type">Exception</span> e){</div><div class="line">    conn.rollback();</div><div class="line">}<span class="keyword">finally</span> {</div><div class="line">}</div></pre></td></tr></table></figure>
+
 <h1 id="7-_Spring_MVC">7. Spring MVC</h1>
+<h2 id="概述">概述</h2>
+<p>围绕DispatcherServlet核心展开，DispatcherServlet是Spring MVC的总导演，总策划，它负责截获请求并将其分派给相应的处理器处理。</p>
+<p>Spring MVC 包括:</p>
+<ul>
+<li>注解控制器</li>
+<li>请求及响应的相信处理</li>
+<li>视图解析</li>
+<li>本地化解析</li>
+<li>删除文件解析</li>
+<li>异常处理</li>
+<li>表单标签绑定</li>
+</ul>
+<h3 id="体系结构">体系结构</h3>
+<ol>
+<li>client发起一个HTTP请求, 若匹配到DispatcherServlet的请求映射路径(web.xml中指定). web容器将该请求转交给DispatcherServlet处理。</li>
+<li>DispatcherServlet收到该请求后，将根据请求的信息(Url, http方法, 请求报文头, 请求参数, Cookie等)及HandlerMapping的配置找到处理请求的处理器（Handler).</li>
+<li>通过HandlerAdapter对Handler进行封装， 再以统一的适配器接口调用Handler.</li>
+<li>Handler完成业务逻辑的处理后将返回一个ModelAndView给DispatcherServlet, ModelAndView包括了视图逻辑名和模型数据信息.</li>
+<li>ModelAndView中包含的“逻辑视图名”而非真正的视图对象, DispatcherServlet借由ViewResolver完成逻辑视图到真实视图对象的解析工作。</li>
+<li>当得到真实的视图对象view后，DispatcherServlet就使用这个View对象对ModelAndView中的模型数据进行视图渲染。</li>
+<li>最终client获取得到的响应消息可能是一个普通的html页面， 也可能是一个xml或json串，甚至是一张图片或一个pdf文档等不同的媒体形式。</li>
+</ol>
+<h3 id="配置DispatcherServlet">配置DispatcherServlet</h3>
+<ol>
+<li>如何截获特定的http请求，交由spring MVC框架处理？</li>
+</ol>
+<p>在web.xml配置一个Servlet, 并通过<servlet-mapping>指定器处理的url.</servlet-mapping></p>
 <h1 id="8-_单元测试">8. 单元测试</h1>
 <h1 id="9-_敏捷开发技术">9. 敏捷开发技术</h1>
 <h1 id="10-_自己动手打造服务平台框架">10. 自己动手打造服务平台框架</h1>
@@ -1192,7 +1289,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2014 Peter Yu<br>
+      &copy; 2015 Peter Yu<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
