@@ -469,6 +469,65 @@ AOP编程的支持
 <h3 id="Jdbc对事务的处理">Jdbc对事务的处理</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="type">Connection</span> conn;</div><div class="line"><span class="keyword">try</span>{</div><div class="line">    conn = <span class="type">DriverManager</span>.getConnection();</div><div class="line">    conn.setAutoCommit(<span class="literal">false</span>);</div><div class="line">    conn.setTransactionIsolation(<span class="type">Connection</span>.<span class="type">TRANSACTION_SERIALIZABLE</span>);</div><div class="line">    <span class="type">Statement</span> <span class="type">stmt</span> = conn.createStatement();</div><div class="line">    <span class="type">int</span> rows = <span class="type">stmt</span>.executeUpdate(<span class="string">"INSERT INTO t_viewspace VALUES(1,'XXXX')"</span>);</div><div class="line">    rows = <span class="type">stmt</span>.executeUpdate(<span class="string">"UPDATE t_viewpoint set ticket = ticket +10"</span>);</div><div class="line">    conn.commit();</div><div class="line">}catch (<span class="type">Exception</span> e){</div><div class="line">    conn.rollback();</div><div class="line">}<span class="keyword">finally</span> {</div><div class="line">}</div></pre></td></tr></table></figure>
 
+<h2 id="Spring对事务管理的处理">Spring对事务管理的处理</h2>
+<p>Spring为事务管理提供了一致的编程模板, 在高层次建立了同意的事务抽象。提供了TransactionTemplate。</p>
+<p>Spring事务管理的亮点在于声明式事务管理。</p>
+<h3 id="事务管理关键抽象">事务管理关键抽象</h3>
+<p>Spring事务管理SPI(Service Provider Interface)的抽象层主要包括三个接口：</p>
+<ul>
+<li><p>PlatformTransactionManager: 根据TransactionDefinition提供的事务属性配置信息，创建事务，并用TransationStatus描述这个激活事务的状态。定义了3方法:</p>
+<ul>
+<li>getTransaction(definition)</li>
+<li>commit(stutus)</li>
+<li>rollback(status)</li>
+</ul>
+</li>
+<li><p>TransactionDefinition: 描述事务的隔离级别，超时时间，是否为只读事务和事务传播规则等控制事务具体行为的事务属性。</p>
+</li>
+<li>TransactionStatus: 代表一个事务的具体运行状态。</li>
+</ul>
+<h3 id="事务管理实现类">事务管理实现类</h3>
+<p>Spring将事务管理委托给底层具体的持久化实现框架完成。</p>
+<p>Spring JDBC和iBatis都是基于数据源的Connection访问数据库，所以可以使用DataSourceTransactionManager.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"dataSource"</span></div><div class="line">        class=<span class="string">"org.apache.commons.dbcp.BasicDataSource"</span></div><div class="line">        destroy-<span class="keyword">method</span>=<span class="string">"close"</span></div><div class="line">        p:driverClassName=<span class="string">"${jdbc.driverClassName}"</span></div><div class="line">        p:url=<span class="string">"${jdbc.url}"</span></div><div class="line">        p:username=<span class="string">"${jdbc.username}"</span></div><div class="line">        p:password=<span class="string">"${jdbc.password}"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"txManager"</span></div><div class="line">        class=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span></div><div class="line">        p:dataSource-<span class="keyword">ref</span>=<span class="string">"dataSource"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<h3 id="事务同步管理器">事务同步管理器</h3>
+<p>Spring将JDBC的Connection,Hibernate的Session等访问数据库的连接或会话对象统称为资源。资源在同一时刻是不能多线程共享的。<br>为了让Dao,Service类可能做到singleton，Spring的事务同步管理类TransactionSynchronizationManager使用ThreadLocal管理为不同事务线程提供了<br>独立的资源副本。</p>
+<p>Spring框架为不同的持久化技术提供了一套从TransactionSynchronizationManager中获取对应线程绑定资源的工具类。<br>DataSourceUtils.getConnection可以从指定的数据源中获取和当前线程绑定的Connection.</p>
+<h3 id="事务传播行为">事务传播行为</h3>
+<h2 id="编程式的事务管理">编程式的事务管理</h2>
+<p>很少用。 Spring提供了TransactionTemplate.</p>
+<h2 id="使用xml配置声明式事务">使用xml配置声明式事务</h2>
+<p>Spring的声明式事务管理是通过Spring AOP实现的，通过事务的声明性信息，Spring负责将事务管理增强逻辑动态织入业务方法相应连接点中。<br>这些逻辑包括获取线程绑定资源，开始事务，提交/回滚事务，进行异常转换和处理工作。</p>
+<h3 id="一个被实施事务增强的服务接口">一个被实施事务增强的服务接口</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">interface</span> IViewSpace {</div><div class="line">    <span class="keyword">void</span> addViewSpace(ViewSpace space);</div><div class="line">    <span class="keyword">void</span> updateViewSpace(ViewSpace space);</div><div class="line">    ViewSpace getViewSpace(<span class="keyword">int</span> spaceId);</div><div class="line">    <span class="keyword">int</span> getViewSpaceNum();</div><div class="line">    <span class="keyword">void</span> deleteViewSpace(<span class="keyword">int</span> spaceId);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>我们希望对addViewSpace和updateViewSpace拥有写事务的能力， 而另外两个拥有读事务的能力。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="annotation">@Transactional</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewSpaceImpl</span> <span class="keyword">implements</span> <span class="title">IViewSpace</span> </span>{</div><div class="line">    <span class="keyword">private</span> ViewSpaceDao viewSpaceDao;</div><div class="line">    <span class="keyword">private</span> ViewPointDao viewPointDao;</div><div class="line"></div><div class="line">    <span class="annotation">@Transactional</span>(readOnly=<span class="keyword">true</span>)</div><div class="line">    <span class="keyword">public</span> ViewSpace <span class="title">getViewSpace</span>(<span class="keyword">int</span> spaceId) {</div><div class="line">        <span class="keyword">return</span> viewSpaceDao.getViewSpace( spaceId);</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateViewSpace</span>(ViewSpace viewSpace) {</div><div class="line">        viewSpaceDao.updateViewSpace(viewSpace);</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getViewSpaceNum</span>() {</div><div class="line">        <span class="keyword">return</span> viewSpaceDao.getViewSpaceNum();</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setViewSpaceDao</span>(ViewSpaceDao viewSpaceDao) {</div><div class="line">        <span class="keyword">this</span>.viewSpaceDao = viewSpaceDao;</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setViewPointDao</span>(ViewPointDao viewPointDao) {</div><div class="line">        <span class="keyword">this</span>.viewPointDao = viewPointDao;</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewSpace</span>(ViewSpace space) {</div><div class="line">        <span class="keyword">this</span>.viewSpaceDao.addViewSpace(space);</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteViewSpace</span>(<span class="keyword">int</span> spaceId) {</div><div class="line">        <span class="keyword">this</span>.viewSpaceDao.deleteViewSpace(spaceId);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>ViewSpaceImpl是一个POJO, 只是简单使用持久层的多个DAO类。</p>
+<h3 id="使用原始的TransactionProxyFactoryBean">使用原始的TransactionProxyFactoryBean</h3>
+<p>了解TransactionProxyFactoryBean有助于跟直观</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--1. 引入dao和DataSource的配置文件--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">import</span> <span class="attribute">resource</span>=<span class="value">"classpath:applicationContext-dao.xml"</span> /&gt;</span></div><div class="line"><span class="comment">&lt;!--2. 声明事务管理器--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"txManager"</span></span></div><div class="line">    <span class="attribute">class</span>=<span class="value">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"dataSource"</span> <span class="attribute">ref</span>=<span class="value">"dataSource"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">bean</span>&gt;</span></div><div class="line"><span class="comment">&lt;!--3. 需要实施事务增强的目标业务bean--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"viewSpaceTarget"</span></span></div><div class="line">        <span class="attribute">class</span>=<span class="value">"com.smart.service.impl.ViewSpaceImpl"</span></div><div class="line">        <span class="attribute">p:viewSpaceDao-ref</span>=<span class="value">"viewSpaceDao"</span></div><div class="line">        <span class="attribute">p:viewPointDao-ref</span>=<span class="value">"viewPointDao"</span>/&gt;</div><div class="line"><span class="comment">&lt;!--4. 使用事务代理工程类为目标业务Bean提供事务增强--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"viewSpaceService"</span></span></div><div class="line">    <span class="attribute">class</span>=<span class="value">"org.springframework.transaction.interceptor.TransactionProxyFactoryBean"</span></div><div class="line">    <span class="attribute">p:transactionManager-ref</span>=<span class="value">"txManager"</span></div><div class="line">    <span class="attribute">p:target-ref</span>=<span class="value">"viewSpaceTarget"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"transactionAttributes"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">props</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"get*"</span>&gt;</span>PROPAGATION_REQUIRED,readOnly<span class="tag">&lt;/<span class="title">prop</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"*"</span>&gt;</span>PROPAGATION_REQUIRED<span class="tag">&lt;/<span class="title">prop</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="title">props</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">bean</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>异常回滚/提交规则</p>
+<p><prop>内的值为事务属性配置信息， 格式如下：</prop></p>
+<pre><code>PROPAGATION_REQUIRED, ISOLATION, readOnly, -<span class="keyword">Exception</span>, +<span class="keyword">Exception</span>
+</code></pre><h3 id="基于tx/aop命名空间的配置">基于tx/aop命名空间的配置</h3>
+<p>Spring基于Schema的配置中,添加了一个tx命名空间， 在配置文件中医明确结构化的方式定义事务属性，<br>大大提高配置事务属性的便利性。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">&lt;<span class="keyword">import</span> resource=<span class="string">"classpath:applicationContext-dao.xml"</span> /&gt;</div><div class="line">&lt;!--①不再需要为了事务<span class="type">AOP</span>增强的实施而改名换姓--&gt;</div><div class="line">&lt;bean id=<span class="string">"viewSpaceService"</span></div><div class="line">    class=<span class="string">"com.smart.service.impl.ViewSpaceImpl"</span></div><div class="line">    p:viewSpaceDao-<span class="keyword">ref</span>=<span class="string">"viewSpaceDao"</span></div><div class="line">    p:viewPointDao-<span class="keyword">ref</span>=<span class="string">"viewPointDao"</span>/&gt;</div><div class="line"></div><div class="line">&lt;!--<span class="number">2</span>. 事务管理器--&gt;</div><div class="line">&lt;bean id=<span class="string">"txManager"</span></div><div class="line">    class=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span></div><div class="line">    p:dataSource-<span class="keyword">ref</span>=<span class="string">"dataSource"</span>/&gt;</div><div class="line"></div><div class="line">&lt;aop:config&gt;</div><div class="line">    &lt;!--③-<span class="number">1</span>通过aop定义事务增强切面--&gt;</div><div class="line">    &lt;aop:pointcut id=<span class="string">"serviceMethod"</span></div><div class="line">                    expression=<span class="string">"execution(* com.smart.service.*Service.*(..))"</span> /&gt;</div><div class="line">    &lt;!--③-<span class="number">2</span>引用事务增强--&gt;</div><div class="line">    &lt;aop:advisor pointcut-<span class="keyword">ref</span>=<span class="string">"serviceMethod"</span> advice-<span class="keyword">ref</span>=<span class="string">"txAdvice"</span> /&gt;</div><div class="line">&lt;/aop:config&gt;</div><div class="line"></div><div class="line">&lt;!--④事务增强--&gt;</div><div class="line">&lt;tx:advice id=<span class="string">"txAdvice"</span> transaction-manager=<span class="string">"txManager"</span>&gt;</div><div class="line">    &lt;!--④-<span class="number">1</span>事务属性定义--&gt;</div><div class="line">    &lt;tx:attributes&gt;</div><div class="line">        &lt;tx:<span class="keyword">method</span> name=<span class="string">"get*"</span> read-only=<span class="string">"false"</span>/&gt;</div><div class="line">        &lt;tx:<span class="keyword">method</span> name=<span class="string">"add*"</span> rollback-<span class="keyword">for</span>=<span class="string">"Exception"</span> /&gt;</div><div class="line">        &lt;tx:<span class="keyword">method</span> name=<span class="string">"update*"</span>/&gt;</div><div class="line">    &lt;/tx:attributes&gt;</div><div class="line">&lt;/tx:advice&gt;</div></pre></td></tr></table></figure>
+
+<p><tx:method> 元素：</tx:method></p>
+<ul>
+<li>name</li>
+<li>progagation</li>
+<li>isolation</li>
+<li>timeout</li>
+<li>read-only</li>
+<li>rollback-for</li>
+<li>no-rollback-for</li>
+</ul>
+<h2 id="使用注解配置声明式事务">使用注解配置声明式事务</h2>
 <h1 id="7-_Spring_MVC">7. Spring MVC</h1>
 <h2 id="概述">概述</h2>
 <p>围绕DispatcherServlet核心展开，DispatcherServlet是Spring MVC的总导演，总策划，它负责截获请求并将其分派给相应的处理器处理。</p>
@@ -498,6 +557,23 @@ AOP编程的支持
 </ol>
 <p>在web.xml配置一个Servlet, 并通过<servlet-mapping>指定器处理的url.</servlet-mapping></p>
 <h1 id="8-_单元测试">8. 单元测试</h1>
+<h2 id="概述-1">概述</h2>
+<h3 id="基本概念">基本概念</h3>
+<p>被测系统(System Under Test):</p>
+<p>测试替身(Test Double): 使用测试替身，也可称为Mock, 减少被测对象的依赖。</p>
+<p>测试夹具(Test Fixture): 在测试方法之前自动进行初始化，和资源回收的工作。 @BeforeMethod, @AfterMethod, @Test, @BeforeClass, @AfterClass</p>
+<p>测试用例(Test Case)</p>
+<p>测试套件(TEst Suite)</p>
+<h2 id="TestNG快速进阶">TestNG快速进阶</h2>
+<h3 id="异常测试">异常测试</h3>
+<p>使用expetedExceptions:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> AutoNameAdviceTest {</div><div class="line">    <span class="keyword">private</span> User user;</div><div class="line">    @Test(enabled = <span class="keyword">true</span>, expectedExceptions = NullPointerException.class)</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUser</span>(){</div><div class="line">        user= <span class="keyword">new</span> User();</div><div class="line">        assertNotNull(user.getLastIp());</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="超时测试">超时测试</h3>
+<p>若在指定时间完成， 就通过测试.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="annotation">@Test</span>(timeOut = <span class="number">10</span>)</div><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTimeout</span>(){</div><div class="line">    user= <span class="keyword">new</span> User();</div><div class="line">    assertNotNull(user);</div><div class="line">    <span class="keyword">try</span> {</div><div class="line">        Thread.sleep(<span class="number">11</span>);</div><div class="line">    } <span class="keyword">catch</span> (InterruptedException e) {</div><div class="line">        e.printStackTrace();</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="参数化测试">参数化测试</h3>
 <h1 id="9-_敏捷开发技术">9. 敏捷开发技术</h1>
 <h1 id="10-_自己动手打造服务平台框架">10. 自己动手打造服务平台框架</h1>
 <h1 id="11-_实战案例开发">11. 实战案例开发</h1>
@@ -516,6 +592,15 @@ AOP编程的支持
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/01/19/Ice协议/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Ice协议
+        
+      </div>
+    </a>
   
   
     <a href="/2014/11/21/Programming-Erlang/" id="article-nav-older" class="article-nav-link-wrap">
@@ -538,7 +623,7 @@ AOP编程的支持
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/笔记/" style="font-size: 15.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 15.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -547,7 +632,7 @@ AOP编程的支持
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -557,6 +642,10 @@ AOP编程的支持
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/01/19/Ice协议/">Ice协议</a>
+          </li>
         
           <li>
             <a href="/2014/12/02/Spring3-0就这么简单/">Spring3.0就这么简单</a>
@@ -572,10 +661,6 @@ AOP编程的支持
         
           <li>
             <a href="/2014/10/29/Git子模块/">Git子模块</a>
-          </li>
-        
-          <li>
-            <a href="/2014/10/29/Understanding-the-JVM/">Understanding the JVM</a>
           </li>
         
       </ul>
