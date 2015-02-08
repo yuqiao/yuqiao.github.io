@@ -555,7 +555,19 @@ AOP编程的支持
 <ol>
 <li>如何截获特定的http请求，交由spring MVC框架处理？</li>
 </ol>
+<p>配置DispatcherServlet,截获特定的URL请求</p>
 <p>在web.xml配置一个Servlet, 并通过<servlet-mapping>指定器处理的url.</servlet-mapping></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--1. 业务层和持久层的配置文件，被父Spring容器使用--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">context-param</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="title">param-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">param-value</span>&gt;</span>classpath:/conf/applicationContext.xml<span class="tag">&lt;/<span class="title">param-value</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">context-param</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">listener</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">listener-class</span>&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="tag">&lt;/<span class="title">listener-class</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">listener</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!--2. 声明DispatcherServlet. 默认自动加载/WEB-INF/viewspace-servlet.xml--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">servlet</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>viewspace<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="title">servlet-class</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="title">load-on-startup</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">servlet</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!--3. 为Dispatcher匹配的URL模式. 指定DispatcherServlet处理所有URL以.html为后缀的HTTP请求--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">servlet-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>viewspace<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">url-pattern</span>&gt;</span>*.html<span class="tag">&lt;/<span class="title">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">servlet-mapping</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>DispatcherServlet遵循“契约优于配置”的原则，在大多数情况下， 无须精心额外的配置。</p>
+<p><servlet>的<init-param>参数:</init-param></servlet></p>
+<ul>
+<li>namespace</li>
+<li>contextConfigLocation</li>
+<li>publishContent</li>
+<li>publishEvents</li>
+</ul>
+<h2 id="注解驱动的控制器">注解驱动的控制器</h2>
 <h1 id="8-_单元测试">8. 单元测试</h1>
 <h2 id="概述-1">概述</h2>
 <h3 id="基本概念">基本概念</h3>
@@ -623,7 +635,7 @@ AOP编程的支持
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 15.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 10.00px;">hadoop</a><a href="/tags/java/" style="font-size: 20.00px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -632,7 +644,7 @@ AOP编程的支持
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -642,6 +654,10 @@ AOP编程的支持
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/02/07/hadoop权威指南/">hadoop权威指南</a>
+          </li>
         
           <li>
             <a href="/2015/01/19/Ice协议/">Ice协议</a>
@@ -657,10 +673,6 @@ AOP编程的支持
         
           <li>
             <a href="/2014/11/17/Pratical-Vim/">Pratical Vim</a>
-          </li>
-        
-          <li>
-            <a href="/2014/10/29/Git子模块/">Git子模块</a>
           </li>
         
       </ul>
