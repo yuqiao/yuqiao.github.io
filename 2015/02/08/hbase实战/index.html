@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>hbase实战 | Joe&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="源码: https://github.com/HBaseinaction
+1. HBase介绍
+HBase是一种数据库。一种稀疏的，分布式的，持久化的，多维有序映射，基于行键(rowkey), 列键(column key)和时间戳(timestamp)建立索引。
+HBase邮件列表：http://HBase.apache.org/mail-lists.htmlJIRA网站： http://issu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hbase实战">
+<meta property="og:url" content="http://yuqiao.github.io/2015/02/08/hbase实战/">
+<meta property="og:site_name" content="Joe's Blog">
+<meta property="og:description" content="源码: https://github.com/HBaseinaction
+1. HBase介绍
+HBase是一种数据库。一种稀疏的，分布式的，持久化的，多维有序映射，基于行键(rowkey), 列键(column key)和时间戳(timestamp)建立索引。
+HBase邮件列表：http://HBase.apache.org/mail-lists.htmlJIRA网站： http://issu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="hbase实战">
+<meta name="twitter:description" content="源码: https://github.com/HBaseinaction
+1. HBase介绍
+HBase是一种数据库。一种稀疏的，分布式的，持久化的，多维有序映射，基于行键(rowkey), 列键(column key)和时间戳(timestamp)建立索引。
+HBase邮件列表：http://HBase.apache.org/mail-lists.htmlJIRA网站： http://issu">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Joe&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Carpe Diem</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">存档</a>
+        
+          <a class="main-nav-link" href="/about">关于</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yuqiao.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-hbase实战" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/08/hbase实战/" class="article-date">
+  <time datetime="2015-02-08T12:59:57.000Z" itemprop="datePublished">2月 8 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hbase实战
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>源码: <a href="https://github.com/HBaseinaction" target="_blank" rel="external">https://github.com/HBaseinaction</a></p>
+<h1 id="1-_HBase介绍">1. HBase介绍</h1>
+<p>HBase是一种数据库。一种稀疏的，分布式的，持久化的，多维有序映射，基于行键(rowkey), 列键(column key)和时间戳(timestamp)建立索引。</p>
+<p>HBase邮件列表：<a href="http://HBase.apache.org/mail-lists.html" target="_blank" rel="external">http://HBase.apache.org/mail-lists.html</a><br>JIRA网站： <a href="http://issues.apache.org/jira/browse/HBASE" target="_blank" rel="external">http://issues.apache.org/jira/browse/HBASE</a></p>
+<h2 id="Hbase使用场景和成功案例">Hbase使用场景和成功案例</h2>
+<h3 id="典型的互联网搜索问题">典型的互联网搜索问题</h3>
+<h3 id="抓取增量数据">抓取增量数据</h3>
+<ul>
+<li>抓取监控指标：OpenTSDB</li>
+<li>抓取用户交互数据: Facebook和StumbleUpon</li>
+<li>遥测技术: Mozilla和Trend Micro</li>
+<li>广告效果和点击流</li>
+</ul>
+<h3 id="内容服务">内容服务</h3>
+<p>Twitter帖子, Facebook帖子，Instagram帖子和微博。</p>
+<ul>
+<li>Url短链接: StumbleUpon</li>
+<li>用户模型服务: Runa用户模型服务</li>
+</ul>
+<h3 id="信息交换">信息交换</h3>
+<p>Facebook的短信系统。 用户读写的所有短信都存在HBase列。 </p>
+<p>Facebook短信系统要求: 高的写吞吐量，计数器吞吐量，自动分库</p>
+<p>参考： </p>
+<ul>
+<li><a href="https://www.facebook.com/note.php?note_id=454991608919" target="_blank" rel="external">https://www.facebook.com/note.php?note_id=454991608919</a></li>
+<li>“Hadoop goes realtime at Facebook” <a href="http://borthakur.com/ftp/RealtimeHadoopSigmod2011.pdf" target="_blank" rel="external">http://borthakur.com/ftp/RealtimeHadoopSigmod2011.pdf</a></li>
+</ul>
+<h2 id="你好HBase">你好HBase</h2>
+<p>Hbase搭建在Apache Hadoop和Apache ZooKeeper上面，用java编写的。 可运行在3种模式：单机， 伪分布式和全分布式。</p>
+<h3 id="快速安装">快速安装</h3>
+<ol>
+<li>下载。 <a href="http://hbase.apache.org/" target="_blank" rel="external">http://hbase.apache.org/</a></li>
+<li>export HBASE_HOME=</li>
+<li>$HBASE_HOME/bin/start-hbase.sh </li>
+<li>默认写数据在/tmp下. 可写配置/etc/hbase/conf/hbase-site.xml</li>
+<li>后台简易页面。  <a href="http://localhost:60010" target="_blank" rel="external">http://localhost:60010</a></li>
+</ol>
+<h3 id="命令行交互">命令行交互</h3>
+<pre><code><span class="variable">$ </span>hbase shell                                                                                                                             <span class="number">13</span><span class="symbol">:</span><span class="number">24</span><span class="symbol">:</span><span class="number">45</span>
+<span class="constant">HBase</span> <span class="constant">Shell</span>; enter <span class="string">'help&lt;RETURN&gt;'</span> <span class="keyword">for</span> list of supported commands.
+<span class="constant">Type</span> <span class="string">"exit&lt;RETURN&gt;"</span> to leave the <span class="constant">HBase</span> <span class="constant">Shell</span>
+<span class="input"><span class="prompt">Version 0.98.10-hadoop2, rb18bc4b06f3eb90f592c906e78fb6461548ae627, Sun Feb  1 05:48:33 UTC 2015
+
+hbase(main):001:0&gt;</span> list</span>
+<span class="constant">TABLE</span>
+<span class="number">2015</span>-<span class="number">02</span>-09 <span class="number">13</span><span class="symbol">:</span><span class="number">25</span><span class="symbol">:</span><span class="number">04</span>,<span class="number">209</span> <span class="constant">WARN</span>  [main] util.<span class="constant">NativeCodeLoader</span><span class="symbol">:</span> <span class="constant">Unable</span> to load native-hadoop library <span class="keyword">for</span> your platform... using builtin-java classes where applicable
+<span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">5500</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> []</span>
+<span class="input"><span class="prompt">hbase(main):002:0&gt;</span> create <span class="string">'mytable'</span>, <span class="string">'cf'</span></span>
+<span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">2180</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> <span class="constant">Hbase::Table</span> - mytable</span>
+<span class="input"><span class="prompt">hbase(main):003:0&gt;</span> list</span>
+<span class="constant">TABLE</span>
+mytable
+<span class="number">1</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">00</span>8<span class="number">0</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> [<span class="string">"mytable"</span>]</span>
+<span class="input"><span class="prompt">hbase(main):004:0&gt;</span> put <span class="string">'mytable'</span>, <span class="string">'first'</span>, <span class="string">'cf:message'</span>, <span class="string">'hello HBase'</span></span>
+<span class="input"><span class="prompt">0 row(s) in 0.0770 seconds
+
+hbase(main):005:0&gt;</span> put <span class="string">'mytable'</span>, <span class="string">'second'</span>, <span class="string">'cf:foo'</span>, <span class="number">0x0</span></span>
+<span class="input"><span class="prompt">0 row(s) in 0.0120 seconds
+
+hbase(main):006:0&gt;</span> put <span class="string">'mytable'</span>, <span class="string">'third'</span>, <span class="string">'cf:bar'</span>, <span class="number">3.14159</span></span>
+<span class="input"><span class="prompt">0 row(s) in 0.0090 seconds
+
+hbase(main):007:0&gt;</span> get <span class="string">'mytable'</span>, <span class="string">'first'</span></span>
+<span class="constant">COLUMN</span>                                        <span class="constant">CELL</span>
+<span class="symbol">cf:</span>message                                   timestamp=<span class="number">1423459575172</span>, value=hello <span class="constant">HBase</span>
+<span class="input"><span class="prompt">1 row(s) in 0.0180 seconds
+
+hbase(main):008:0&gt;</span> scan <span class="string">'mytable'</span></span>
+<span class="constant">ROW</span>                                           <span class="constant">COLUMN</span>+<span class="constant">CELL</span>
+first                                        column=<span class="symbol">cf:</span>message, timestamp=<span class="number">1423459575172</span>, value=hello <span class="constant">HBase</span>
+second                                       column=<span class="symbol">cf:</span>foo, timestamp=<span class="number">1423459599179</span>, value=<span class="number">0</span>
+third                                        column=<span class="symbol">cf:</span>bar, timestamp=<span class="number">1423459615603</span>, value=<span class="number">3.14159</span>
+<span class="input"><span class="prompt">3 row(s) in 0.0160 seconds
+
+hbase(main):009:0&gt;</span> quit    </span>
+</code></pre><h1 id="2-_入门">2. 入门</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/02/08/hbase实战/" data-id="6x2xv8qg5o07bomx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/02/07/hadoop权威指南/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">hadoop权威指南</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/02/08/hbase实战/">hbase实战</a>
+          </li>
+        
+          <li>
+            <a href="/2015/02/07/hadoop权威指南/">hadoop权威指南</a>
+          </li>
+        
+          <li>
+            <a href="/2015/01/19/Ice协议/">Ice协议</a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/02/Spring3-0就这么简单/">Spring3.0就这么简单</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Peter Yu<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">存档</a>
+  
+    <a href="/about" class="mobile-nav-link">关于</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>
