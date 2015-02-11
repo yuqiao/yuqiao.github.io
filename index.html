@@ -173,6 +173,111 @@ third                                        column=<span class="symbol">cf:</sp
 
 hbase(main):009:0&gt;</span> quit    </span>
 </code></pre><h1 id="2-_入门">2. 入门</h1>
+<p>本章目标:</p>
+<ul>
+<li>学习HBase的逻辑数据模型(logical data model)</li>
+<li>如何进行HBase模式(Schema)设计</li>
+</ul>
+<p>代码参考:  <a href="https://github.com/hbaseinaction/twitbase" target="_blank" rel="external">https://github.com/hbaseinaction/twitbase</a></p>
+<h2 id="从头开始">从头开始</h2>
+<p>TwitBase存储3种简单的核心数据元素: 用户(user), 推贴(twit)和关系(relationship).</p>
+<h3 id="创建表">创建表</h3>
+<pre><code><span class="input"><span class="prompt">hbase(main):002:0&gt;</span> create <span class="string">'users'</span>, <span class="string">'info'</span></span>
+<span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">10.2700</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> <span class="constant">Hbase::Table</span> - users</span>
+<span class="input"><span class="prompt">hbase(main):003:0&gt;</span> list</span>
+<span class="constant">TABLE</span>
+mytable
+users
+<span class="number">2</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">0040</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> [<span class="string">"mytable"</span>, <span class="string">"users"</span>]</span>
+<span class="input"><span class="prompt">hbase(main):004:0&gt;</span> describe <span class="string">'users'</span></span>
+<span class="constant">Table</span> users is <span class="constant">ENABLED</span>
+users
+<span class="constant">COLUMN</span> <span class="constant">FAMILIES</span> <span class="constant">DESCRIPTION</span>
+{<span class="constant">NAME</span> =&gt; <span class="string">'info'</span>, <span class="constant">BLOOMFILTER</span> =&gt; <span class="string">'ROW'</span>, <span class="constant">VERSIONS</span> =&gt; <span class="string">'1'</span>, <span class="constant">IN_MEMORY</span> =&gt; <span class="string">'false'</span>, <span class="constant">KEEP_DELETED_CELLS</span> =&gt; <span class="string">'FALSE'</span>, <span class="constant">DATA_BLOCK_ENCODING</span> =&gt; <span class="string">'NONE'</span>, <span class="constant">TTL</span> =&gt; <span class="string">'FOREVER'</span>, <span class="constant">COMPRESSION</span> =&gt; <span class="string">'NONE
+'</span>, <span class="constant">MIN_VERSIONS</span> =&gt; <span class="string">'0'</span>, <span class="constant">BLOCKCACHE</span> =&gt; <span class="string">'true'</span>, <span class="constant">BLOCKSIZE</span> =&gt; <span class="string">'65536'</span>, <span class="constant">REPLICATION_SCOPE</span> =&gt; <span class="string">'0'</span>}
+<span class="number">1</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">0350</span> seconds
+</code></pre><h3 id="建立连接">建立连接</h3>
+<pre><code>Configuration myConf = HBaseConfiguration.create();
+myConf.<span class="keyword">set</span>(<span class="string">"hbase.zookeeper.quorum"</span>, <span class="string">"serverip"</span>);
+HTableInterface usersTable = <span class="keyword">new</span> HTable(myConf, <span class="string">"users"</span>);
+</code></pre><h3 id="连接管理">连接管理</h3>
+<p>创建一个表实例是个开销很大的操作， 需要占用一些网络资源。使用连接池更好一些，使用HTablePool比直接使用HTable更常见：</p>
+<pre><code>HTablePool pool = new HTablePool();
+HTableInterface usersTabel = pool.getTable(<span class="string">"users"</span>);
+<span class="keyword">...</span> //work withe the table
+usersTable.close();
+</code></pre><p>当你完成工作表时，连接资源会返回到连接池里。</p>
+<h2 id="数据操作">数据操作</h2>
+<p>行键(rowkey): Hbase的行唯一标识符。<br>HBase Api有5个基本命令: Get, Put, Delete, Scan和Increment.</p>
+<h3 id="Hbase写路径">Hbase写路径</h3>
+<p>在Hbase中，无论是增加新行还是修改已有行，内部流程都是相同的。 Hbase接到命令后存入变化信息，或者写入失败抛出异常。</p>
+<p>默认，执行写入时写到两个地方: 预写式日志（write-ahead log, WAL) 和MemStore. 以保证数据持久化。两个地方信息都写入并确认后，才认为写动作完成。</p>
+<p>MemStore是内存里的写入缓冲区，HBase中数据在永久写入之前都在这里累积。当MemStore填满后，其中的数据会刷写到硬盘，生成一个HFile.</p>
+<p>HFile是Hbase使用的底层存储格式。Hfile对应列族，一个列族可以有多个HFile，但一个HFile不能存多个列族的数据。<br>在集群的每个节点上， 每个列族有一个MemStore.</p>
+<p>大型分布式系统中硬件故障很常见，HBase也不例外。若MemStore还没有刷写，服务器就崩溃了， 内存没有写入硬盘的数据就会丢失。<br>使用WAL恢复。</p>
+<p>// 待补</p>
+<h3 id="Hbase读路径">Hbase读路径</h3>
+<p>想快速访问数据，通用的原则是数据保持有序并尽可能保存在内存里。</p>
+<p>Hbase实现了这两个目标， 大多情况下读操作可以做到毫秒级。</p>
+<p>BlockCache是优化HBase性能的一个重要部分。</p>
+<p>首先检查MemStore, 然后检查BlockCache, 最后访问硬盘上的HFile.</p>
+<h3 id="合并:_HBase的后台工作">合并: HBase的后台工作</h3>
+<p>Delete命令并不立即删除内容，只是打上删除的标记。因为HFile是不能改变的，直到执行一次大合并(major compaction), 这时被删除记录占用的空间才会释放。</p>
+<p>合并分为两种：大合并()和小合并().</p>
+<p>小合并把多个小HFile合并生成一个大HFile. 因为读出一个完整的行可能引用很多文件，限制HFile的数量对于读性能很重要。</p>
+<p>大合并将处理给定region的一个列族的所有HFile.</p>
+<p>参考: “Visualizing HBase Flushes and Compactions” Bruno Dumon.</p>
+<h3 id="有时间版本的数据">有时间版本的数据</h3>
+<p>HBase默认只存储3个版本，可以基于列族设置。</p>
+<h3 id="数据模型概括">数据模型概括</h3>
+<p>逻辑实体如下：</p>
+<ul>
+<li>表</li>
+<li>行</li>
+<li>列族</li>
+<li>列限定符</li>
+<li>单元</li>
+<li>时间版本</li>
+</ul>
+<h2 id="数据坐标">数据坐标</h2>
+<p>HBase使用的坐标依次是: 行键，列族，列限定符，时间版本。 4个坐标</p>
+<h2 id="数据模型">数据模型</h2>
+<p>半结构化数据。</p>
+<p>HBase的半结构化逻辑模型里数据构成是松耦合的，这一点有利于物理分散存储。<br>当然也导致HBase不能实施关系约束(constraint)并不支持多行事务(multirow transaction).</p>
+<h1 id="3-_分布式的HBase,HDFS和MapReduce">3. 分布式的HBase,HDFS和MapReduce</h1>
+<p>HBase在两方面依赖Hadoop.</p>
+<ol>
+<li>Hadoop MapReduce提供了分布式计算框架，支持高吞吐量数据访问。</li>
+<li>HDFS作为HBase的存储层，支持可用性(availability)和可靠性(reliability).</li>
+</ol>
+<h2 id="一个MapReduce的例子">一个MapReduce的例子</h2>
+<h2 id="MapReduce概览">MapReduce概览</h2>
+<h2 id="分布式模式的HBase">分布式模式的HBase</h2>
+<h2 id="HBase和MapReduce">HBase和MapReduce</h2>
+<h2 id="信息汇总">信息汇总</h2>
+<h2 id="大规模条件下的可用性和可靠性">大规模条件下的可用性和可靠性</h2>
+<h1 id="4-_HBase表设计">4. HBase表设计</h1>
+<h2 id="如何开始模式(schema)设计">如何开始模式(schema)设计</h2>
+<p>考虑以下问题:</p>
+<ul>
+<li>表应该有多少个列族</li>
+<li>列族使用什么数据</li>
+<li>每个列族应该有多少列</li>
+<li>列名是什么？</li>
+<li>单元存放什么数据</li>
+<li>每个单元存储多少个时间版本</li>
+<li>行键的结构是什么？应该包含什么信息</li>
+</ul>
+<h1 id="5-_使用协处理器扩展HBase">5. 使用协处理器扩展HBase</h1>
+<h1 id="6-_其他HBase客户端选择">6. 其他HBase客户端选择</h1>
+<h1 id="7-_通过实例学习HBase:_OpenTSDB">7. 通过实例学习HBase: OpenTSDB</h1>
+<h1 id="8-_在HBase上查询地理信息系统">8. 在HBase上查询地理信息系统</h1>
+<h1 id="9-_部署HBase">9. 部署HBase</h1>
+<h1 id="10-_运维">10. 运维</h1>
 
       
     </div>
