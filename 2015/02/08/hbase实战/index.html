@@ -263,7 +263,26 @@ usersTable.close();
 </ol>
 <h2 id="一个MapReduce的例子">一个MapReduce的例子</h2>
 <h2 id="MapReduce概览">MapReduce概览</h2>
+<ul>
+<li>拆解。 hadoop只能以行为单位拆解</li>
+<li>map阶段处理</li>
+<li>洗牌阶段(shuffle step)</li>
+<li>排序阶段(sort step)</li>
+<li>聚合工作·</li>
+</ul>
+<h3 id="MapReduce内部处理">MapReduce内部处理</h3>
+<ul>
+<li>JobTracker进程扮演着应用监管的角色，负责管理集群上运行的MapReduce应用。作业提交给JobTracker来执行，管理分配工作负载。</li>
+<li>Map阶段和Reduce阶段定义的工作由另一个TaskTracker的进程来执行</li>
+</ul>
 <h2 id="分布式模式的HBase">分布式模式的HBase</h2>
+<p>Hbse中的表由行和列组成的。</p>
+<p>表会切分小一点儿的数据单位(Region), 然后分配到多台服务器上。</p>
+<p>托管region的服务器叫做RegionServer.</p>
+<p>RegionServer和HDFS DataNode典型情况下并列配置在同一物理硬件上。<br>RegionServer本质上是HDFS客户端，在上面存储和访问数据。 主(master)进程分配region给RegionServer.<br>每个RegionServer一般托管多个region.</p>
+<h3 id="如何找到Region">如何找到Region</h3>
+<p>HBase有两个特殊的表：-Root-和.META.</p>
+<p>当客户端要访问某行时，先找到-ROOT-表，查找上面地方可以找到负责某行的region. </p>
 <h2 id="HBase和MapReduce">HBase和MapReduce</h2>
 <h2 id="信息汇总">信息汇总</h2>
 <h2 id="大规模条件下的可用性和可靠性">大规模条件下的可用性和可靠性</h2>
@@ -279,6 +298,9 @@ usersTable.close();
 <li>每个单元存储多少个时间版本</li>
 <li>行键的结构是什么？应该包含什么信息</li>
 </ul>
+<h3 id="问题建模">问题建模</h3>
+<p>一个列族的所有列在硬盘上存放在一起，使用这种特性把不同访问模式的列放在不同列族中，以便隔离他们。</p>
+<p>提前多做准备工作总是有好处的</p>
 <h1 id="5-_使用协处理器扩展HBase">5. 使用协处理器扩展HBase</h1>
 <h1 id="6-_其他HBase客户端选择">6. 其他HBase客户端选择</h1>
 <h1 id="7-_通过实例学习HBase:_OpenTSDB">7. 通过实例学习HBase: OpenTSDB</h1>
@@ -299,6 +321,15 @@ usersTable.close();
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/02/17/node即学即用/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          node即学即用
+        
+      </div>
+    </a>
   
   
     <a href="/2015/02/07/hadoop权威指南/" id="article-nav-older" class="article-nav-link-wrap">
@@ -321,7 +352,7 @@ usersTable.close();
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -330,7 +361,7 @@ usersTable.close();
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -342,6 +373,14 @@ usersTable.close();
       <ul>
         
           <li>
+            <a href="/2015/02/18/javascript权威指南/">javascript权威指南</a>
+          </li>
+        
+          <li>
+            <a href="/2015/02/17/node即学即用/">node即学即用</a>
+          </li>
+        
+          <li>
             <a href="/2015/02/08/hbase实战/">hbase实战</a>
           </li>
         
@@ -351,14 +390,6 @@ usersTable.close();
         
           <li>
             <a href="/2015/01/19/Ice协议/">Ice协议</a>
-          </li>
-        
-          <li>
-            <a href="/2014/12/02/Spring3-0就这么简单/">Spring3.0就这么简单</a>
-          </li>
-        
-          <li>
-            <a href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
           </li>
         
       </ul>
