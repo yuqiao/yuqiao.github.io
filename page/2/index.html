@@ -69,6 +69,152 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Git子模块" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/29/Git子模块/" class="article-date">
+  <time datetime="2014-10-29T01:46:39.000Z" itemprop="datePublished">10月 29 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/29/Git子模块/">Git子模块</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://git-scm.com/book/zh/v1/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97" target="_blank" rel="external">参考</a></p>
+<h1 id="子模块">子模块</h1>
+<p>经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。</p>
+<p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
+<h1 id="初步">初步</h1>
+<ol>
+<li><p>添加子模块。 通过git submodule add将外部项目加为子模块:</p>
+<pre><code> $ git submodule add git:<span class="comment">//github.com/chneukirchen/rack.git rack</span>
+ Initialized empty Git repository <span class="keyword">in</span> /opt/subtest/rack/.git/
+ remote: Counting objects: <span class="number">3181</span>, <span class="keyword">done</span>.
+ remote: Compressing objects: <span class="number">100</span>% (<span class="number">1534</span>/<span class="number">1534</span>), <span class="keyword">done</span>.
+ remote: Total <span class="number">3181</span> (delta <span class="number">1951</span>), reused <span class="number">2623</span> (delta <span class="number">1603</span>)
+ Receiving objects: <span class="number">100</span>% (<span class="number">3181</span>/<span class="number">3181</span>), <span class="number">675.42</span> KiB | <span class="number">422</span> KiB/s, <span class="keyword">done</span>.
+ Resolving deltas: <span class="number">100</span>% (<span class="number">1951</span>/<span class="number">1951</span>), <span class="keyword">done</span>.
+</code></pre></li>
+</ol>
+<p>加入子模块后，运行git status, 会看到以下两项。</p>
+<pre><code>$ git status
+<span class="preprocessor"># On branch master</span>
+<span class="preprocessor"># Changes to be committed:</span>
+<span class="preprocessor">#   (use "git reset HEAD &lt;file&gt;..." to unstage)</span>
+<span class="preprocessor">#</span>
+<span class="preprocessor">#      new file:   .gitmodules</span>
+<span class="preprocessor">#      new file:   rack</span>
+<span class="preprocessor">#</span>
+</code></pre><p>会生成一个.gitmodules文件。这是一个配置文件，保存了项目 URL 和你拉取到的本地子目录。</p>
+<p>这个文件跟其他文件一样也是处于版本控制之下的，就像你的.gitignore文件一样。它跟项目里的其他文件一样可以被推送和拉取。这是其他克隆此项目的人获知子模块项目来源的途径。</p>
+<p>在看文件rack:</p>
+<pre><code>$ git diff <span class="comment">--cached rack</span>
+diff <span class="comment">--git a/rack b/rack</span>
+<span class="built_in">new</span> <span class="built_in">file</span> mode <span class="number">160000</span>
+index <span class="number">0000000.</span><span class="number">.08</span>d709f
+<span class="comment">--- /dev/null</span>
++++ b/rack
+@@ -<span class="number">0</span>,<span class="number">0</span> +<span class="number">1</span> @@
++Subproject commit <span class="number">08</span>d709f78b8c5b0fbeb7821e37fa53e69afcf433
+</code></pre><p>尽管rack是你工作目录里的子目录，但 Git 把它视作一个子模块，当你不在那个目录里时并不记录它的内容。取而代之的是，Git 将它记录成来自那个仓库的一个特殊的提交。当你在那个子目录里修改并提交时，子项目会通知那里的 HEAD 已经发生变更并记录你当前正在工作的那个提交；通过那样的方法，当其他人克隆此项目，他们可以重新创建一致的环境。</p>
+<p>这是关于子模块的重要一点：你记录他们当前确切所处的提交。你不能记录一个子模块的master或者其他的符号引用。</p>
+<ol>
+<li><p>克隆一个带子模块的项目<br>这里你将克隆一个带子模块的项目。当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件：</p>
+<p> $ git clone git://github.com/schacon/myproject.git<br> Initialized empty Git repository in /opt/myproject/.git/<br> remote: Counting objects: 6, done.<br> remote: Compressing objects: 100% (4/4), done.<br> remote: Total 6 (delta 0), reused 0 (delta 0)<br> Receiving objects: 100% (6/6), done.<br> $ cd myproject<br> $ ls -l<br> total 8<br> -rw-r—r—  1 schacon  admin   3 Apr  9 09:11 README<br> drwxr-xr-x  2 schacon  admin  68 Apr  9 09:11 rack<br> $ ls rack/<br> $</p>
+</li>
+</ol>
+<p>rack目录存在了，但是是空的。你必须运行两个命令：git submodule init来初始化你的本地配置文件，git submodule update来从那个项目拉取所有数据并检出你上层项目里所列的合适的提交</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/10/29/Git子模块/" data-id="zuzr02a3ba2shyf2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Understanding-the-JVM" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/29/Understanding-the-JVM/" class="article-date">
+  <time datetime="2014-10-29T01:07:36.000Z" itemprop="datePublished">10月 29 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/29/Understanding-the-JVM/">Understanding the JVM</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_走进Java">1. 走进Java</h1>
+<p><img src="/img/jdk7.png" alt="java技术体系"></p>
+<h1 id="2-_Java内存区域与内存溢出异常">2. Java内存区域与内存溢出异常</h1>
+<h2 id="运行时数据区域">运行时数据区域</h2>
+<ol>
+<li>程序计数器: 当前线程所执行的字节码的行号指示器。</li>
+<li>Java虚拟机栈：存储局部变量表，操作数栈，动态链接，方法出口等信息</li>
+<li>本地方法栈。</li>
+<li>Java堆: 存放对象实例</li>
+<li>方法区: 各个线程共享的内存区域，用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器编译后的代码等数据。</li>
+<li>运行时常量池：是方法区的一部分。</li>
+<li>直接内存</li>
+</ol>
+<h2 id="HotSpot虚拟机对象探秘">HotSpot虚拟机对象探秘</h2>
+<h3 id="对象的创建">对象的创建</h3>
+<h1 id="3-_垃圾收集器与内存分配策略">3. 垃圾收集器与内存分配策略</h1>
+<h1 id="4-_虚拟机性能监控与故障处理工具">4. 虚拟机性能监控与故障处理工具</h1>
+<h1 id="5-_调优案例分析与实战">5. 调优案例分析与实战</h1>
+<h1 id="6-_类文件结构">6. 类文件结构</h1>
+<h1 id="7-_虚拟机加载机制">7. 虚拟机加载机制</h1>
+<h1 id="8-_虚拟机字节码执行引擎">8. 虚拟机字节码执行引擎</h1>
+<h1 id="9-_类加载及执行子系统的案例与实战">9. 类加载及执行子系统的案例与实战</h1>
+<h1 id="10-_早期（编译期）优化">10. 早期（编译期）优化</h1>
+<h1 id="11-_晚期（运行期）优化">11. 晚期（运行期）优化</h1>
+<h1 id="12-_java内存模型与线程">12. java内存模型与线程</h1>
+<h1 id="13-_线程安全与锁优化">13. 线程安全与锁优化</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/10/29/Understanding-the-JVM/" data-id="bnh0d21ucjrmas8m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/28/hello-world/" class="article-date">
@@ -335,7 +481,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -344,7 +490,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -356,6 +502,14 @@
       <ul>
         
           <li>
+            <a href="/2015/02/27/p专业主义/">专业主义</a>
+          </li>
+        
+          <li>
+            <a href="/2015/02/27/java核心技术/">java核心技术</a>
+          </li>
+        
+          <li>
             <a href="/2015/02/18/javascript权威指南/">javascript权威指南</a>
           </li>
         
@@ -365,14 +519,6 @@
         
           <li>
             <a href="/2015/02/08/hbase实战/">hbase实战</a>
-          </li>
-        
-          <li>
-            <a href="/2015/02/07/hadoop权威指南/">hadoop权威指南</a>
-          </li>
-        
-          <li>
-            <a href="/2015/01/19/Ice协议/">Ice协议</a>
           </li>
         
       </ul>
