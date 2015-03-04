@@ -168,6 +168,38 @@ Hadoop">
 <h2 id="使用Hadoop分析数据">使用Hadoop分析数据</h2>
 <h3 id="map阶段和reduce阶段">map阶段和reduce阶段</h3>
 <h3 id="Java_MapReduce">Java MapReduce</h3>
+<p>需要三样东西:</p>
+<ul>
+<li>map函数</li>
+<li>reduce函数</li>
+<li>用了运行作业的代码</li>
+</ul>
+<p>Mapper:</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MaxTemperatureMapper</span> <span class="keyword">extends</span> <span class="title">MapReduceBase</span> 
+    <span class="keyword">implements</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">Text</span>, <span class="title">IntWritable</span>&gt; </span>{
+
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> inst MISSING = <span class="number">9999</span>;
+
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">map</span>(LongWritable key, Text value, OutputCollector&lt;Text, IntWritable&gt; output,
+        Reporter reporter) <span class="keyword">throws</span> IOException {
+
+        String line = value.toString();
+        String year = line.substring(<span class="number">15</span>,<span class="number">19</span>);
+        <span class="keyword">int</span> airTemperature;
+
+        <span class="keyword">if</span>(line.charAt(<span class="number">87</span>) == <span class="string">'+'</span>){
+            airTemperature = Integer.parseInt(line.substring(<span class="number">88</span>,<span class="number">92</span>);
+        }<span class="keyword">else</span>{
+            airTemperature = Integer.parseInt(line.substring(<span class="number">87</span>,<span class="number">92</span>);
+        }
+        String quality = liine.substring(<span class="number">92</span>,<span class="number">93</span>);
+        <span class="keyword">if</span>(airTemperature != MISSING &amp;&amp; quality.matches(<span class="string">"[01459]"</span>)){
+            output.collect(<span class="keyword">new</span> Text(year), <span class="keyword">new</span> IntWritable(airTemperature));
+        }
+    }
+}
+</code></pre><p>Reducer:</p>
+<p>public class MaxTemperatureReducer extends MapReduceBase<br>    implements Reducer<text, intwritable=""> output, Reporter reporter)</text,></p>
 <h2 id="横向扩展">横向扩展</h2>
 <h2 id="Hadoop的Steaming">Hadoop的Steaming</h2>
 <h2 id="Hadoop的Pipes">Hadoop的Pipes</h2>
@@ -230,7 +262,7 @@ Hadoop">
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -239,7 +271,7 @@ Hadoop">
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -249,6 +281,10 @@ Hadoop">
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/03/04/如何记笔记/">如何记笔记</a>
+          </li>
         
           <li>
             <a href="/2015/02/27/p专业主义/">专业主义</a>
@@ -264,10 +300,6 @@ Hadoop">
         
           <li>
             <a href="/2015/02/17/node即学即用/">node即学即用</a>
-          </li>
-        
-          <li>
-            <a href="/2015/02/08/hbase实战/">hbase实战</a>
           </li>
         
       </ul>
