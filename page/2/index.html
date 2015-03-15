@@ -69,6 +69,1271 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-node即学即用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/17/node即学即用/" class="article-date">
+  <time datetime="2015-02-17T14:06:27.000Z" itemprop="datePublished">2月 17 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/17/node即学即用/">node即学即用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言">前言</h1>
+<p>本书目标：了解Node平台本身，还能掌握Node为快速高效地构建高扩展性网站和服务提供多个重要模块。</p>
+<h1 id="1-_Node-js简介">1. Node.js简介</h1>
+<p>Node的特性： </p>
+<ul>
+<li>对高性能的追求</li>
+<li>利用了Javascript的事件驱动(Event-driven)特性。 采用了事件驱动(event loop)架构，让开发高效的服务端程序变得简单和安全。</li>
+<li>提供了一系列“非阻塞”函数库来支持事件循环特性：把文件系统和数据库操作封装成事件驱动形式的函数接口</li>
+<li>能在服务端运行Javascript.</li>
+<li>开发者很容易为其扩展新的库。</li>
+</ul>
+<h2 id="写代码">写代码</h2>
+<h3 id="Node_REPL">Node REPL</h3>
+<h3 id="编写首个服务器程序">编写首个服务器程序</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var <span class="keyword">http</span> = <span class="built_in">require</span>(<span class="string">'http'</span>)</div><div class="line"><span class="keyword">http</span>.createServer(<span class="function"><span class="keyword">function</span> (<span class="title">req</span>, <span class="title">res</span>){</span></div><div class="line">    res.writeHead(<span class="number">200</span>, {<span class="string">'Content-Type'</span>: <span class="string">'text/plain'</span>})</div><div class="line">    res.<span class="keyword">end</span>(<span class="string">'Hello, node\n'</span>)</div><div class="line">}).listen(<span class="number">8124</span>, <span class="string">'127.0.0.1'</span>)</div><div class="line"></div><div class="line">console.<span class="built_in">log</span>(<span class="string">'Server running at http://127.0.0.1:8124'</span>)</div></pre></td></tr></table></figure>
+
+<h2 id="为何选用Node">为何选用Node</h2>
+<h3 id="高性能Web服务器">高性能Web服务器</h3>
+<h1 id="2-_编写有趣的应用">2. 编写有趣的应用</h1>
+<h2 id="创建一个聊天服务器">创建一个聊天服务器</h2>
+<p>需要在Node中包含TCP模块，创建一个新的TCP服务器:</p>
+<pre><code><span class="keyword">var</span> net = <span class="built_in">require</span>(<span class="string">'net'</span>)
+
+<span class="keyword">var</span> chatServer = net.createServer()
+
+chatServer.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span><span class="params">(client)</span> </span>{
+    client.write(<span class="string">'Hi!\n'</span>)
+    client.write(<span class="string">'Bye!\n'</span>)
+    client.end()
+})
+
+chatServer.listen(<span class="number">9000</span>)
+</code></pre><p>使用telnet连接服务器测试： telnet 127.0.0.1 9000</p>
+<p>首先需要手动客户端发送的消息：</p>
+<pre><code><span class="keyword">var</span> net = <span class="built_in">require</span>(<span class="string">'net'</span>)
+
+<span class="keyword">var</span> chatServer = net.createServer()
+
+chatServer.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span><span class="params">(client)</span> </span>{
+    client.write(<span class="string">'Hi!\n'</span>)
+    client.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span><span class="params">(data)</span></span>{
+        <span class="built_in">console</span>.log(data)
+    })
+})
+
+chatServer.listen(<span class="number">9000</span>)
+</code></pre><p>这里添加了另外一个事件监听器，调用的是client.on().</p>
+<p>Javascript无法很好处理二进制数据,所以Node特地增加了一个Buffer库来帮助服务器。</p>
+<p>目前他只能和一个客户端通信，我们需要照顾到所有客户端。为此创建一个列表:</p>
+<pre><code><span class="keyword">var</span> net = <span class="built_in">require</span>(<span class="string">'net'</span>)
+
+<span class="keyword">var</span> chatServer = net.createServer(),
+    clientList = []
+
+chatServer.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span><span class="params">(client)</span> </span>{
+    client.name = client.remoteAddress + <span class="string">':'</span> + client.remotePort
+    client.write(<span class="string">'Hi '</span> + client.name + <span class="string">'!\n'</span>);
+    clientList.push(client)
+    client.on(<span class="string">'data'</span>,<span class="function"><span class="keyword">function</span><span class="params">(data)</span></span>{
+        broadcast(data, client)
+    })
+})
+
+<span class="function"><span class="keyword">function</span> <span class="title">broadcast</span><span class="params">(message, client)</span></span>{
+    <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;clientList.length;i+=<span class="number">1</span>){
+        <span class="keyword">if</span>(client != clientList[i]){
+            clientList[i].write(client.name + <span class="string">" says "</span> + message)
+        }
+    }
+}
+
+chatServer.listen(<span class="number">9000</span>)
+</code></pre><p>在connection事件监听器上为每个client对象增加name属性。</p>
+<p>但这个服务器有个致命缺陷：若一个客户端断开了，服务器会出大问题。<br>对已经关闭的socket进行write操作时，Node程序会抛出异常。</p>
+<p>把聊天服务器改造得更加健壮:</p>
+<pre><code>chatServer.on(<span class="string">'connection'</span>, function(<span class="keyword">client</span>){
+    <span class="keyword">client</span>.name = <span class="keyword">client</span>.remoteAddress + <span class="string">':'</span> + <span class="keyword">client</span>.remotePort
+    <span class="keyword">client</span>.write(<span class="string">'Hi '</span> + <span class="keyword">client</span>.name + <span class="string">'!\n'</span>);
+    clientList.push(<span class="keyword">client</span>)
+    <span class="keyword">client</span>.on(<span class="string">'data'</span>,function(data){
+        broadcast(data, <span class="keyword">client</span>)
+    })
+    <span class="keyword">client</span>.on(<span class="string">'end'</span>,function(){
+        clientList.splice(clientList.indexOf(<span class="keyword">client</span>),<span class="number">1</span>)
+    })
+})
+</code></pre><p>一个socket锻炼连接时会触发end事件，表示它要关闭。</p>
+<p>可以做得更加保险：</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">broadcast</span><span class="params">(message, client)</span></span>{
+    <span class="keyword">var</span> cleanup = []
+    <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;clientList.length;i+=<span class="number">1</span>){
+        <span class="keyword">if</span>(client != clientList[i]){
+            <span class="keyword">if</span>(clientList[i].writable){
+                clientList[i].write(client.name + <span class="string">" says "</span> + message)
+            }<span class="keyword">else</span>{
+                cleanup.push(clientList[i])
+                clientList[i].destroy()
+            }
+        }
+    }
+    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;cleanup.length;i+=<span class="number">1</span>){
+        clientList.splice(clientList.indexOf(cleanup[i]),<span class="number">1</span>)
+    }
+}
+</code></pre><h2 id="也编写个twitter">也编写个twitter</h2>
+<ol>
+<li>需要安装express模块，为现有的http服务器添加了更多的扩展，使开发Web应用更加简单： npm install express</li>
+</ol>
+<p>基本web服务器：</p>
+<pre><code><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)
+<span class="keyword">var</span> app = express.createServer()
+app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span><span class="params">(req,res)</span></span>{
+    res.send(<span class="string">'Welcome to Node Twitter'</span>)
+})
+
+app.listen(<span class="number">8000</span>)
+</code></pre><p>添加基础API:</p>
+<pre><code><span class="keyword">var</span> express = require(<span class="string">'express'</span>)
+<span class="keyword">var</span> app = express.createServer()
+app.listen(<span class="number">8000</span>)
+
+<span class="keyword">var</span> tweets = []
+app.<span class="keyword">get</span>(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span><span class="params">(req,res)</span></span>{
+    res.send(<span class="string">'Welcome to Node Twitter'</span>)
+})
+
+app.post(<span class="string">'/send'</span>, express.bodyParser(), <span class="function"><span class="keyword">function</span><span class="params">(req,res)</span></span>{
+    <span class="keyword">if</span>(req.body &amp;&amp; req.body.tweet){
+        tweets.push(req.body.tweet)
+        res.send({status:<span class="string">"ok"</span>, message:<span class="string">"Tweet received"</span>})
+    }<span class="keyword">else</span>{
+        res.send({status:<span class="string">"nok"</span>, message:<span class="string">"no tweet recevied"</span>})
+    }
+})
+
+app.<span class="keyword">get</span>(<span class="string">'/tweets'</span>, <span class="function"><span class="keyword">function</span><span class="params">(req,res)</span></span>{
+    res.send(tweets)
+})
+</code></pre><h1 id="3-_编写健壮的Node程序">3. 编写健壮的Node程序</h1>
+<h1 id="4-_核心API">4. 核心API</h1>
+<h1 id="5-_工具类API">5. 工具类API</h1>
+<h1 id="6-_数据访问">6. 数据访问</h1>
+<h1 id="7-_重要的外部模块">7. 重要的外部模块</h1>
+<h1 id="8-_扩展Node">8. 扩展Node</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/02/17/node即学即用/" data-id="xudy9fv1k37sr358" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node/">node</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hbase实战" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/08/hbase实战/" class="article-date">
+  <time datetime="2015-02-08T12:59:57.000Z" itemprop="datePublished">2月 8 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/08/hbase实战/">hbase实战</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>源码: <a href="https://github.com/HBaseinaction" target="_blank" rel="external">https://github.com/HBaseinaction</a></p>
+<h1 id="1-_HBase介绍">1. HBase介绍</h1>
+<p>HBase是一种数据库。一种稀疏的，分布式的，持久化的，多维有序映射，基于行键(rowkey), 列键(column key)和时间戳(timestamp)建立索引。</p>
+<p>HBase邮件列表：<a href="http://HBase.apache.org/mail-lists.html" target="_blank" rel="external">http://HBase.apache.org/mail-lists.html</a><br>JIRA网站： <a href="http://issues.apache.org/jira/browse/HBASE" target="_blank" rel="external">http://issues.apache.org/jira/browse/HBASE</a></p>
+<h2 id="Hbase使用场景和成功案例">Hbase使用场景和成功案例</h2>
+<h3 id="典型的互联网搜索问题">典型的互联网搜索问题</h3>
+<h3 id="抓取增量数据">抓取增量数据</h3>
+<ul>
+<li>抓取监控指标：OpenTSDB</li>
+<li>抓取用户交互数据: Facebook和StumbleUpon</li>
+<li>遥测技术: Mozilla和Trend Micro</li>
+<li>广告效果和点击流</li>
+</ul>
+<h3 id="内容服务">内容服务</h3>
+<p>Twitter帖子, Facebook帖子，Instagram帖子和微博。</p>
+<ul>
+<li>Url短链接: StumbleUpon</li>
+<li>用户模型服务: Runa用户模型服务</li>
+</ul>
+<h3 id="信息交换">信息交换</h3>
+<p>Facebook的短信系统。 用户读写的所有短信都存在HBase列。 </p>
+<p>Facebook短信系统要求: 高的写吞吐量，计数器吞吐量，自动分库</p>
+<p>参考： </p>
+<ul>
+<li><a href="https://www.facebook.com/note.php?note_id=454991608919" target="_blank" rel="external">https://www.facebook.com/note.php?note_id=454991608919</a></li>
+<li>“Hadoop goes realtime at Facebook” <a href="http://borthakur.com/ftp/RealtimeHadoopSigmod2011.pdf" target="_blank" rel="external">http://borthakur.com/ftp/RealtimeHadoopSigmod2011.pdf</a></li>
+</ul>
+<h2 id="你好HBase">你好HBase</h2>
+<p>Hbase搭建在Apache Hadoop和Apache ZooKeeper上面，用java编写的。 可运行在3种模式：单机， 伪分布式和全分布式。</p>
+<h3 id="快速安装">快速安装</h3>
+<ol>
+<li>下载。 <a href="http://hbase.apache.org/" target="_blank" rel="external">http://hbase.apache.org/</a></li>
+<li>export HBASE_HOME=</li>
+<li>$HBASE_HOME/bin/start-hbase.sh </li>
+<li>默认写数据在/tmp下. 可写配置/etc/hbase/conf/hbase-site.xml</li>
+<li>后台简易页面。  <a href="http://localhost:60010" target="_blank" rel="external">http://localhost:60010</a></li>
+</ol>
+<h3 id="命令行交互">命令行交互</h3>
+<pre><code><span class="variable">$ </span>hbase shell                                                                                                                             <span class="number">13</span><span class="symbol">:</span><span class="number">24</span><span class="symbol">:</span><span class="number">45</span>
+<span class="constant">HBase</span> <span class="constant">Shell</span>; enter <span class="string">'help&lt;RETURN&gt;'</span> <span class="keyword">for</span> list of supported commands.
+<span class="constant">Type</span> <span class="string">"exit&lt;RETURN&gt;"</span> to leave the <span class="constant">HBase</span> <span class="constant">Shell</span>
+<span class="input"><span class="prompt">Version 0.98.10-hadoop2, rb18bc4b06f3eb90f592c906e78fb6461548ae627, Sun Feb  1 05:48:33 UTC 2015
+
+hbase(main):001:0&gt;</span> list</span>
+<span class="constant">TABLE</span>
+<span class="number">2015</span>-<span class="number">02</span>-09 <span class="number">13</span><span class="symbol">:</span><span class="number">25</span><span class="symbol">:</span><span class="number">04</span>,<span class="number">209</span> <span class="constant">WARN</span>  [main] util.<span class="constant">NativeCodeLoader</span><span class="symbol">:</span> <span class="constant">Unable</span> to load native-hadoop library <span class="keyword">for</span> your platform... using builtin-java classes where applicable
+<span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">5500</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> []</span>
+<span class="input"><span class="prompt">hbase(main):002:0&gt;</span> create <span class="string">'mytable'</span>, <span class="string">'cf'</span></span>
+<span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">2180</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> <span class="constant">Hbase::Table</span> - mytable</span>
+<span class="input"><span class="prompt">hbase(main):003:0&gt;</span> list</span>
+<span class="constant">TABLE</span>
+mytable
+<span class="number">1</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">00</span>8<span class="number">0</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> [<span class="string">"mytable"</span>]</span>
+<span class="input"><span class="prompt">hbase(main):004:0&gt;</span> put <span class="string">'mytable'</span>, <span class="string">'first'</span>, <span class="string">'cf:message'</span>, <span class="string">'hello HBase'</span></span>
+<span class="input"><span class="prompt">0 row(s) in 0.0770 seconds
+
+hbase(main):005:0&gt;</span> put <span class="string">'mytable'</span>, <span class="string">'second'</span>, <span class="string">'cf:foo'</span>, <span class="number">0x0</span></span>
+<span class="input"><span class="prompt">0 row(s) in 0.0120 seconds
+
+hbase(main):006:0&gt;</span> put <span class="string">'mytable'</span>, <span class="string">'third'</span>, <span class="string">'cf:bar'</span>, <span class="number">3.14159</span></span>
+<span class="input"><span class="prompt">0 row(s) in 0.0090 seconds
+
+hbase(main):007:0&gt;</span> get <span class="string">'mytable'</span>, <span class="string">'first'</span></span>
+<span class="constant">COLUMN</span>                                        <span class="constant">CELL</span>
+<span class="symbol">cf:</span>message                                   timestamp=<span class="number">1423459575172</span>, value=hello <span class="constant">HBase</span>
+<span class="input"><span class="prompt">1 row(s) in 0.0180 seconds
+
+hbase(main):008:0&gt;</span> scan <span class="string">'mytable'</span></span>
+<span class="constant">ROW</span>                                           <span class="constant">COLUMN</span>+<span class="constant">CELL</span>
+first                                        column=<span class="symbol">cf:</span>message, timestamp=<span class="number">1423459575172</span>, value=hello <span class="constant">HBase</span>
+second                                       column=<span class="symbol">cf:</span>foo, timestamp=<span class="number">1423459599179</span>, value=<span class="number">0</span>
+third                                        column=<span class="symbol">cf:</span>bar, timestamp=<span class="number">1423459615603</span>, value=<span class="number">3.14159</span>
+<span class="input"><span class="prompt">3 row(s) in 0.0160 seconds
+
+hbase(main):009:0&gt;</span> quit    </span>
+</code></pre><h1 id="2-_入门">2. 入门</h1>
+<p>本章目标:</p>
+<ul>
+<li>学习HBase的逻辑数据模型(logical data model)</li>
+<li>如何进行HBase模式(Schema)设计</li>
+</ul>
+<p>代码参考:  <a href="https://github.com/hbaseinaction/twitbase" target="_blank" rel="external">https://github.com/hbaseinaction/twitbase</a></p>
+<h2 id="从头开始">从头开始</h2>
+<p>TwitBase存储3种简单的核心数据元素: 用户(user), 推贴(twit)和关系(relationship).</p>
+<h3 id="创建表">创建表</h3>
+<pre><code><span class="input"><span class="prompt">hbase(main):002:0&gt;</span> create <span class="string">'users'</span>, <span class="string">'info'</span></span>
+<span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">10.2700</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> <span class="constant">Hbase::Table</span> - users</span>
+<span class="input"><span class="prompt">hbase(main):003:0&gt;</span> list</span>
+<span class="constant">TABLE</span>
+mytable
+users
+<span class="number">2</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">0040</span> seconds
+<span class="output"><span class="status">
+=&gt;</span> [<span class="string">"mytable"</span>, <span class="string">"users"</span>]</span>
+<span class="input"><span class="prompt">hbase(main):004:0&gt;</span> describe <span class="string">'users'</span></span>
+<span class="constant">Table</span> users is <span class="constant">ENABLED</span>
+users
+<span class="constant">COLUMN</span> <span class="constant">FAMILIES</span> <span class="constant">DESCRIPTION</span>
+{<span class="constant">NAME</span> =&gt; <span class="string">'info'</span>, <span class="constant">BLOOMFILTER</span> =&gt; <span class="string">'ROW'</span>, <span class="constant">VERSIONS</span> =&gt; <span class="string">'1'</span>, <span class="constant">IN_MEMORY</span> =&gt; <span class="string">'false'</span>, <span class="constant">KEEP_DELETED_CELLS</span> =&gt; <span class="string">'FALSE'</span>, <span class="constant">DATA_BLOCK_ENCODING</span> =&gt; <span class="string">'NONE'</span>, <span class="constant">TTL</span> =&gt; <span class="string">'FOREVER'</span>, <span class="constant">COMPRESSION</span> =&gt; <span class="string">'NONE
+'</span>, <span class="constant">MIN_VERSIONS</span> =&gt; <span class="string">'0'</span>, <span class="constant">BLOCKCACHE</span> =&gt; <span class="string">'true'</span>, <span class="constant">BLOCKSIZE</span> =&gt; <span class="string">'65536'</span>, <span class="constant">REPLICATION_SCOPE</span> =&gt; <span class="string">'0'</span>}
+<span class="number">1</span> row(s) <span class="keyword">in</span> <span class="number">0</span>.<span class="number">0350</span> seconds
+</code></pre><h3 id="建立连接">建立连接</h3>
+<pre><code>Configuration myConf = HBaseConfiguration.create();
+myConf.<span class="keyword">set</span>(<span class="string">"hbase.zookeeper.quorum"</span>, <span class="string">"serverip"</span>);
+HTableInterface usersTable = <span class="keyword">new</span> HTable(myConf, <span class="string">"users"</span>);
+</code></pre><h3 id="连接管理">连接管理</h3>
+<p>创建一个表实例是个开销很大的操作， 需要占用一些网络资源。使用连接池更好一些，使用HTablePool比直接使用HTable更常见：</p>
+<pre><code>HTablePool pool = new HTablePool();
+HTableInterface usersTabel = pool.getTable(<span class="string">"users"</span>);
+<span class="keyword">...</span> //work withe the table
+usersTable.close();
+</code></pre><p>当你完成工作表时，连接资源会返回到连接池里。</p>
+<h2 id="数据操作">数据操作</h2>
+<p>行键(rowkey): Hbase的行唯一标识符。<br>HBase Api有5个基本命令: Get, Put, Delete, Scan和Increment.</p>
+<h3 id="Hbase写路径">Hbase写路径</h3>
+<p>在Hbase中，无论是增加新行还是修改已有行，内部流程都是相同的。 Hbase接到命令后存入变化信息，或者写入失败抛出异常。</p>
+<p>默认，执行写入时写到两个地方: 预写式日志（write-ahead log, WAL) 和MemStore. 以保证数据持久化。两个地方信息都写入并确认后，才认为写动作完成。</p>
+<p>MemStore是内存里的写入缓冲区，HBase中数据在永久写入之前都在这里累积。当MemStore填满后，其中的数据会刷写到硬盘，生成一个HFile.</p>
+<p>HFile是Hbase使用的底层存储格式。Hfile对应列族，一个列族可以有多个HFile，但一个HFile不能存多个列族的数据。<br>在集群的每个节点上， 每个列族有一个MemStore.</p>
+<p>大型分布式系统中硬件故障很常见，HBase也不例外。若MemStore还没有刷写，服务器就崩溃了， 内存没有写入硬盘的数据就会丢失。<br>使用WAL恢复。</p>
+<p>// 待补</p>
+<h3 id="Hbase读路径">Hbase读路径</h3>
+<p>想快速访问数据，通用的原则是数据保持有序并尽可能保存在内存里。</p>
+<p>Hbase实现了这两个目标， 大多情况下读操作可以做到毫秒级。</p>
+<p>BlockCache是优化HBase性能的一个重要部分。</p>
+<p>首先检查MemStore, 然后检查BlockCache, 最后访问硬盘上的HFile.</p>
+<h3 id="合并:_HBase的后台工作">合并: HBase的后台工作</h3>
+<p>Delete命令并不立即删除内容，只是打上删除的标记。因为HFile是不能改变的，直到执行一次大合并(major compaction), 这时被删除记录占用的空间才会释放。</p>
+<p>合并分为两种：大合并()和小合并().</p>
+<p>小合并把多个小HFile合并生成一个大HFile. 因为读出一个完整的行可能引用很多文件，限制HFile的数量对于读性能很重要。</p>
+<p>大合并将处理给定region的一个列族的所有HFile.</p>
+<p>参考: “Visualizing HBase Flushes and Compactions” Bruno Dumon.</p>
+<h3 id="有时间版本的数据">有时间版本的数据</h3>
+<p>HBase默认只存储3个版本，可以基于列族设置。</p>
+<h3 id="数据模型概括">数据模型概括</h3>
+<p>逻辑实体如下：</p>
+<ul>
+<li>表</li>
+<li>行</li>
+<li>列族</li>
+<li>列限定符</li>
+<li>单元</li>
+<li>时间版本</li>
+</ul>
+<h2 id="数据坐标">数据坐标</h2>
+<p>HBase使用的坐标依次是: 行键，列族，列限定符，时间版本。 4个坐标</p>
+<h2 id="数据模型">数据模型</h2>
+<p>半结构化数据。</p>
+<p>HBase的半结构化逻辑模型里数据构成是松耦合的，这一点有利于物理分散存储。<br>当然也导致HBase不能实施关系约束(constraint)并不支持多行事务(multirow transaction).</p>
+<h1 id="3-_分布式的HBase,HDFS和MapReduce">3. 分布式的HBase,HDFS和MapReduce</h1>
+<p>HBase在两方面依赖Hadoop.</p>
+<ol>
+<li>Hadoop MapReduce提供了分布式计算框架，支持高吞吐量数据访问。</li>
+<li>HDFS作为HBase的存储层，支持可用性(availability)和可靠性(reliability).</li>
+</ol>
+<h2 id="一个MapReduce的例子">一个MapReduce的例子</h2>
+<h2 id="MapReduce概览">MapReduce概览</h2>
+<ul>
+<li>拆解。 hadoop只能以行为单位拆解</li>
+<li>map阶段处理</li>
+<li>洗牌阶段(shuffle step)</li>
+<li>排序阶段(sort step)</li>
+<li>聚合工作·</li>
+</ul>
+<h3 id="MapReduce内部处理">MapReduce内部处理</h3>
+<ul>
+<li>JobTracker进程扮演着应用监管的角色，负责管理集群上运行的MapReduce应用。作业提交给JobTracker来执行，管理分配工作负载。</li>
+<li>Map阶段和Reduce阶段定义的工作由另一个TaskTracker的进程来执行</li>
+</ul>
+<h2 id="分布式模式的HBase">分布式模式的HBase</h2>
+<p>Hbse中的表由行和列组成的。</p>
+<p>表会切分小一点儿的数据单位(Region), 然后分配到多台服务器上。</p>
+<p>托管region的服务器叫做RegionServer.</p>
+<p>RegionServer和HDFS DataNode典型情况下并列配置在同一物理硬件上。<br>RegionServer本质上是HDFS客户端，在上面存储和访问数据。 主(master)进程分配region给RegionServer.<br>每个RegionServer一般托管多个region.</p>
+<h3 id="如何找到Region">如何找到Region</h3>
+<p>HBase有两个特殊的表：-Root-和.META.</p>
+<p>当客户端要访问某行时，先找到-ROOT-表，查找上面地方可以找到负责某行的region. </p>
+<h2 id="HBase和MapReduce">HBase和MapReduce</h2>
+<h2 id="信息汇总">信息汇总</h2>
+<h2 id="大规模条件下的可用性和可靠性">大规模条件下的可用性和可靠性</h2>
+<h1 id="4-_HBase表设计">4. HBase表设计</h1>
+<h2 id="如何开始模式(schema)设计">如何开始模式(schema)设计</h2>
+<p>考虑以下问题:</p>
+<ul>
+<li>表应该有多少个列族</li>
+<li>列族使用什么数据</li>
+<li>每个列族应该有多少列</li>
+<li>列名是什么？</li>
+<li>单元存放什么数据</li>
+<li>每个单元存储多少个时间版本</li>
+<li>行键的结构是什么？应该包含什么信息</li>
+</ul>
+<h3 id="问题建模">问题建模</h3>
+<p>一个列族的所有列在硬盘上存放在一起，使用这种特性把不同访问模式的列放在不同列族中，以便隔离他们。</p>
+<p>提前多做准备工作总是有好处的</p>
+<h1 id="5-_使用协处理器扩展HBase">5. 使用协处理器扩展HBase</h1>
+<h1 id="6-_其他HBase客户端选择">6. 其他HBase客户端选择</h1>
+<h1 id="7-_通过实例学习HBase:_OpenTSDB">7. 通过实例学习HBase: OpenTSDB</h1>
+<h1 id="8-_在HBase上查询地理信息系统">8. 在HBase上查询地理信息系统</h1>
+<h1 id="9-_部署HBase">9. 部署HBase</h1>
+<h1 id="10-_运维">10. 运维</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/02/08/hbase实战/" data-id="6x2xv8qg5o07bomx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hadoop权威指南" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/07/hadoop权威指南/" class="article-date">
+  <time datetime="2015-02-07T12:20:54.000Z" itemprop="datePublished">2月 7 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/07/hadoop权威指南/">hadoop权威指南</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_初始Hadoop">1. 初始Hadoop</h1>
+<p>已经有了大量的数据， 问题是如何存储和分析这些数据。</p>
+<h2 id="数据存储和分析">数据存储和分析</h2>
+<p>容量快速增长的同时，磁盘的访问速度却未能与时俱进。</p>
+<p>多个磁盘数据的并行读写， 需要解决以下问题：</p>
+<ul>
+<li>硬盘故障。 使用备份（例如RAID冗余磁盘阵列），另外Hadoop文件系统（HDFS).</li>
+<li>大多数分析任务需要以某种方式结合大部分数据共同完成分析任务。 MapReduce提出了一个编程模型。</li>
+</ul>
+<p>Hadoop提供了一个可靠的共享存储和分析系统。</p>
+<h2 id="与其它系统的比较">与其它系统的比较</h2>
+<h3 id="关系数据库">关系数据库</h3>
+<p>为何不使用数据库对大量磁盘上的大规模数据进行批量计算呢？为何需要MapReduce?</p>
+<p>答案来自于磁盘的另一个趋势: 寻址时间的提高远远慢于传输速率的提高。</p>
+<ul>
+<li>如果数据的访问模式包含大量的磁盘寻址，那么读取大量数据集所花的时间势必会更长。（与流式读取比较， 流式读取主要取决于传输速率）</li>
+<li>若数据库只更新一小部分记录（B树), 效率比MapReduce效率低得多，因为需要使用”排序/合并”来重建数据库。</li>
+</ul>
+<p>MapReduce比较适合以批处理的方式处理需要分析整个数据集的问题。而RDBMS适用于“点查询”和更新，数据集被索引后，数据库系统能够提供较低延迟的数据检索和快速的少量数据库更新。<br>另一个区别：它们操作的数据集的结构化程度。</p>
+<h3 id="网格计算">网格计算</h3>
+<h2 id="Hadoop发展简史">Hadoop发展简史</h2>
+<p>Hadoop是Apache Lucence创始人Doug Cutting创建的， Lucence是一个广泛使用的文本搜索系统库。<br>Hadoop起源于Apache Nutch, 一个开源的网络搜索引擎，本身也是Lucence项目的一部分。</p>
+<ul>
+<li>Nutch始于2002年, 一个可以运行的网页爬取工具和搜索引擎很快“浮出水面”, 但这一架构可扩展度不够， 不能解决数十亿网页的搜索问题. </li>
+<li>2003年发表的一篇论文提供了帮助， 文中描述了谷歌产品架构（谷歌分布式文件系统, GFS), 可以解决他们在网页爬取和索引过程中产生的超大文件的存储需求。<br>特别关键的是, GFS能够节省系统管理（如管理存储节点）所花的大量时间。</li>
+<li>2004年，他们开始着手实现Nutch的分布式文件系统（NDFS).</li>
+<li>2004年，谷歌发布论文介绍MapReduce系统</li>
+<li>2005年初， Nutch开发人员在Nutch上实现了一个MapReduce系统</li>
+<li>2006年2月，Nutch开发人员将NDFS和MapReduce从Nutch移出形成Lucence的一个子项目，称为Hadoop. 大约同时Doug Cutting加入雅虎。</li>
+<li>2008年2月，Yahoo!宣布其搜索引擎使用的索引在一个拥有1万个内核的Hadoop集群上构建的。</li>
+<li>2008年4月，Hadoop打破世界纪录，</li>
+</ul>
+<h2 id="Apache_Hadoop和Hadoop生态圈">Apache Hadoop和Hadoop生态圈</h2>
+<p>Hadoop项目：</p>
+<ul>
+<li>Common: 一组分布式文件系统和通用I/O的组件和接口（序列化，Java RPC和持久化数据结构）</li>
+<li>Avro: 一种支持高效，跨语言的RPC以及永久存储数据结构的序列化系统。</li>
+<li>MapReduce: 分布式数据模型和执行环境，运行于大型商用机集群。</li>
+<li>HDFS: 分布式文件系统</li>
+<li>Pig: 一种数据流语言和运行环境，用于检索非常大的数据集，Pig运行在MapReduce和HDFS的集群上</li>
+<li>Hive: 一种分布式，按列存储的数据仓库。 Hive管理HDFS中存储的数据，并提供基于SQL的查询语言用以查询数据。</li>
+<li>HBase: 一种分布式，按列存储的数据库。使用HDFS作为底层存储，同事支持MapReduce的批量式计算和点查询。</li>
+<li>Zookeeper: 一个分布式，高可用的协调服务。</li>
+<li>Sqoop: 在数据库和HDFS之间高效传输数据的工具.</li>
+</ul>
+<h1 id="2-_关于MapReduce">2. 关于MapReduce</h1>
+<p>MapReduce是一个可用于数据处理的编程模型。</p>
+<h2 id="一个气象数据集">一个气象数据集</h2>
+<h2 id="使用Unix工具进行数据分析">使用Unix工具进行数据分析</h2>
+<h2 id="使用Hadoop分析数据">使用Hadoop分析数据</h2>
+<h3 id="map阶段和reduce阶段">map阶段和reduce阶段</h3>
+<h3 id="Java_MapReduce">Java MapReduce</h3>
+<p>需要三样东西:</p>
+<ul>
+<li>map函数</li>
+<li>reduce函数</li>
+<li>用了运行作业的代码</li>
+</ul>
+<p>Mapper:</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MaxTemperatureMapper</span> <span class="keyword">extends</span> <span class="title">MapReduceBase</span> 
+    <span class="keyword">implements</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">Text</span>, <span class="title">IntWritable</span>&gt; </span>{
+
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> inst MISSING = <span class="number">9999</span>;
+
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">map</span>(LongWritable key, Text value, OutputCollector&lt;Text, IntWritable&gt; output,
+        Reporter reporter) <span class="keyword">throws</span> IOException {
+
+        String line = value.toString();
+        String year = line.substring(<span class="number">15</span>,<span class="number">19</span>);
+        <span class="keyword">int</span> airTemperature;
+
+        <span class="keyword">if</span>(line.charAt(<span class="number">87</span>) == <span class="string">'+'</span>){
+            airTemperature = Integer.parseInt(line.substring(<span class="number">88</span>,<span class="number">92</span>);
+        }<span class="keyword">else</span>{
+            airTemperature = Integer.parseInt(line.substring(<span class="number">87</span>,<span class="number">92</span>);
+        }
+        String quality = liine.substring(<span class="number">92</span>,<span class="number">93</span>);
+        <span class="keyword">if</span>(airTemperature != MISSING &amp;&amp; quality.matches(<span class="string">"[01459]"</span>)){
+            output.collect(<span class="keyword">new</span> Text(year), <span class="keyword">new</span> IntWritable(airTemperature));
+        }
+    }
+}
+</code></pre><p>Reducer:</p>
+<p>public class MaxTemperatureReducer extends MapReduceBase<br>    implements Reducer<text, intwritable=""> output, Reporter reporter)</text,></p>
+<h2 id="横向扩展">横向扩展</h2>
+<h2 id="Hadoop的Steaming">Hadoop的Steaming</h2>
+<h2 id="Hadoop的Pipes">Hadoop的Pipes</h2>
+<h1 id="3-_Hadoop分布式文件系统">3. Hadoop分布式文件系统</h1>
+<h1 id="4-_Hadoop_I/O">4. Hadoop I/O</h1>
+<h1 id="5-_MapReduce应用开发">5. MapReduce应用开发</h1>
+<h1 id="6-_MapReduce的工作机制">6. MapReduce的工作机制</h1>
+<h1 id="7-_MapReduce的类型与格式">7. MapReduce的类型与格式</h1>
+<h1 id="8-_MapReduce的特性">8. MapReduce的特性</h1>
+<h1 id="9-_构建Hadoop集群">9. 构建Hadoop集群</h1>
+<h1 id="10-_管理Hadoop">10. 管理Hadoop</h1>
+<h1 id="11-_Pig简介">11. Pig简介</h1>
+<h1 id="12-_Hive简介">12. Hive简介</h1>
+<h1 id="13-_HBase">13. HBase</h1>
+<h1 id="14-_Zookeeper">14. Zookeeper</h1>
+<h1 id="15-_开源Sqoop">15. 开源Sqoop</h1>
+<h1 id="16-_实例分析">16. 实例分析</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/02/07/hadoop权威指南/" data-id="1b7yam8klxq1x4yi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Ice协议" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/01/19/Ice协议/" class="article-date">
+  <time datetime="2015-01-19T00:32:01.000Z" itemprop="datePublished">1月 19 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/19/Ice协议/">Ice协议</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="数据编码（Data_Encoding)">数据编码（Data Encoding)</h1>
+<h1 id="协议消息（Protocol_Messages)">协议消息（Protocol Messages)</h1>
+<h1 id="协议压缩（Protocol_Compressing)">协议压缩（Protocol Compressing)</h1>
+<h1 id="协议和编码版本">协议和编码版本</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/01/19/Ice协议/" data-id="yawn65lgew7cjccf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ice/">Ice</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式系统/">分布式系统</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Spring3-0就这么简单" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/12/02/Spring3-0就这么简单/" class="article-date">
+  <time datetime="2014-12-02T03:08:56.000Z" itemprop="datePublished">12月 2 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/12/02/Spring3-0就这么简单/">Spring3.0就这么简单</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_快速入门">1. 快速入门</h1>
+<p>spring是分层的Java SE/EE应用一站式的轻量级开源框架，以<strong> 反转控制(IOC) </strong>和 <strong> 面向切片(AOP) </strong> 为内核,<br>提供了展现层Spring MVC, 持久层Spring JDBC以及业务层事务管理等众多的企业级应用技术。</p>
+<p>好的设计优于具体实现，代码应易于测试。</p>
+<p>Spring好处：</p>
+<ul>
+<li>方便解耦，简化开发</li>
+<li>AOP编程的支持</li>
+<li>声明式事务的支持</li>
+<li>方便程序的测试</li>
+<li>方便集成各种优秀的框架</li>
+<li>降低Java EE API的使用难度。</li>
+<li>java源码是经典的学习范例。</li>
+</ul>
+<h3 id="Spring体系结构">Spring体系结构</h3>
+<p>5个主要模块:</p>
+<ol>
+<li>IOC</li>
+<li>AOP</li>
+<li>数据访问和集成</li>
+<li>web及远程操作</li>
+<li>web及远程访问(Spring MVC)</li>
+</ol>
+<h1 id="2-_Spring_IoC容器">2. Spring IoC容器</h1>
+<p>Ioc: 通过容器来控制业务对象之间的依赖关系，而非传统实现中， 由代码直接操控。</p>
+<p>控制反转：控制权由应用代码中转到了外部容器。</p>
+<p>优点：降低了业务对象之间的依赖程度。</p>
+<p>BeanFactory是Spring框架最核心的接口，提供了高级Ioc的配置机制。<br>ApplicationContext建立在BeanFactory基础之上， 提供了更多面向应用的功能。(应用上下文）</p>
+<h3 id="BeanFactory">BeanFactory</h3>
+<p>spring 配置文件:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;?xml <span class="variable">version=</span><span class="string">"1.0"</span> <span class="variable">encoding=</span><span class="string">"UTF-8"</span> ?&gt;</div><div class="line">&lt;beans <span class="variable">xmlns=</span><span class="string">"http://www.springframework.org/schema/beans"</span></div><div class="line">    xmlns:<span class="variable">xsi=</span><span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">    xmlns:<span class="variable">p=</span><span class="string">"http://www.springframework.org/schema/p"</span></div><div class="line">    xsi:<span class="variable">schemaLocation=</span><span class="string">"http://www.springframework.org/schema/beans</span></div><div class="line">       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"&gt;</div><div class="line">   &lt;bean <span class="variable">id=</span><span class="string">"car"</span> <span class="variable">class=</span><span class="string">"com.smart.Car"</span></div><div class="line">         p:<span class="variable">brand=</span><span class="string">"红旗CA72"</span></div><div class="line">         p:<span class="variable">maxSpeed=</span><span class="string">"200"</span>/&gt;</div><div class="line">   &lt;bean <span class="variable">id=</span><span class="string">"myBeanPostProcessor"</span> <span class="variable">class=</span><span class="string">"com.smart.context.MyBeanPostProcessor"</span>/&gt;</div><div class="line">   &lt;bean <span class="variable">id=</span><span class="string">"myBeanFactoryPostProcessor"</span> <span class="variable">class=</span><span class="string">"com.smart.context.MyBeanFactoryPostProcessor"</span>/&gt;</div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure>
+
+<p>使用BeanFactory:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> BeanFactoryTest {</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(String[] args) throws Throwable{</div><div class="line">       ResourcePatternResolver resolver = <span class="keyword">new</span> PathMatchingResourcePatternResolver();</div><div class="line">       Resource res = resolver.getResource(<span class="string">"classpath:com/smart/beanfactory/beans.xml"</span>);</div><div class="line">       System.<span class="keyword">out</span>.println(res.getURL());</div><div class="line">       BeanFactory bf = <span class="keyword">new</span> XmlBeanFactory(res);</div><div class="line">       System.<span class="keyword">out</span>.println(<span class="string">"init BeanFactory."</span>);</div><div class="line"></div><div class="line">       Car car = bf.getBean(<span class="string">"car"</span>,Car.class);</div><div class="line">       System.<span class="keyword">out</span>.println(<span class="string">"car bean is ready for use!"</span>);</div><div class="line">       car.introduce();</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="ApplicationContext">ApplicationContext</h3>
+<p>相对BeanFactory, ApplicationContext初始化比较简单:</p>
+<pre><code>ApplicationContext ctx = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"com/smart/context/beans.xml"</span>);
+</code></pre><p>还可以指定一组配置文件:</p>
+<pre><code>ApplicationContext ctx = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="keyword">new</span> <span class="built_in">String</span>[]{<span class="string">"conf/beans1.xml"</span>,<span class="string">"conf/beans2.xml"</span>});
+</code></pre><p>BeanFactory在初始化容器时，并未初始化Bean, 直到第一次访问某个Bean才实例化Bean.<br>而ApplicationContext在初始化应用上下文时就实例化所有单实例的Bean.</p>
+<h3 id="WebApplicationContext">WebApplicationContext</h3>
+<p>WebApplicationContext是专门为Web应用准备的，允许从Web根目录的路径中装载配置文件，完成初始化工作。</p>
+<p>它需要ServletContext实例。 在web.xml中配置自启动的Servlet或Web容器监听器(ServletContextListener), 借助它们任何一个<br>完成Spring WEb应用上下文的工作。</p>
+<p>配置监听器引导：</p>
+<pre><code><span class="tag">&lt;<span class="title">context-param</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="title">param-name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">param-value</span>&gt;</span>classpath:spring-config.xml<span class="tag">&lt;/<span class="title">param-value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">context-param</span>&gt;</span>
+<span class="tag">&lt;<span class="title">listener</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">listener-class</span>&gt;</span>
+        org.springframework.web.context.ContextLoaderListener
+    <span class="tag">&lt;/<span class="title">listener-class</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">listener</span>&gt;</span>
+</code></pre><p>配置自启动的Servlet引导：</p>
+<h3 id="集合类型属性">集合类型属性</h3>
+<pre><code><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"boss1"</span> <span class="attribute">class</span>=<span class="value">"com.smart.attr.Boss"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"car"</span> <span class="attribute">ref</span>=<span class="value">"car"</span> /&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"favorites"</span>&gt;</span>
+        <span class="comment">&lt;!-- list&gt;
+            &lt;value&gt;看报&lt;/value&gt;
+            &lt;value&gt;赛车&lt;/value&gt;
+            &lt;value&gt;高尔夫&lt;/value&gt;
+            &lt;/list --&gt;</span>
+        <span class="tag">&lt;<span class="title">set</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>看报<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>赛车<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>高尔夫<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">set</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"jobs"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">map</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">entry</span> &gt;</span>
+                <span class="tag">&lt;<span class="title">key</span>&gt;</span> <span class="tag">&lt;<span class="title">value</span>&gt;</span>AM<span class="tag">&lt;/<span class="title">value</span>&gt;</span> <span class="tag">&lt;/<span class="title">key</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">value</span>&gt;</span>会见客户<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">entry</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">key</span>&gt;</span> <span class="tag">&lt;<span class="title">value</span>&gt;</span>PM<span class="tag">&lt;/<span class="title">value</span>&gt;</span> <span class="tag">&lt;/<span class="title">key</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">value</span>&gt;</span>公司内部会议<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">map</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"mails"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">props</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"jobMail"</span>&gt;</span>john-office@baobaotao.com<span class="tag">&lt;/<span class="title">prop</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"lifeMail"</span>&gt;</span>john-life@baobaotao.com<span class="tag">&lt;/<span class="title">prop</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">props</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"jobTime"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">map</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">entry</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">key</span>&gt;</span> <span class="tag">&lt;<span class="title">value</span>&gt;</span>会见客户<span class="tag">&lt;/<span class="title">value</span>&gt;</span> <span class="tag">&lt;/<span class="title">key</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">value</span>&gt;</span>124<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">map</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+</code></pre><p>对应Boss类：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">class</span> Boss {
+    <span class="keyword">private</span> String name ;
+    <span class="keyword">private</span> <span class="keyword">int</span> age;
+    <span class="keyword">private</span> Car car = <span class="keyword">new</span> Car();
+    <span class="keyword">private</span> Map jobs = <span class="keyword">new</span> HashMap();
+    <span class="keyword">private</span> Properties mails = <span class="keyword">new</span> Properties();
+    <span class="keyword">private</span> Map&lt;String,Integer&gt; jobTime = <span class="keyword">new</span> HashMap&lt;String,Integer&gt;();
+    <span class="keyword">public</span> String <span class="title">getName</span>() {
+        <span class="keyword">return</span> name;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span>(String name) {
+        <span class="keyword">this</span>.name = name;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span>() {
+        <span class="keyword">return</span> age;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span>(<span class="keyword">int</span> age) {
+        <span class="keyword">this</span>.age = age;
+    }
+    <span class="keyword">public</span> Map&lt;String, Integer&gt; <span class="title">getJobTime</span>() {
+        <span class="keyword">return</span> jobTime;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setJobTime</span>(Map&lt;String, Integer&gt; jobTime) {
+        <span class="keyword">this</span>.jobTime = jobTime;
+    }
+    <span class="keyword">public</span> Properties <span class="title">getMails</span>() {
+        <span class="keyword">return</span> mails;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMails</span>(Properties mails) {
+        <span class="keyword">this</span>.mails = mails;
+    }
+    <span class="keyword">public</span> Map <span class="title">getJobs</span>() {
+        <span class="keyword">return</span> jobs;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setJobs</span>(Map jobs) {
+        <span class="keyword">this</span>.jobs = jobs;
+    }
+<span class="comment">//  private List favorites = new ArrayList();</span>
+<span class="comment">//</span>
+<span class="comment">//  public List getFavorites() {</span>
+<span class="comment">//      return favorites;</span>
+<span class="comment">//  }</span>
+<span class="comment">//  public void setFavorites(List favorites) {</span>
+<span class="comment">//      this.favorites = favorites;</span>
+<span class="comment">//  }</span>
+    <span class="keyword">private</span> Set favorites = <span class="keyword">new</span> HashSet();
+    <span class="keyword">public</span> Car <span class="title">getCar</span>() {
+        <span class="keyword">return</span> car;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCar</span>(Car car) {
+        <span class="keyword">this</span>.car = car;
+    }
+    <span class="keyword">public</span> String <span class="title">toString</span>(){
+        String temp =<span class="string">"car:"</span>+car+<span class="string">"\n"</span>;
+        temp += <span class="string">"favorites.size:"</span>+favorites.size()+<span class="string">"\n"</span>;
+        temp += <span class="string">"jobs.size:"</span>+jobs.size();
+        <span class="keyword">return</span> temp;
+    }
+    <span class="keyword">public</span> Set <span class="title">getFavorites</span>() {
+        <span class="keyword">return</span> favorites;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFavorites</span>(Set favorites) {
+        <span class="keyword">this</span>.favorites = favorites;
+    }
+}
+</code></pre><h3 id="配置集合类型的Bean">配置集合类型的Bean</h3>
+<pre><code><span class="tag">&lt;<span class="title">util:list</span> <span class="attribute">id</span>=<span class="value">"favoriteList1"</span> <span class="attribute">list-class</span>=<span class="value">"java.util.LinkedList"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>看报<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>赛车<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>高尔夫<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">util:list</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">util:set</span> <span class="attribute">id</span>=<span class="value">"favoriteSet1"</span>  &gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>看报<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>赛车<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>高尔夫<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">util:set</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">util:map</span> <span class="attribute">id</span>=<span class="value">"emails1"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">entry</span> <span class="attribute">key</span>=<span class="value">"AM"</span> <span class="attribute">value</span>=<span class="value">"会见客户"</span> /&gt;</span>
+    <span class="tag">&lt;<span class="title">entry</span> <span class="attribute">key</span>=<span class="value">"PM"</span> <span class="attribute">value</span>=<span class="value">"公司内部会议"</span> /&gt;</span>
+<span class="tag">&lt;/<span class="title">util:map</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">util:properties</span> <span class="attribute">id</span>=<span class="value">"emailProps1"</span>
+<span class="attribute">location</span>=<span class="value">"classpath:com/smart/fb/mails.properties"</span> /&gt;</span>
+</code></pre><h3 id="自动装配">自动装配</h3>
+<p><bean>元素提供自动装配的属性：autowire=”&lt;自动装配类型&gt;”</bean></p>
+<p>4种自动装配类型：</p>
+<ul>
+<li>byName</li>
+<li>byType</li>
+<li>constructor</li>
+<li>autodetect</li>
+</ul>
+<p><beans>元素标签中的default-autowire属性可以配置全局自动装配。</beans></p>
+<h3 id="Bean作用域">Bean作用域</h3>
+<ol>
+<li>singleton</li>
+<li>prototype</li>
+<li>request</li>
+<li>session</li>
+<li>globalSession</li>
+</ol>
+<h3 id="基于注解的配置">基于注解的配置</h3>
+<ul>
+<li>@Component</li>
+<li>@Repository: 用于对DAO实现类进行标注</li>
+<li>@Service: 用于对Service实现类进行标注</li>
+<li>@Controller: 用于对Controller实现类进行标注</li>
+</ul>
+<p>使用注解配置信息启动Spring容器：</p>
+<pre><code>&lt;<span class="keyword">context</span>:<span class="keyword">component</span>-scan base-<span class="keyword">package</span>=<span class="string">"com.yuqiao.hellomvc.dao"</span>/&gt;
+&lt;<span class="keyword">context</span>:<span class="keyword">component</span>-scan base-<span class="keyword">package</span>=<span class="string">"com.yuqiao.hellomvc.dao"</span> resorce-pattern=<span class="string">"anno/*.class"</span>/&gt;
+</code></pre><p>默认情况下, resorce-pattern=”<em>*/</em>.class”</p>
+<p>Spring通过@Autowired注解实现Bean的依赖注入。<br>若容器没有一个和标注变量类型匹配的Bean， Spring容器启动时讲抛出NoSuchBeanDefinitionException异常，<br>若希望不抛出该异常，那么就可以使用@Autowired(require=false)进行标注。</p>
+<p>使用@Qualifier指定注入Bean名称。</p>
+<h1 id="3-_Spring_AOP">3. Spring AOP</h1>
+<h2 id="aop_概述">aop 概述</h2>
+<p>aop应用场景受限, 一般只适用于那些具有横切逻辑的应用场景：性能监测，访问控制， 事务管理及日志记录。</p>
+<h3 id="aop术语">aop术语</h3>
+<ul>
+<li>连接点(JoinPoint)</li>
+<li>切点(PointCut)</li>
+<li>增强(Advice)</li>
+<li>目标对象(Target)</li>
+<li>引介(introduce)</li>
+<li>织入(Weaving)</li>
+<li>代理(Proxy)</li>
+<li>切面(Aspect) </li>
+</ul>
+<h2 id="创建增强类">创建增强类</h2>
+<p>Spring支持5种类型的增强:</p>
+<ul>
+<li>前置增强(org.springframework.aop.BeforeAdvice)</li>
+<li>后置增强(org.springframework.aop.AfterReturningAdvice)</li>
+<li>环绕增强(org.springframework.intercept.MethodInterceptor)</li>
+<li>异常抛出增强(org.springframework.aop.ThrowsAdvice)</li>
+<li>引介增强(org.springframework.aop.INtroductionInterceptor)</li>
+</ul>
+<h2 id="创建切面">创建切面</h2>
+<p>支持两种方法配置器:</p>
+<ul>
+<li>静态方法配置器</li>
+<li>动态方法配置器</li>
+</ul>
+<h3 id="切点类型">切点类型</h3>
+<ul>
+<li>静态方法切点</li>
+<li>动态方法切点</li>
+<li>注解切点</li>
+<li>表达式切点</li>
+<li>流程切点</li>
+<li>复合切点</li>
+</ul>
+<h3 id="切面类型">切面类型</h3>
+<ul>
+<li>Advisor(一般切面)</li>
+<li>PointcutAdvisor(切点切面)</li>
+<li>IntroductionAdvisor(引介切面)</li>
+</ul>
+<h3 id="静态普通方法名匹配切面">静态普通方法名匹配切面</h3>
+<p>在Waiter#greetTo()织入增强，切面类实现：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreetingAdvisor</span> <span class="keyword">extends</span> <span class="title">StaticMethodMatcherPointcutAdvisor</span> </span>{</div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span>(Method method, Class&lt;?&gt; targetClass) {</div><div class="line">        <span class="keyword">return</span> <span class="string">"greetTo"</span>.equals(method.getName());</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> ClassFilter <span class="title">getClassFilter</span>() {</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ClassFilter() {</div><div class="line">            <span class="annotation">@Override</span></div><div class="line">            <span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span>(Class&lt;?&gt; clazz) {</div><div class="line">                <span class="keyword">return</span> Waiter.class.isAssignableFrom(clazz);</div><div class="line">            }</div><div class="line">        };</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>配置切面:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"greetingAdvisor"</span> class=<span class="string">"com.yuqiao.advice.GreetingAdvisor"</span></div><div class="line">        p:advice-<span class="keyword">ref</span>=<span class="string">"greetingBeforeAdvice"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"parent"</span> abstract=<span class="string">"true"</span></div><div class="line">        class=<span class="string">"org.springframework.aop.framework.ProxyFactoryBean"</span></div><div class="line">        p:interceptorNames=<span class="string">"greetingAdvisor"</span></div><div class="line">        p:proxyTargetClass=<span class="string">"true"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"waiter2"</span> parent=<span class="string">"parent"</span> p:target-<span class="keyword">ref</span>=<span class="string">"nativeWaiter"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"seller1"</span> parent=<span class="string">"parent"</span> p:target-<span class="keyword">ref</span>=<span class="string">"seller"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<h3 id="静态正则表达式方法匹配切面">静态正则表达式方法匹配切面</h3>
+<p>为seller定义切面：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"regexAdvisor"</span> class=<span class="string">"org.springframework.aop.support.RegexpMethodPointcutAdvisor"</span></div><div class="line">        p:advice-<span class="keyword">ref</span>=<span class="string">"greetingBeforeAdvice"</span>&gt;</div><div class="line">    &lt;property name=<span class="string">"patterns"</span>&gt;</div><div class="line">        &lt;list&gt;</div><div class="line">            &lt;value&gt;.*greet.*&lt;/value&gt;</div><div class="line">        &lt;/list&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line">&lt;bean id=<span class="string">"seller2"</span> class=<span class="string">"org.springframework.aop.framework.ProxyFactoryBean"</span></div><div class="line">        p:interceptorNames=<span class="string">"regexAdvisor"</span></div><div class="line">        p:target-<span class="keyword">ref</span>=<span class="string">"seller"</span></div><div class="line">        p:proxyTargetClass=<span class="string">"true"</span>/&gt;&lt;ap</div></pre></td></tr></table></figure>
+
+<h2 id="自动创建代理">自动创建代理</h2>
+<p>前面都是使用ProxyFactoryBean创建织入切面的代理， 每个bean都需要该配置， 比较麻烦。</p>
+<p>spring提供了自动代理机制。 使用BeanPostProcessor， 根据一定规则自动在容器实例化Bean时为匹配的Bean生成代理实例. 分类：</p>
+<ul>
+<li>基于Bean配置名规则的自动代理创建器。实现类为BeanNameAutoProxyCreator.</li>
+<li>基于Advisor陪陪机制。DefaultAdvisorAutoProxyCreator.</li>
+<li>基于Bean中AspectJ注解标签的自动代理创建器。</li>
+</ul>
+<h3 id="BeanNameAutoProxyCreator">BeanNameAutoProxyCreator</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;bean <span class="variable">class=</span><span class="string">"org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator"</span></div><div class="line">        p:<span class="variable">beanNames=</span><span class="string">"*er"</span></div><div class="line">        p:<span class="variable">interceptorNames=</span><span class="string">"greetingBeforeAdvice"</span></div><div class="line">        p:<span class="variable">optimize=</span><span class="string">"true"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<h3 id="DefaultAdvisorAutoProxyCreator">DefaultAdvisorAutoProxyCreator</h3>
+<pre><code>&lt;bean <span class="keyword">class</span>=<span class="string">"org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"</span>/&gt;
+</code></pre><h2 id="基于@AspectJ配置切面">基于@AspectJ配置切面</h2>
+<h3 id="@AspectJ语法基础">@AspectJ语法基础</h3>
+<p>Spring支持9个@AspectJ切点表达函数</p>
+<ul>
+<li>execution()</li>
+<li>@annotation()</li>
+<li>args()</li>
+<li>@args()</li>
+<li>within()</li>
+<li>target()</li>
+<li>@within()</li>
+</ul>
+<h1 id="4-_使用Spring_JDBC访问数据库">4. 使用Spring JDBC访问数据库</h1>
+<p>由于JDBC api过于底层，开发者不但要编写数据操作代码，还需要编写JDBC连接，处理异常，释放资源等的代码。</p>
+<p>Spring JDBC通过模板和回调机制大大降低了JDBC的复杂度。</p>
+<p>创建一张表:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">DriverManagerDataSource <span class="keyword">ds</span> = <span class="keyword">new</span> DriverManagerDataSource();</div><div class="line"><span class="keyword">ds</span>.setDriverClassName(<span class="string">"com.mysql.jdbc.Driver"</span>);</div><div class="line"><span class="keyword">ds</span>.setUrl(<span class="string">"jdbc:mysql://localhost:3306/sampledb"</span>);</div><div class="line"><span class="keyword">ds</span>.setUsername(<span class="string">"root"</span>);</div><div class="line"></div><div class="line">JdbcTemplate jdbcTemplate = <span class="keyword">new</span> JdbcTemplate();</div><div class="line">jdbcTemplate.setDataSource(<span class="keyword">ds</span>);</div><div class="line"></div><div class="line">String sql = <span class="string">"create table t_user(user_id int primary key, user_name varchar(60))"</span>;</div><div class="line">jdbcTemplate.<span class="keyword">execute</span>(sql);</div></pre></td></tr></table></figure>
+
+<p>一般情况下，在DAO类中使用JdbcTemplate, 在XML配置文件中配置好JdbcTemplate,然后直接在DAO中注入即可。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.yuqiao.hellomvc.dao;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="annotation">@Repository</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginLogDao</span> </span>{</div><div class="line">    <span class="annotation">@Autowired</span></div><div class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertLoginLog</span>(LoginLog loginLog) {</div><div class="line">        String sqlStr = <span class="string">"INSERT INTO t_login_log(user_id,ip,login_datetime) "</span></div><div class="line">                + <span class="string">"VALUES(?,?,?)"</span>;</div><div class="line">        Object[] args = {loginLog.getUserId(), loginLog.getIp(),</div><div class="line">                loginLog.getLoginDate()};</div><div class="line">        jdbcTemplate.update(sqlStr, args);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>在Spring配置文件定义jdbcTemplate:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"dataSource"</span> class=<span class="string">"org.apache.commons.dbcp.BasicDataSource"</span></div><div class="line">      destroy-<span class="keyword">method</span>=<span class="string">"close"</span></div><div class="line">      p:driverClassName=<span class="string">"com.mysql.jdbc.Driver"</span></div><div class="line">      p:url=<span class="string">"jdbc:mysql://localhost:3306/sampledb31"</span></div><div class="line">      p:username=<span class="string">"root"</span></div><div class="line">      p:password=<span class="string">""</span>/&gt;</div><div class="line"></div><div class="line">&lt;bean id=<span class="string">"jdbcTemplate"</span> class=<span class="string">"org.springframework.jdbc.core.JdbcTemplate"</span></div><div class="line">      p:dataSource-<span class="keyword">ref</span>=<span class="string">"dataSource"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<p>配置一般分为4个步骤:</p>
+<ol>
+<li><p>定义DataSource.</p>
+</li>
+<li><p>定义JdbcTemplate. 可以控制JDBC api的属性.</p>
+<ul>
+<li>queryTimeout. 查询数据的最大超时时间。</li>
+<li>fetchSize. ResultSet每次返回的行数.</li>
+<li>maxRows:</li>
+<li>ignoreWarnings:</li>
+</ul>
+</li>
+<li><p>声明一个抽象的<bean>，以便所有DAO复用配置。</bean></p>
+</li>
+<li><p>配置具体的DAO.</p>
+</li>
+</ol>
+<h2 id="基本的数据操作">基本的数据操作</h2>
+<h3 id="返回数据库的表自增主键值">返回数据库的表自增主键值</h3>
+<p>KeyHolder是一个回调接口，Spring用他保存新增记录对应的主键。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewSpace</span>(<span class="keyword">final</span> ViewSpace viewSpace){</div><div class="line">    <span class="keyword">final</span> String sql = <span class="string">"INSERT INTO t_view_space (space_name, description, address, user_id) VALUES(?,?,?,?)"</span>;</div><div class="line">    KeyHolder keyHolder = <span class="keyword">new</span> GeneratedKeyHolder();</div><div class="line">    jdbcTemplate.update(<span class="keyword">new</span> PreparedStatementCreator() {</div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> PreparedStatement <span class="title">createPreparedStatement</span>(Connection connection) <span class="keyword">throws</span> SQLException {</div><div class="line">            PreparedStatement ps = connection.prepareStatement(sql);</div><div class="line">            ps.setString(<span class="number">1</span>, viewSpace.getSpaceName());</div><div class="line">            ps.setString(<span class="number">2</span>, viewSpace.getDescription());</div><div class="line">            ps.setString(<span class="number">3</span>, viewSpace.getAddress());</div><div class="line">            ps.setInt(<span class="number">4</span>, viewSpace.getUser());</div><div class="line">            <span class="keyword">return</span> ps;</div><div class="line">        }</div><div class="line">    },keyHolder);</div><div class="line">    viewSpace.setSpaceId(keyHolder.getKey().intValue());</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>在jdbc3.0之前， PreparedStatement不能绑定主键。用户必须在插入数据库后马上执行另一条获取新增主键的查询语句。<br>mysql: SELECT LAST_INSERT_ID();</p>
+<h3 id="批量更改数据">批量更改数据</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewSpaces</span>(<span class="keyword">final</span> List&lt;ViewSpace&gt; viewSpaceList){</div><div class="line">    <span class="keyword">final</span> String sql = <span class="string">"INSERT INTO t_view_space (space_name, description, address, user_id) VALUES(?,?,?,?)"</span>;</div><div class="line">    jdbcTemplate.batchUpdate(sql, <span class="keyword">new</span> BatchPreparedStatementSetter() {</div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValues</span>(PreparedStatement ps, <span class="keyword">int</span> i) <span class="keyword">throws</span> SQLException {</div><div class="line">            ViewSpace viewSpace = viewSpaceList.get(i);</div><div class="line">            ps.setString(<span class="number">1</span>, viewSpace.getSpaceName());</div><div class="line">            ps.setString(<span class="number">2</span>, viewSpace.getDescription());</div><div class="line">            ps.setString(<span class="number">3</span>, viewSpace.getAddress());</div><div class="line">            ps.setInt(<span class="number">4</span>, viewSpace.getUser());</div><div class="line"></div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getBatchSize</span>() {</div><div class="line">            <span class="keyword">return</span> viewSpaceList.size();</div><div class="line">        }</div><div class="line">    });</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="查询数据">查询数据</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> ViewSpace <span class="title">getViewSpace</span>(<span class="keyword">final</span> <span class="keyword">int</span> id){</div><div class="line">    <span class="keyword">final</span> String sql = <span class="string">"SELECT space_name, description, address, user_id from t_view_space where space_id=?"</span>;</div><div class="line">    <span class="keyword">final</span> ViewSpace vs = <span class="keyword">new</span> ViewSpace();</div><div class="line">    jdbcTemplate.query(sql, <span class="keyword">new</span> Object[]{id}, <span class="keyword">new</span> RowCallbackHandler() {</div><div class="line">        <span class="annotation">@Override</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processRow</span>(ResultSet resultSet) <span class="keyword">throws</span> SQLException {</div><div class="line">            vs.setSpaceId(id);</div><div class="line">            vs.setSpaceName(resultSet.getString(<span class="string">"space_name"</span>));</div><div class="line">            vs.setDescription(resultSet.getString(<span class="string">"description"</span>));</div><div class="line">            vs.setAddress(resultSet.getString(<span class="string">"address"</span>));</div><div class="line">            vs.setUser(resultSet.getInt(<span class="string">"user_id"</span>));</div><div class="line">        }</div><div class="line">    });</div><div class="line">    <span class="keyword">return</span> vs;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>RowCallbackHandler 和RowMapper<t>比较。</t></p>
+<p>单值查询接口：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getViewSpaceNum</span>(){</div><div class="line">    String sql = <span class="string">"select COUNT(*) FROM  t_view_space"</span>;</div><div class="line">    <span class="keyword">return</span> jdbcTemplate.queryForInt(sql);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>编写sql语句时，用大写方式编写SQL的关键字和函数， 用小写的形式编写表名，字段名等非语义的元素。</p>
+<p>调用存储过程： execute</p>
+<h2 id="BLOB/CLOB类型数据的操作">BLOB/CLOB类型数据的操作</h2>
+<h1 id="5-_集成Hibernate">5. 集成Hibernate</h1>
+<h1 id="6-_Spring的事务管理">6. Spring的事务管理</h1>
+<h2 id="数据库事务基础知识">数据库事务基础知识</h2>
+<p>一荣俱荣，一损俱损。体现事务的思想，很多复杂的事务要分步进行，但他们组成一个整体，要么整体生效，要么整体失效。</p>
+<p>数据库事务需要满足4个特性（ACID):原子性(Atomic), 一致性(Consistency), 隔离性(Isolation)和持久性(Durability).</p>
+<p>一致性是目标，其它都是达到这个目标的措施或者手段。</p>
+<p>数据库系统一般采用重执行日志保证原子性，一致性和持久性。重执行日志记录了数据库变化的每一个动作，数据库在一个事务中执行一部分操作后发生错误退出，数据库即可根据重执行日志车险已经执行的操作。<br>数据库管理系统采用数据库锁机制保证事务的隔离性。</p>
+<p>Connection#getMetaData()获取DatbaMataData对象，该对象的supportsTransactions(), supportsTransactionIsolationLevel(int level)查看底层数据库的事务支持情况。</p>
+<h3 id="Jdbc对事务的处理">Jdbc对事务的处理</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="type">Connection</span> conn;</div><div class="line"><span class="keyword">try</span>{</div><div class="line">    conn = <span class="type">DriverManager</span>.getConnection();</div><div class="line">    conn.setAutoCommit(<span class="literal">false</span>);</div><div class="line">    conn.setTransactionIsolation(<span class="type">Connection</span>.<span class="type">TRANSACTION_SERIALIZABLE</span>);</div><div class="line">    <span class="type">Statement</span> <span class="type">stmt</span> = conn.createStatement();</div><div class="line">    <span class="type">int</span> rows = <span class="type">stmt</span>.executeUpdate(<span class="string">"INSERT INTO t_viewspace VALUES(1,'XXXX')"</span>);</div><div class="line">    rows = <span class="type">stmt</span>.executeUpdate(<span class="string">"UPDATE t_viewpoint set ticket = ticket +10"</span>);</div><div class="line">    conn.commit();</div><div class="line">}catch (<span class="type">Exception</span> e){</div><div class="line">    conn.rollback();</div><div class="line">}<span class="keyword">finally</span> {</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h2 id="Spring对事务管理的处理">Spring对事务管理的处理</h2>
+<p>Spring为事务管理提供了一致的编程模板, 在高层次建立了同意的事务抽象。提供了TransactionTemplate。</p>
+<p>Spring事务管理的亮点在于声明式事务管理。</p>
+<h3 id="事务管理关键抽象">事务管理关键抽象</h3>
+<p>Spring事务管理SPI(Service Provider Interface)的抽象层主要包括三个接口：</p>
+<ul>
+<li><p>PlatformTransactionManager: 根据TransactionDefinition提供的事务属性配置信息，创建事务，并用TransationStatus描述这个激活事务的状态。定义了3方法:</p>
+<ul>
+<li>getTransaction(definition)</li>
+<li>commit(stutus)</li>
+<li>rollback(status)</li>
+</ul>
+</li>
+<li><p>TransactionDefinition: 描述事务的隔离级别，超时时间，是否为只读事务和事务传播规则等控制事务具体行为的事务属性。</p>
+</li>
+<li>TransactionStatus: 代表一个事务的具体运行状态。</li>
+</ul>
+<h3 id="事务管理实现类">事务管理实现类</h3>
+<p>Spring将事务管理委托给底层具体的持久化实现框架完成。</p>
+<p>Spring JDBC和iBatis都是基于数据源的Connection访问数据库，所以可以使用DataSourceTransactionManager.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"dataSource"</span></div><div class="line">        class=<span class="string">"org.apache.commons.dbcp.BasicDataSource"</span></div><div class="line">        destroy-<span class="keyword">method</span>=<span class="string">"close"</span></div><div class="line">        p:driverClassName=<span class="string">"${jdbc.driverClassName}"</span></div><div class="line">        p:url=<span class="string">"${jdbc.url}"</span></div><div class="line">        p:username=<span class="string">"${jdbc.username}"</span></div><div class="line">        p:password=<span class="string">"${jdbc.password}"</span>/&gt;</div><div class="line">&lt;bean id=<span class="string">"txManager"</span></div><div class="line">        class=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span></div><div class="line">        p:dataSource-<span class="keyword">ref</span>=<span class="string">"dataSource"</span>/&gt;</div></pre></td></tr></table></figure>
+
+<h3 id="事务同步管理器">事务同步管理器</h3>
+<p>Spring将JDBC的Connection,Hibernate的Session等访问数据库的连接或会话对象统称为资源。资源在同一时刻是不能多线程共享的。<br>为了让Dao,Service类可能做到singleton，Spring的事务同步管理类TransactionSynchronizationManager使用ThreadLocal管理为不同事务线程提供了<br>独立的资源副本。</p>
+<p>Spring框架为不同的持久化技术提供了一套从TransactionSynchronizationManager中获取对应线程绑定资源的工具类。<br>DataSourceUtils.getConnection可以从指定的数据源中获取和当前线程绑定的Connection.</p>
+<h3 id="事务传播行为">事务传播行为</h3>
+<h2 id="编程式的事务管理">编程式的事务管理</h2>
+<p>很少用。 Spring提供了TransactionTemplate.</p>
+<h2 id="使用xml配置声明式事务">使用xml配置声明式事务</h2>
+<p>Spring的声明式事务管理是通过Spring AOP实现的，通过事务的声明性信息，Spring负责将事务管理增强逻辑动态织入业务方法相应连接点中。<br>这些逻辑包括获取线程绑定资源，开始事务，提交/回滚事务，进行异常转换和处理工作。</p>
+<h3 id="一个被实施事务增强的服务接口">一个被实施事务增强的服务接口</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">interface</span> IViewSpace {</div><div class="line">    <span class="keyword">void</span> addViewSpace(ViewSpace space);</div><div class="line">    <span class="keyword">void</span> updateViewSpace(ViewSpace space);</div><div class="line">    ViewSpace getViewSpace(<span class="keyword">int</span> spaceId);</div><div class="line">    <span class="keyword">int</span> getViewSpaceNum();</div><div class="line">    <span class="keyword">void</span> deleteViewSpace(<span class="keyword">int</span> spaceId);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>我们希望对addViewSpace和updateViewSpace拥有写事务的能力， 而另外两个拥有读事务的能力。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="annotation">@Transactional</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewSpaceImpl</span> <span class="keyword">implements</span> <span class="title">IViewSpace</span> </span>{</div><div class="line">    <span class="keyword">private</span> ViewSpaceDao viewSpaceDao;</div><div class="line">    <span class="keyword">private</span> ViewPointDao viewPointDao;</div><div class="line"></div><div class="line">    <span class="annotation">@Transactional</span>(readOnly=<span class="keyword">true</span>)</div><div class="line">    <span class="keyword">public</span> ViewSpace <span class="title">getViewSpace</span>(<span class="keyword">int</span> spaceId) {</div><div class="line">        <span class="keyword">return</span> viewSpaceDao.getViewSpace( spaceId);</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateViewSpace</span>(ViewSpace viewSpace) {</div><div class="line">        viewSpaceDao.updateViewSpace(viewSpace);</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getViewSpaceNum</span>() {</div><div class="line">        <span class="keyword">return</span> viewSpaceDao.getViewSpaceNum();</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setViewSpaceDao</span>(ViewSpaceDao viewSpaceDao) {</div><div class="line">        <span class="keyword">this</span>.viewSpaceDao = viewSpaceDao;</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setViewPointDao</span>(ViewPointDao viewPointDao) {</div><div class="line">        <span class="keyword">this</span>.viewPointDao = viewPointDao;</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewSpace</span>(ViewSpace space) {</div><div class="line">        <span class="keyword">this</span>.viewSpaceDao.addViewSpace(space);</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteViewSpace</span>(<span class="keyword">int</span> spaceId) {</div><div class="line">        <span class="keyword">this</span>.viewSpaceDao.deleteViewSpace(spaceId);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>ViewSpaceImpl是一个POJO, 只是简单使用持久层的多个DAO类。</p>
+<h3 id="使用原始的TransactionProxyFactoryBean">使用原始的TransactionProxyFactoryBean</h3>
+<p>了解TransactionProxyFactoryBean有助于跟直观</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--1. 引入dao和DataSource的配置文件--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">import</span> <span class="attribute">resource</span>=<span class="value">"classpath:applicationContext-dao.xml"</span> /&gt;</span></div><div class="line"><span class="comment">&lt;!--2. 声明事务管理器--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"txManager"</span></span></div><div class="line">    <span class="attribute">class</span>=<span class="value">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"dataSource"</span> <span class="attribute">ref</span>=<span class="value">"dataSource"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">bean</span>&gt;</span></div><div class="line"><span class="comment">&lt;!--3. 需要实施事务增强的目标业务bean--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"viewSpaceTarget"</span></span></div><div class="line">        <span class="attribute">class</span>=<span class="value">"com.smart.service.impl.ViewSpaceImpl"</span></div><div class="line">        <span class="attribute">p:viewSpaceDao-ref</span>=<span class="value">"viewSpaceDao"</span></div><div class="line">        <span class="attribute">p:viewPointDao-ref</span>=<span class="value">"viewPointDao"</span>/&gt;</div><div class="line"><span class="comment">&lt;!--4. 使用事务代理工程类为目标业务Bean提供事务增强--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"viewSpaceService"</span></span></div><div class="line">    <span class="attribute">class</span>=<span class="value">"org.springframework.transaction.interceptor.TransactionProxyFactoryBean"</span></div><div class="line">    <span class="attribute">p:transactionManager-ref</span>=<span class="value">"txManager"</span></div><div class="line">    <span class="attribute">p:target-ref</span>=<span class="value">"viewSpaceTarget"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"transactionAttributes"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">props</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"get*"</span>&gt;</span>PROPAGATION_REQUIRED,readOnly<span class="tag">&lt;/<span class="title">prop</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="title">prop</span> <span class="attribute">key</span>=<span class="value">"*"</span>&gt;</span>PROPAGATION_REQUIRED<span class="tag">&lt;/<span class="title">prop</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="title">props</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">bean</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>异常回滚/提交规则</p>
+<p><prop>内的值为事务属性配置信息， 格式如下：</prop></p>
+<pre><code>PROPAGATION_REQUIRED, ISOLATION, readOnly, -<span class="keyword">Exception</span>, +<span class="keyword">Exception</span>
+</code></pre><h3 id="基于tx/aop命名空间的配置">基于tx/aop命名空间的配置</h3>
+<p>Spring基于Schema的配置中,添加了一个tx命名空间， 在配置文件中医明确结构化的方式定义事务属性，<br>大大提高配置事务属性的便利性。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">&lt;<span class="keyword">import</span> resource=<span class="string">"classpath:applicationContext-dao.xml"</span> /&gt;</div><div class="line">&lt;!--①不再需要为了事务<span class="type">AOP</span>增强的实施而改名换姓--&gt;</div><div class="line">&lt;bean id=<span class="string">"viewSpaceService"</span></div><div class="line">    class=<span class="string">"com.smart.service.impl.ViewSpaceImpl"</span></div><div class="line">    p:viewSpaceDao-<span class="keyword">ref</span>=<span class="string">"viewSpaceDao"</span></div><div class="line">    p:viewPointDao-<span class="keyword">ref</span>=<span class="string">"viewPointDao"</span>/&gt;</div><div class="line"></div><div class="line">&lt;!--<span class="number">2</span>. 事务管理器--&gt;</div><div class="line">&lt;bean id=<span class="string">"txManager"</span></div><div class="line">    class=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span></div><div class="line">    p:dataSource-<span class="keyword">ref</span>=<span class="string">"dataSource"</span>/&gt;</div><div class="line"></div><div class="line">&lt;aop:config&gt;</div><div class="line">    &lt;!--③-<span class="number">1</span>通过aop定义事务增强切面--&gt;</div><div class="line">    &lt;aop:pointcut id=<span class="string">"serviceMethod"</span></div><div class="line">                    expression=<span class="string">"execution(* com.smart.service.*Service.*(..))"</span> /&gt;</div><div class="line">    &lt;!--③-<span class="number">2</span>引用事务增强--&gt;</div><div class="line">    &lt;aop:advisor pointcut-<span class="keyword">ref</span>=<span class="string">"serviceMethod"</span> advice-<span class="keyword">ref</span>=<span class="string">"txAdvice"</span> /&gt;</div><div class="line">&lt;/aop:config&gt;</div><div class="line"></div><div class="line">&lt;!--④事务增强--&gt;</div><div class="line">&lt;tx:advice id=<span class="string">"txAdvice"</span> transaction-manager=<span class="string">"txManager"</span>&gt;</div><div class="line">    &lt;!--④-<span class="number">1</span>事务属性定义--&gt;</div><div class="line">    &lt;tx:attributes&gt;</div><div class="line">        &lt;tx:<span class="keyword">method</span> name=<span class="string">"get*"</span> read-only=<span class="string">"false"</span>/&gt;</div><div class="line">        &lt;tx:<span class="keyword">method</span> name=<span class="string">"add*"</span> rollback-<span class="keyword">for</span>=<span class="string">"Exception"</span> /&gt;</div><div class="line">        &lt;tx:<span class="keyword">method</span> name=<span class="string">"update*"</span>/&gt;</div><div class="line">    &lt;/tx:attributes&gt;</div><div class="line">&lt;/tx:advice&gt;</div></pre></td></tr></table></figure>
+
+<p><tx:method> 元素：</tx:method></p>
+<ul>
+<li>name</li>
+<li>progagation</li>
+<li>isolation</li>
+<li>timeout</li>
+<li>read-only</li>
+<li>rollback-for</li>
+<li>no-rollback-for</li>
+</ul>
+<h2 id="使用注解配置声明式事务">使用注解配置声明式事务</h2>
+<h1 id="7-_Spring_MVC">7. Spring MVC</h1>
+<h2 id="概述">概述</h2>
+<p>围绕DispatcherServlet核心展开，DispatcherServlet是Spring MVC的总导演，总策划，它负责截获请求并将其分派给相应的处理器处理。</p>
+<p>Spring MVC 包括:</p>
+<ul>
+<li>注解控制器</li>
+<li>请求及响应的相信处理</li>
+<li>视图解析</li>
+<li>本地化解析</li>
+<li>删除文件解析</li>
+<li>异常处理</li>
+<li>表单标签绑定</li>
+</ul>
+<h3 id="体系结构">体系结构</h3>
+<ol>
+<li>client发起一个HTTP请求, 若匹配到DispatcherServlet的请求映射路径(web.xml中指定). web容器将该请求转交给DispatcherServlet处理。</li>
+<li>DispatcherServlet收到该请求后，将根据请求的信息(Url, http方法, 请求报文头, 请求参数, Cookie等)及HandlerMapping的配置找到处理请求的处理器（Handler).</li>
+<li>通过HandlerAdapter对Handler进行封装， 再以统一的适配器接口调用Handler.</li>
+<li>Handler完成业务逻辑的处理后将返回一个ModelAndView给DispatcherServlet, ModelAndView包括了视图逻辑名和模型数据信息.</li>
+<li>ModelAndView中包含的“逻辑视图名”而非真正的视图对象, DispatcherServlet借由ViewResolver完成逻辑视图到真实视图对象的解析工作。</li>
+<li>当得到真实的视图对象view后，DispatcherServlet就使用这个View对象对ModelAndView中的模型数据进行视图渲染。</li>
+<li>最终client获取得到的响应消息可能是一个普通的html页面， 也可能是一个xml或json串，甚至是一张图片或一个pdf文档等不同的媒体形式。</li>
+</ol>
+<h3 id="配置DispatcherServlet">配置DispatcherServlet</h3>
+<ol>
+<li>如何截获特定的http请求，交由spring MVC框架处理？</li>
+</ol>
+<p>配置DispatcherServlet,截获特定的URL请求</p>
+<p>在web.xml配置一个Servlet, 并通过<servlet-mapping>指定器处理的url.</servlet-mapping></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--1. 业务层和持久层的配置文件，被父Spring容器使用--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">context-param</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="title">param-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">param-value</span>&gt;</span>classpath:/conf/applicationContext.xml<span class="tag">&lt;/<span class="title">param-value</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">context-param</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">listener</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">listener-class</span>&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="tag">&lt;/<span class="title">listener-class</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">listener</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!--2. 声明DispatcherServlet. 默认自动加载/WEB-INF/viewspace-servlet.xml--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">servlet</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>viewspace<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="title">servlet-class</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="title">load-on-startup</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">servlet</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!--3. 为Dispatcher匹配的URL模式. 指定DispatcherServlet处理所有URL以.html为后缀的HTTP请求--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">servlet-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">servlet-name</span>&gt;</span>viewspace<span class="tag">&lt;/<span class="title">servlet-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">url-pattern</span>&gt;</span>*.html<span class="tag">&lt;/<span class="title">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">servlet-mapping</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>DispatcherServlet遵循“契约优于配置”的原则，在大多数情况下， 无须精心额外的配置。</p>
+<p><servlet>的<init-param>参数:</init-param></servlet></p>
+<ul>
+<li>namespace</li>
+<li>contextConfigLocation</li>
+<li>publishContent</li>
+<li>publishEvents</li>
+</ul>
+<h2 id="注解驱动的控制器">注解驱动的控制器</h2>
+<h1 id="8-_单元测试">8. 单元测试</h1>
+<h2 id="概述-1">概述</h2>
+<h3 id="基本概念">基本概念</h3>
+<p>被测系统(System Under Test):</p>
+<p>测试替身(Test Double): 使用测试替身，也可称为Mock, 减少被测对象的依赖。</p>
+<p>测试夹具(Test Fixture): 在测试方法之前自动进行初始化，和资源回收的工作。 @BeforeMethod, @AfterMethod, @Test, @BeforeClass, @AfterClass</p>
+<p>测试用例(Test Case)</p>
+<p>测试套件(TEst Suite)</p>
+<h2 id="TestNG快速进阶">TestNG快速进阶</h2>
+<h3 id="异常测试">异常测试</h3>
+<p>使用expetedExceptions:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> AutoNameAdviceTest {</div><div class="line">    <span class="keyword">private</span> User user;</div><div class="line">    @Test(enabled = <span class="keyword">true</span>, expectedExceptions = NullPointerException.class)</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUser</span>(){</div><div class="line">        user= <span class="keyword">new</span> User();</div><div class="line">        assertNotNull(user.getLastIp());</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="超时测试">超时测试</h3>
+<p>若在指定时间完成， 就通过测试.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="annotation">@Test</span>(timeOut = <span class="number">10</span>)</div><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTimeout</span>(){</div><div class="line">    user= <span class="keyword">new</span> User();</div><div class="line">    assertNotNull(user);</div><div class="line">    <span class="keyword">try</span> {</div><div class="line">        Thread.sleep(<span class="number">11</span>);</div><div class="line">    } <span class="keyword">catch</span> (InterruptedException e) {</div><div class="line">        e.printStackTrace();</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="参数化测试">参数化测试</h3>
+<h1 id="9-_敏捷开发技术">9. 敏捷开发技术</h1>
+<h1 id="10-_自己动手打造服务平台框架">10. 自己动手打造服务平台框架</h1>
+<h1 id="11-_实战案例开发">11. 实战案例开发</h1>
+<pre><code>      p:<span class="variable">proxyTargetClass=</span><span class="string">"true"</span>/&gt;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/12/02/Spring3-0就这么简单/" data-id="vnksoj35p9u4whw3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Programming-Erlang" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/21/Programming-Erlang/" class="article-date">
+  <time datetime="2014-11-21T00:09:31.000Z" itemprop="datePublished">11月 21 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言">前言</h1>
+<p>Erlang是函数式编程语言，在Erlang里，改变进程的状态是允许的，但一个进程改变另一个进程的状态则不行。<br>Erlang里没有互斥，没有同步方法，也没有内存共享式编程的各种设备。</p>
+<p>每个进程能且只能用一种方法交互，就是<strong>交换消息</strong> . </p>
+<p>编写Erlang程序时，实现的方式不是让单个进程执行所有任务， 而是生成大量只做简单事情的小进程，并让他们通信。</p>
+<p>本书介绍并发性，分布，容错和函数式编程，阐述如何编写一个没有锁和互斥，只是纯粹使用消息传到的分布式并发系统，<br>如何在多核CPU上自动加速程序， 如何编写让人们互相交流的分布式应用程序。<br>还介绍了如何编写容错和分布式系统的设计模式，如何给并发性建模,再把这些模型映射到计算机程序上。</p>
+<h1 id="1-_什么是并发">1. 什么是并发</h1>
+<h2 id="给并发建模">给并发建模</h2>
+<p>编程模型基于对现实世界的观察。</p>
+<h2 id="并发的益处">并发的益处</h2>
+<ol>
+<li>性能分析</li>
+<li>可扩展性</li>
+<li>容错性</li>
+<li>清晰性</li>
+</ol>
+<h1 id="2-_Erlang速览">2. Erlang速览</h1>
+<h2 id="进程，m模块和编译">进程，m模块和编译</h2>
+<p>例子(hello.erl)：</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(hello)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([start/<span class="number">0</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">start</span><span class="params">()</span> -&gt;</span></div><div class="line">    <span class="function_name">io:format</span>(<span class="string">"Hello world~n"</span>).</div></pre></td></tr></table></figure>
+
+<p>shell运行：</p>
+<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">hello</span>).
+{<span class="ok">ok</span>,<span class="function_or_atom">hello</span>}
+<span class="prompt">2&gt; </span><span class="function_or_atom">hello:start</span>().
+<span class="variable">Hello</span> <span class="function_or_atom">world</span>
+<span class="ok">ok</span>
+<span class="prompt">3&gt; </span>
+</code></pre><p>c(hello)命令编译hello.erl文件里的代码。</p>
+<p>编译:</p>
+<pre><code>$ erlc hello.erl                                                                                                  
+$ erl -noshell <span class="operator">-s</span> hello start <span class="operator">-s</span> init stop                                                                       
+Hello world
+</code></pre><p>$erl … 命令加载hello模块并执行hello:start()函数， 随后执行了init:stop(), 这个表达式终止了Erlang会话。</p>
+<p>Erlang的基本并发单元：进程。<br>一个进程是一个轻量级的虚拟机，只能通过发送和接收消息来与其他进程通信。</p>
+<h2 id="你好，并发">你好，并发</h2>
+<h3 id="文件服务器进程">文件服务器进程</h3>
+<p>文件服务器：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">-<span class="built_in">module</span>(afile_server).</div><div class="line">-<span class="reserved">export</span>([start/<span class="number">1</span>,<span class="keyword">loop</span>/<span class="number">1</span>]).</div><div class="line"></div><div class="line">start<span class="function"><span class="params">(Dir)</span> -&gt;</span> spawn(afile_server, <span class="keyword">loop</span>, [Dir]).</div><div class="line"></div><div class="line"><span class="keyword">loop</span><span class="function"><span class="params">(Dir)</span> -&gt;</span></div><div class="line">    receive</div><div class="line">        {Client, list_dir}<span class="function"> -&gt;</span></div><div class="line">            Client ! {self(), <span class="attribute">file</span>:list_dir(Dir)};</div><div class="line">        {Client, {get_file, File} }<span class="function"> -&gt;</span></div><div class="line">            Full = <span class="attribute">filename</span>:join(Dir, File),</div><div class="line">            Client ! {self(), <span class="attribute">file</span>:read_file(Full)}</div><div class="line">    end,</div><div class="line">    <span class="keyword">loop</span>(Dir).</div></pre></td></tr></table></figure>
+
+<p>模式：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">loop(Dir) -&gt;</div><div class="line">    %% 等待指令</div><div class="line">    receive</div><div class="line">        Command -&gt;</div><div class="line">            <span class="keyword">...</span> 做点什么 <span class="keyword">...</span></div><div class="line">    end,</div><div class="line">    loop(Dir).</div></pre></td></tr></table></figure>
+
+<p>shell测试：</p>
+<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">afile_server</span>).
+{<span class="ok">ok</span>,<span class="function_or_atom">afile_server</span>}
+<span class="prompt">2&gt; </span><span class="variable">FileServer</span> = <span class="function_or_atom">afile_server:start</span>(<span class="string">"."</span>)
+<span class="prompt">2&gt; </span>.
+&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;
+<span class="prompt">3&gt; </span><span class="variable">FileServer</span> <span class="exclamation_mark">!</span> {<span class="function_or_atom">self</span>(), <span class="function_or_atom">list_dir</span>}.
+{&lt;<span class="number">0.32</span>.<span class="number">0</span>&gt;,<span class="function_or_atom">list_dir</span>}
+<span class="prompt">4&gt; </span><span class="function_or_atom">receive</span> <span class="variable">X</span> <span class="arrow">-&gt;</span> <span class="variable">X</span> <span class="function_or_atom">end</span>.
+{&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;,
+{<span class="ok">ok</span>,[<span class="string">"afile_server.beam"</span>,<span class="string">"afile_server.erl"</span>,<span class="string">"hello.beam"</span>,
+    <span class="string">"hello.erl"</span>]}
+</code></pre><h3 id="客户端代码">客户端代码</h3>
+<p>客户端模块的目的：隐藏底层通信的细节。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(afile_client)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([ls/<span class="number">1</span>,get_file/<span class="number">2</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">ls</span><span class="params">(<span class="variable">Server</span>)</span>-&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), list_dir}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">FileList</span>}</span> -&gt;</div><div class="line">            <span class="variable">FileList</span></div><div class="line">    <span class="keyword">end</span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">get_file</span><span class="params">(<span class="variable">Server</span>, <span class="variable">File</span>)</span> -&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), <span class="tuple">{get_file, <span class="variable">File</span>}</span>}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">Content</span>}</span> -&gt;</div><div class="line">            <span class="variable">Content</span></div><div class="line">    <span class="keyword">end</span>.</div></pre></td></tr></table></figure>
+
+<h1 id="3-_基本概念">3. 基本概念</h1>
+<p>Erlang的遍历不可变，一次性赋值变量。</p>
+<h2 id="停止Erlang_shell">停止Erlang shell</h2>
+<p>q().</p>
+<h2 id="简单的整数运算">简单的整数运算</h2>
+<h2 id="变量">变量</h2>
+<p>变量名必须以<strong>大写字母</strong>开头.</p>
+<p>Erlang的变量不会变。</p>
+<p>变量绑定和模式匹配。</p>
+<p>没有副作用意味着可以让程序并行。</p>
+<h2 id="浮点数">浮点数</h2>
+<h2 id="原子">原子</h2>
+<h2 id="元组">元组</h2>
+<h2 id="列表">列表</h2>
+<h2 id="字符串">字符串</h2>
+<h2 id="模式匹配">模式匹配</h2>
+<h1 id="4-_模块和函数">4. 模块和函数</h1>
+<h2 id="模块是存放代码的地方">模块是存放代码的地方</h2>
+<ul>
+<li>逗号(,)分隔函数调用，数据构造和模式中的参数。</li>
+<li>分号(;)分隔子句。</li>
+<li>句号(.)分各个函数整体。</li>
+</ul>
+<h2 id="fun:_基本的抽象单元">fun: 基本的抽象单元</h2>
+<h1 id="5-_记录与映射组">5. 记录与映射组</h1>
+<h1 id="6-_顺序程序的错误处理">6. 顺序程序的错误处理</h1>
+<h1 id="7-_二进制与位语法">7. 二进制与位语法</h1>
+<h1 id="8-_Erlang顺序编程补遗">8. Erlang顺序编程补遗</h1>
+<h1 id="9-_类型">9. 类型</h1>
+<h1 id="10-_编译和运行程序">10. 编译和运行程序</h1>
+<h1 id="11-_现实世界中的并发">11. 现实世界中的并发</h1>
+<h1 id="12-_并发编程">12. 并发编程</h1>
+<h1 id="13-_并发程序中的错误">13. 并发程序中的错误</h1>
+<h1 id="14-_分布式编程">14. 分布式编程</h1>
+<h1 id="15-_接口技术">15. 接口技术</h1>
+<h1 id="16-_文件编程">16. 文件编程</h1>
+<h1 id="17-_套接字编程">17. 套接字编程</h1>
+<h1 id="18-_用WebSocket和Erlang进行浏览">18. 用WebSocket和Erlang进行浏览</h1>
+<h1 id="19-_用ETS和DETS存储编程">19. 用ETS和DETS存储编程</h1>
+<h1 id="20-_Mnesia:_Erlang数据库">20. Mnesia: Erlang数据库</h1>
+<h1 id="21-_性能分析，调试与跟踪">21. 性能分析，调试与跟踪</h1>
+<h1 id="22-_OTP介绍">22. OTP介绍</h1>
+<h1 id="23-_用OTP构建系统">23. 用OTP构建系统</h1>
+<h1 id="24-_编程术语">24. 编程术语</h1>
+<h1 id="25-_第三方程序">25. 第三方程序</h1>
+<h1 id="26-_多核CPU编程">26. 多核CPU编程</h1>
+<h1 id="27-_福尔摩斯的最后一案">27. 福尔摩斯的最后一案</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/11/21/Programming-Erlang/" data-id="so1gv6al5i4a57vi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Erlang/">Erlang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Pratical-Vim" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/11/17/Pratical-Vim/" class="article-date">
@@ -460,206 +1725,9 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
 
 
   
-    <article id="post-think-in-java" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/10/think-in-java/" class="article-date">
-  <time datetime="2014-10-10T05:30:43.000Z" itemprop="datePublished">10月 10 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/10/think-in-java/">java编程思想</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="7_复用类">7 复用类</h1>
-<p>复用代码是Java众多引人注目的功能之一.</p>
-<h2 id="7-1_组合语法">7.1 组合语法</h2>
-<p>引用初始化的地方:</p>
-<ol>
-<li>定义对象的地方.</li>
-<li>在类的构造器中</li>
-<li>惰性初始化, 在正要使用这些对象至二千.</li>
-<li>使用实例初始化</li>
-</ol>
-<h2 id="7-3_代理">7.3 代理</h2>
-<h2 id="7-7_向上转型">7.7 向上转型</h2>
-<p>使用继承还是组合?</p>
-<p>一个清晰的判断方法是问一问自己是否需要从新类向基类进行向上转型. 若需要, 则继承是必须的.</p>
-<h2 id="7-8_final关键字">7.8 final关键字</h2>
-<p>final通常指:”这是无法改变的”.</p>
-<h3 id="数据">数据</h3>
-<ul>
-<li>对于基本类型, final使数值恒定不变</li>
-<li>对于引用, 无法再改为指向另一个对象</li>
-</ul>
-<h1 id="8_多态">8 多态</h1>
-<p>在面向对象的程序设计语言中, 多态是继数据对象和继承之后的第三种基本特征.</p>
-<p>多态通过分离<strong>做什么</strong>和<strong>怎么做</strong>, 从另一个角度将接口和实现分离开来.</p>
-<p><strong>封装</strong>通过合并特征和行为来创建新的数据类型.</p>
-<p>多态的作用则是消除<strong>类型</strong>之间的耦合关系.</p>
-<p>绑定:</p>
-<ul>
-<li>前期绑定</li>
-<li>后期绑定</li>
-</ul>
-<p>可扩展性. 多态是一项让程序员”将改变的事物与未变的事务分离开来”</p>
-<p>只有非private方法才可以被覆盖, 当时还需要密切注意覆盖private方法的现象.</p>
-<p>在导出类主体中,若没有明确指定调用某个基类构造器,它就会”默默”地调用默认构造器.</p>
-<p>编写构造器准则: 用尽可能简单的方法使对象进入正常状态, 若干可以的话,避免调用其他方法.</p>
-<p>在构造器内唯一能够按期调用的方法是基类中的final方法.</p>
-<p>协变返回类型: 导出类中的被覆盖放客运返回基类方法的返回类型的某种导出类型. </p>
-<p>优先选择组合.</p>
-<p>通用的准则: 用继承表达行为间的差异,并用字段表达状态上的变化.</p>
-<h1 id="9_接口">9 接口</h1>
-<p>接口和内部类为我们提供了一种将接口和实现分离的更加结构化的方法.</p>
-<h1 id="12_通过异常处理错误">12 通过异常处理错误</h1>
-<p>java的基本理念: 结构不佳的代码不能运行.</p>
-<p>java的异常处理的目的在于通过使用少于目前数量的代码来简化大型,可靠的程序的生成,并通过这种方式使你更加自信:你的应用中没有未处理的错误.</p>
-<h2 id="12-1_概念">12.1 概念</h2>
-<p>c以及其他语言错误处理模式的问题.</p>
-<p>解决的办法: 用强制规定的形式来消除错误处理中随心所欲的因素.</p>
-<p>另一个好处: 降低错误处理的复杂度.可以把”描述在正常执行过程中做什么事”和”出了问题怎么办”的代码分离.</p>
-<h2 id="12-2_基本异常">12.2 基本异常</h2>
-<p>异常情形(exceptional condition)是指阻止当前方法或作用域继续执行的问题.</p>
-<p>异常最重要的方面之一是: 如果发生问题, 它们将不允许程序沿着其正常的路径继续走下去.</p>
-<p>例子:</p>
-<pre><code><span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"t = null"</span>);
-</code></pre><h2 id="12-3_捕获异常">12.3 捕获异常</h2>
-<p>try块:</p>
-<pre><code><span class="keyword">try</span>{
-    <span class="comment">// code that might generate exceptions</span>
-}<span class="keyword">catch</span>(Type1 id1){
-    <span class="comment">// Handle exptions of Type1</span>
-}<span class="keyword">catch</span>(Type2 id2){
-    <span class="comment">// Handle exception of Type2 </span>
-}
-</code></pre><p>异常处理两种基本模型:</p>
-<ul>
-<li>终止模型</li>
-<li>恢复模型. 修正错误,然后重新尝试调用出问题的方法.</li>
-</ul>
-<p>最终采用类似”终止模型”的代码. 恢复性的处理程序需要了解异常抛出的地点,势必要包含依赖于抛出位置的非通用性代码.增加了代码编写和维护的困难.</p>
-<h2 id="12-4_创建自定义异常">12.4 创建自定义异常</h2>
-<p>例子:</p>
-<pre><code><span class="class"><span class="keyword">class</span> <span class="title">SimpleException</span> <span class="inheritance"><span class="keyword">extends</span></span> <span class="title">Exception</span> </span>{}
-
-<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InheritingExceptions</span></span>{
-    <span class="keyword">public</span> <span class="keyword">void</span> f() throws SimpleException {
-        System.out.println(<span class="string">"Throw Exception from f()"</span>);
-        <span class="keyword">throw</span> <span class="keyword">new</span> SimpleException();
-    }
-    <span class="keyword">public</span> <span class="keyword">static</span> main(String[] args){
-        <span class="keyword">try</span>{
-            f();
-        }<span class="keyword">catch</span>(SimpleException e){
-            System.out.println(<span class="string">"Caugth it!"</span>);
-        }
-    }
-</code></pre><h2 id="12-12_其它可选方式">12.12 其它可选方式</h2>
-<p>异常处理的原则之一: 只有在你知道如何处理时才捕获异常.</p>
-<p>异常处理的目标之一: 把错误处理的代码和错误发生的地点分离开. 让两部分代码各专注各的.</p>
-<p>#</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2014/10/10/think-in-java/" data-id="ji7pqqt6ud6yvc4q" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/program/">program</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-how-to-use-hexo" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/09/how-to-use-hexo/" class="article-date">
-  <time datetime="2014-10-09T07:03:30.000Z" itemprop="datePublished">10月 9 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/09/how-to-use-hexo/">使用 hexo</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-_安装">1. 安装</h1>
-<ol>
-<li>安装node.js : <a href="http://nodejs.org/#download" target="_blank" rel="external">http://nodejs.org/#download</a></li>
-<li><p>安装npm: </p>
-<ul>
-<li>git clone —recursive git://github.com/isaacs/npm.git</li>
-<li>cd npm</li>
-<li>sudo node cli.js install npm -gf</li>
-</ul>
-</li>
-<li><p>安装hexo: npm install hexo -g</p>
-</li>
-<li>git clone <a href="https://github.com/yuqiao/yuqiao.github.io.git" target="_blank" rel="external">https://github.com/yuqiao/yuqiao.github.io.git</a></li>
-<li>cd yuqiao.github.io</li>
-<li>hexo init</li>
-<li>npm install</li>
-<li><p>vi _config.yml  # 配置git deploy</p>
-<p>  deploy:</p>
-<pre><code><span class="attribute">type</span>: <span class="string">github</span>
-<span class="attribute">repository</span>: <span class="string">https://github.com/yuqiao/yuqiao.github.io.git</span>
-<span class="attribute">branch</span>: <span class="string">master</span>
-</code></pre></li>
-<li><p>hexo generate</p>
-</li>
-<li>hexo deploy</li>
-</ol>
-<h1 id="2-_使用">2. 使用</h1>
-<ol>
-<li>修改_config.yml</li>
-<li>hexo new “xxxx”</li>
-</ol>
-<h1 id="参考">参考</h1>
-<ol>
-<li><a href="http://zipperary.com/2013/05/28/hexo-guide-2/" target="_blank" rel="external">http://zipperary.com/2013/05/28/hexo-guide-2/</a></li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2014/10/09/how-to-use-hexo/" data-id="i4pep39cwh2svg6z" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 </section>
@@ -672,7 +1740,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/golang/" style="font-size: 10.00px;">golang</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 13.33px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 10.00px;">think</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
     </div>
   </div>
 
@@ -681,7 +1749,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -693,23 +1761,23 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
       <ul>
         
           <li>
-            <a href="/2015/03/04/如何记笔记/">如何记笔记</a>
+            <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
           </li>
         
           <li>
-            <a href="/2015/02/27/p专业主义/">专业主义</a>
+            <a href="/2015/03/14/Go并发编程实战/">Go并发编程实战</a>
           </li>
         
           <li>
-            <a href="/2015/02/27/java核心技术/">java核心技术</a>
+            <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
           </li>
         
           <li>
-            <a href="/2015/02/18/javascript权威指南/">javascript权威指南</a>
+            <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
           </li>
         
           <li>
-            <a href="/2015/02/17/node即学即用/">node即学即用</a>
+            <a href="/2015/03/07/ProgrammingInScala/">Scala编程</a>
           </li>
         
       </ul>

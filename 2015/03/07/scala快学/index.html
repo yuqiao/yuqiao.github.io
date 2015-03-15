@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>快学scala | Joe&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1 基础
+scala解释器
+声明值和变量
+变量或函数的类型总是写在变量或函数名称的后面。 使得我们更容易阅读那些负责类型的声明。
+val greeting: String = null
+val greeting: Any = 'Hello'
+可以将多个值或变量放在一起声明:
+val xmax, ymax = 100 //将xmax和ymax设为100
+valgreeting, message: S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="快学scala">
+<meta property="og:url" content="http://yuqiao.github.io/2015/03/07/scala快学/">
+<meta property="og:site_name" content="Joe's Blog">
+<meta property="og:description" content="1 基础
+scala解释器
+声明值和变量
+变量或函数的类型总是写在变量或函数名称的后面。 使得我们更容易阅读那些负责类型的声明。
+val greeting: String = null
+val greeting: Any = 'Hello'
+可以将多个值或变量放在一起声明:
+val xmax, ymax = 100 //将xmax和ymax设为100
+valgreeting, message: S">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="快学scala">
+<meta name="twitter:description" content="1 基础
+scala解释器
+声明值和变量
+变量或函数的类型总是写在变量或函数名称的后面。 使得我们更容易阅读那些负责类型的声明。
+val greeting: String = null
+val greeting: Any = 'Hello'
+可以将多个值或变量放在一起声明:
+val xmax, ymax = 100 //将xmax和ymax设为100
+valgreeting, message: S">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Joe&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Carpe Diem</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">存档</a>
+        
+          <a class="main-nav-link" href="/about">关于</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yuqiao.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-scala快学" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/07/scala快学/" class="article-date">
+  <time datetime="2015-03-07T01:10:50.000Z" itemprop="datePublished">3月 7 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      快学scala
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1_基础">1 基础</h1>
+<h2 id="scala解释器">scala解释器</h2>
+<h2 id="声明值和变量">声明值和变量</h2>
+<p>变量或函数的类型总是写在变量或函数名称的后面。 使得我们更容易阅读那些负责类型的声明。</p>
+<pre><code><span class="keyword">val</span> greeting: String = <span class="keyword">null</span>
+<span class="keyword">val</span> greeting: Any = <span class="string">"Hello"</span>
+</code></pre><p>可以将多个值或变量放在一起声明:</p>
+<pre><code>val xmax, ymax = <span class="number">100</span> <span class="comment">//将xmax和ymax设为100</span>
+valgreeting, message: <span class="built_in">String</span> = <span class="literal">null</span>
+</code></pre><h2 id="常用类型">常用类型</h2>
+<p>7种数值类型： Byte, Char, Short, Int, Long, Float和Double, Boolean</p>
+<p>不需要包装类型，基本类型和包装类型自己的转换是scala编译器的工作。</p>
+<p>在scala中，我们用方法，而不是强制类型转换， 来做数值类型之间的转换：</p>
+<pre><code><span class="number">99.44</span>.toInt <span class="comment">//= 99</span>
+<span class="number">99.</span>toChar   <span class="comment">//='c'</span>
+</code></pre><h2 id="算术和操作符重载是">算术和操作符重载是</h2>
+<p>“a 方法 b”  是 “a.方法(b)” 的简写</p>
+<p>scala没有++， — 操作符</p>
+<h2 id="apply方法">apply方法</h2>
+<p>“hello”(4)是”hello”.apply(4)的缩写。</p>
+<p>使用伴生对象的apply方法。</p>
+<h2 id="Scaladoc">Scaladoc</h2>
+<p>www.scala-lang.org/api<br>或者www.scala-lang.org/downloads#api</p>
+<p>类名旁边的O(伴生对象）和C（类）</p>
+<p>scala文档小窍门:</p>
+<ul>
+<li>想使用数值类型， 记得看看RichInt, RichDouble等， 字符串，记得看看StringOps.</li>
+<li>数值函数位于scala.math包中。</li>
+<li>名称比较奇怪的函数。 如BigInt有个方法unary_-, 就是你定义前置的负操作符-x的方式</li>
+<li>标记位implicit的方法对应的是自动（隐式）转换。</li>
+<li>方法可以以函数为常数</li>
+</ul>
+<h1 id="2_控制结构和函数">2 控制结构和函数</h1>
+<h2 id="变长参数">变长参数</h2>
+<p>使用Int<em>, 若传入的数组后面要加上”:_</em>“转换</p>
+<pre><code>def sum(args:<span class="type">Int</span>*) = {
+  <span class="keyword">var</span> <span class="literal">result</span> = <span class="number">0</span>
+  <span class="keyword">for</span>(arg &lt;- args) <span class="literal">result</span> += arg
+  <span class="literal">result</span>
+}
+val s = sum(<span class="number">1</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">9</span>)
+val s2 = sum(<span class="number">1</span> to <span class="number">10</span>: _*)
+</code></pre><h2 id="懒值">懒值</h2>
+<p>但val被声明为lazy时，它的初始化将被推迟，直到我们首次对它取值。</p>
+<p>lazy val words = scala.io.Source.fromFile(“/usr/share/dict/words”).mkString</p>
+<h2 id="异常">异常</h2>
+<p>throws表达式有特殊的类型Nothing.</p>
+<h1 id="3_数组相关操作">3 数组相关操作</h1>
+<p>要点：</p>
+<ul>
+<li>长度固定使用Array， 长度可能变化用ArrayBuffer</li>
+<li>提供初始值不用使用new</li>
+<li>用()来访问元素</li>
+<li>用for(elem &lt;- arr)来遍历元素</li>
+<li>用for(elem &lt;- arr if …)… yeild .. 来将原数组转型为新数组</li>
+<li>scala数组和Java数组可以互操作；用ArrayBuffer, 使用scala.collection.JavaConversions中的转换函数。</li>
+</ul>
+<h2 id="与java的互操作">与java的互操作</h2>
+<p>转成java的List:</p>
+<pre><code>import scala.collection.JavaConversions.bufferAsJavaList
+val <span class="command"><span class="keyword">command</span> = <span class="title">ArrayBuffer</span>(<span class="string">"ls"</span>, <span class="string">"-la"</span>, <span class="string">"/home/"</span>)</span>
+val pb = <span class="built_in">new</span> ProcessBuilder(<span class="command"><span class="keyword">command</span>)</span>
+</code></pre><p>将java的List转成BufferArray:</p>
+<pre><code>import scala.collection.JavaConversions.asScalaBuffer
+<span class="keyword">val</span> cmd:<span class="keyword">mutable</span>.Buffer[String] = pb.command()
+</code></pre><h1 id="4_映射和元组">4 映射和元组</h1>
+<pre><code>val scores <span class="subst">=</span> <span class="built_in">Map</span>(<span class="string">"Alice"</span> <span class="subst">-&gt; </span><span class="number">10</span>, <span class="string">"Bob"</span> <span class="subst">-&gt; </span><span class="number">3</span>, <span class="string">"Cindy"</span> <span class="subst">-&gt; </span><span class="number">5</span>)
+val ms <span class="subst">=</span> scala<span class="built_in">.</span>collection<span class="built_in">.</span>mutable<span class="built_in">.</span><span class="built_in">Map</span>(<span class="string">"Alice"</span> <span class="subst">-&gt; </span><span class="number">10</span>, <span class="string">"Bob"</span> <span class="subst">-&gt; </span><span class="number">3</span>, <span class="string">"Cindy"</span> <span class="subst">-&gt; </span><span class="number">5</span>)
+println(scores(<span class="string">"Bob"</span>))
+println(scores<span class="built_in">.</span>getOrElse(<span class="string">"yuqiao"</span>, <span class="number">0</span>))
+</code></pre><p>与Java的互操作：</p>
+<pre><code><span class="preprocessor"><span class="keyword">import</span> scala.collection.JavaConversions.mapAsScalaMap</span>
+</code></pre><p>使用zip:</p>
+<pre><code>val symbols = Array(<span class="string">"&lt;"</span>, <span class="string">"-"</span>, <span class="string">"&gt;"</span>)
+val counts = Array(<span class="number">2</span>, <span class="number">10</span>, <span class="number">2</span>)
+val <span class="built_in">pairs</span> = symbols.zip(counts)
+<span class="keyword">for</span>((k,v)&lt;-<span class="built_in">pairs</span>){
+  <span class="built_in">print</span>(k*v)
+}
+</code></pre><p>使用toMap将对偶集合转换成映射Map.</p>
+<h1 id="5_类">5 类</h1>
+<p>要点:</p>
+<ul>
+<li>类中字段自动带有getter和setter方法</li>
+<li>可以用定制的getter/setter方法替换掉字段的定义</li>
+<li>用@BeanProperty注解来生成JavaBeans的getXXX/setXXX方法</li>
+<li>每个类都有一个主要的构造器, 它的参数直接成为类的字段。</li>
+<li>辅助构造器是可选的， 叫做this.</li>
+</ul>
+<p>定义类:</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Counter</span> </span>{
+    <span class="keyword">private</span> <span class="keyword">var</span> value = <span class="number">0</span>
+    <span class="keyword">def</span> increment() { value +=<span class="number">1</span>}
+    <span class="keyword">def</span> current() = value
+}
+
+<span class="keyword">val</span> myCounter = <span class="keyword">new</span> Counter
+myCounter.increment()        <span class="comment">//对改值器使用()</span>
+println(myCounter.current)   <span class="comment">//对取值器不使用()</span>
+</code></pre><p>在scala中， getter和setter分别是age和age_=</p>
+<p>统一访问原则</p>
+<p>对象私有字段</p>
+<p>Bean属性</p>
+<p>主构造器:</p>
+<pre><code><span class="keyword">class</span> Person(val name:String, val age: <span class="keyword">Int</span>) {
+
+<span class="keyword">def</span> <span class="keyword">description</span> = name + <span class="string">" is "</span> + age + <span class="string">" years old"</span>
+}
+</code></pre><p>Martin Odesky建议: 在scala中, 类也接受参数， 就像方法一样。</p>
+<p>嵌套类:</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Network</span> </span>{
+    <span class="class"><span class="keyword">class</span> <span class="title">Member</span><span class="params">(val name:String)</span></span>{
+        <span class="keyword">val</span> contacts = <span class="keyword">new</span> ArrayBuffer[Member]()
+    }
+
+    <span class="keyword">private</span> <span class="keyword">val</span> members = <span class="keyword">new</span> ArrayBuffer[Member]()
+
+    <span class="keyword">def</span> join(name:String)={
+        <span class="keyword">val</span> m = <span class="keyword">new</span> Member(name)
+        members += m
+        m
+    }
+}
+
+<span class="keyword">val</span> chatter = <span class="keyword">new</span> Network
+<span class="keyword">val</span> myFace = <span class="keyword">new</span> Network
+</code></pre><p>每个实例都有它自己的Member类。chatter.Member和myFace.Member是不同的类。</p>
+<p>可以放在Network的伴生对象。</p>
+<h1 id="6_对象">6 对象</h1>
+<p>scala没有静态方法或静态字段， 可以用object这个语法结构达到同样目的。</p>
+<p>枚举通过扩展Enumeration实现：</p>
+<pre><code><span class="class"><span class="keyword">object</span> <span class="title">TrafficColor</span> <span class="keyword">extends</span> <span class="title">Enumeration</span></span>{
+    <span class="keyword">type</span> TrafficColor = Value
+    <span class="keyword">val</span> Red, Yellow, Geen = Value
+}
+
+<span class="keyword">def</span> doWhat(color: TrafficColor) ={
+  <span class="keyword">if</span>(color == Red)  <span class="string">"stop"</span>
+  <span class="keyword">else</span> <span class="keyword">if</span>(color==Geen) <span class="string">"go"</span>
+  <span class="keyword">else</span> <span class="string">"hurry up"</span>
+}
+
+<span class="keyword">def</span> testEnum(): Unit = {
+  <span class="keyword">for</span>(c &lt;- TrafficColor.values) println(c.id + <span class="string">":"</span> + c + <span class="string">" "</span> + doWhat(c))
+}
+</code></pre><h1 id="7_包和引入">7 包和引入</h1>
+<p>要点:</p>
+<ul>
+<li>包也可以像内部类那样嵌套</li>
+<li>包路径不是绝对路径</li>
+<li>包声明链x.y.z并不自动将中间包x.y变成可见</li>
+<li>位于文件顶部不带花括号的包声明在整个文件范围内有效</li>
+<li>包对象可以持有函数和变量</li>
+<li>引入语句可以引入包，类和对象</li>
+<li>引入语句可以出现在任何地方</li>
+<li>引入语句可以重命名和隐藏特定成员</li>
+<li>java.lang, scala和predef总是被引入</li>
+</ul>
+<h1 id="8_继承">8 继承</h1>
+<p>要点:</p>
+<ul>
+<li>extends, final关键字和java相同</li>
+<li>重写方法必须用override</li>
+<li>只有主构造器可以钓鱼超类的主构造器</li>
+<li>你可以重写字段</li>
+</ul>
+<p>类型检查和转换:</p>
+<pre><code><span class="keyword">if</span>(p.isInstanceOf[Employee]){
+    val s = p.asInstanceOf[Employee]
+    <span class="keyword">...</span>
+}
+</code></pre><p>若想测试p指向的是一个Employee对象但又不是其子类：</p>
+<pre><code><span class="keyword">if</span>(p.getClasss == <span class="class"><span class="keyword">class</span><span class="title">Of</span>[<span class="title">Employee</span>])</span>
+</code></pre><p>classOf定义在scala.Predef对象中。</p>
+<p>模式匹配通常是更好的选择：</p>
+<pre><code>p match {
+    case s:Employee =&gt; <span class="keyword">...</span> // 将s作为Employee处理
+    case _ =&gt; // p 不是Employee
+}
+</code></pre><p>超类的构造：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Employee</span><span class="params">(name: String, age: Int, val salary: Double)</span><span class="keyword">extends</span> <span class="title">Person</span><span class="params">(name, age)</span></span>
+</code></pre><p>可以用val重写抽象def. 但def只能重写def, var只能重写另一个抽象的var</p>
+<p>匿名子类：</p>
+<pre><code>val alien = <span class="keyword">new</span> Person(<span class="string">"Fred"</span>) {
+    <span class="keyword">def</span> greeting = <span class="string">"Greetings, Earthinling! My name is Fred!"</span>
+}
+
+<span class="keyword">def</span> meet(p: Person{<span class="keyword">def</span> greeting: String}){
+    <span class="keyword">println</span>(p.name +<span class="string">"says: "</span> + p.greeting)
+}
+</code></pre><p>抽象类：用abstract标记不能实例化的类。</p>
+<p>重写超类的抽象方法， 不需要override.</p>
+<p>类可以有抽象字段。</p>
+<p>构造顺序和提前定义。 </p>
+<p>提前定义， 让你可以在超类的构造器之前初始化子类的val字段：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Ant</span> <span class="keyword">extends</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">val</span> range = <span class="number">2</span>
+} <span class="keyword">with</span> Creature
+</code></pre><h2 id="Scala继承层级">Scala继承层级</h2>
+<p>基本类型和Unit， 都扩展自AnyVal<br>类都扩展自AnyRef.</p>
+<p>AnyVal和AnyRef的基类是Any。Any是根节点.</p>
+<p>Any类定义了isInstanceOf, asInstanceOf方法， 以及用于相等性判断和哈希码的方法<br>AnyRef追加了来着Object类的jai</p>
+<h1 id="9_文件和正则表达式">9 文件和正则表达式</h1>
+<h1 id="10_特质">10 特质</h1>
+<h1 id="11_操作符">11 操作符</h1>
+<h1 id="12_高阶函数">12 高阶函数</h1>
+<h1 id="13_集合">13 集合</h1>
+<h1 id="14_模式匹配和样例类">14 模式匹配和样例类</h1>
+<h1 id="15_注解">15 注解</h1>
+<h1 id="16_XML处理">16 XML处理</h1>
+<h1 id="17_类型参数">17 类型参数</h1>
+<h1 id="18_高级类型">18 高级类型</h1>
+<h1 id="19_解析">19 解析</h1>
+<h1 id="20_Actor">20 Actor</h1>
+<h1 id="21_隐式转换和隐式参数">21 隐式转换和隐式参数</h1>
+<h1 id="22_定界延续">22 定界延续</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/03/07/scala快学/" data-id="vbw899bc9g9rfzk4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scalao/">scalao</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/03/07/ProgrammingInScala/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Scala编程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/03/04/如何记笔记/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">如何记笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/golang/" style="font-size: 10.00px;">golang</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 13.33px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 10.00px;">think</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/14/Go并发编程实战/">Go并发编程实战</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/07/ProgrammingInScala/">Scala编程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Peter Yu<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">存档</a>
+  
+    <a href="/about" class="mobile-nav-link">关于</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

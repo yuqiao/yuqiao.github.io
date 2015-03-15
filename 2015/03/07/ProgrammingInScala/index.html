@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Scala编程 | Joe&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1 可扩展的语言
+增加新的类型:
+ scala像一个集市而不是大教堂, 它被设计为可以让使用他的人扩展和修改.
+增加新的控制结构:
+ 基于actor的并发模型
+为何使用scala
+1 兼容的2 简洁的3 高级的
+ 程序员总是在与代码的复杂性搏斗.只有对工作的代码了如指掌,才能有的放矢的编程开发.
+ 复杂的代码成了很多软件项目崩溃的原因.
+ 不幸的是,重要的软件通常需求复杂.复杂性不可避免,那么必须">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scala编程">
+<meta property="og:url" content="http://yuqiao.github.io/2015/03/07/ProgrammingInScala/">
+<meta property="og:site_name" content="Joe's Blog">
+<meta property="og:description" content="1 可扩展的语言
+增加新的类型:
+ scala像一个集市而不是大教堂, 它被设计为可以让使用他的人扩展和修改.
+增加新的控制结构:
+ 基于actor的并发模型
+为何使用scala
+1 兼容的2 简洁的3 高级的
+ 程序员总是在与代码的复杂性搏斗.只有对工作的代码了如指掌,才能有的放矢的编程开发.
+ 复杂的代码成了很多软件项目崩溃的原因.
+ 不幸的是,重要的软件通常需求复杂.复杂性不可避免,那么必须">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Scala编程">
+<meta name="twitter:description" content="1 可扩展的语言
+增加新的类型:
+ scala像一个集市而不是大教堂, 它被设计为可以让使用他的人扩展和修改.
+增加新的控制结构:
+ 基于actor的并发模型
+为何使用scala
+1 兼容的2 简洁的3 高级的
+ 程序员总是在与代码的复杂性搏斗.只有对工作的代码了如指掌,才能有的放矢的编程开发.
+ 复杂的代码成了很多软件项目崩溃的原因.
+ 不幸的是,重要的软件通常需求复杂.复杂性不可避免,那么必须">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Joe&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Carpe Diem</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">存档</a>
+        
+          <a class="main-nav-link" href="/about">关于</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yuqiao.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ProgrammingInScala" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/07/ProgrammingInScala/" class="article-date">
+  <time datetime="2015-03-07T02:47:36.000Z" itemprop="datePublished">3月 7 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Scala编程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1_可扩展的语言">1 可扩展的语言</h1>
+<p>增加新的类型:</p>
+<pre><code> scala像一个集市而不是大教堂, 它被设计为可以让使用他的人扩展和修改.
+</code></pre><p>增加新的控制结构:</p>
+<pre><code> 基于actor的并发模型
+</code></pre><h2 id="为何使用scala">为何使用scala</h2>
+<p>1 兼容的<br>2 简洁的<br>3 高级的</p>
+<pre><code> 程序员总是在与代码的复杂性搏斗.只有对工作的代码了如指掌,才能有的放矢的编程开发.
+ 复杂的代码成了很多软件项目崩溃的原因.
+ 不幸的是,重要的软件通常需求复杂.复杂性不可避免,那么必须加强管理.
+ scala可以通过帮助提升接口的抽象级别来帮助管理复杂性.
+</code></pre><p>4 静态类型的</p>
+<pre><code> scala通过类型推断避免了冗余性
+ 通过模式匹配和一些新的编写和组织类型的办法获得了灵活性.
+ 静态类型系统可以保证消除某些运行时错误.
+</code></pre><h1 id="2_Scala入门初探">2 Scala入门初探</h1>
+<p>定义方法时, 如果仅仅包含一条语句, 可以连花括号可以不写.</p>
+<p>倾向于函数式的编程风格::</p>
+<pre><code>    args.<span class="keyword">foreach</span>( arg =&gt; println(arg ) )
+    args.<span class="keyword">foreach</span>( println )
+</code></pre><p>scala的数组是通过索引值加圆括号进行访问( 不是方括号)</p>
+<p>另一个准则: 方法只有一个参数,调用的时候可以省略点和括号::</p>
+<pre><code>    <span class="keyword">for</span>( <span class="keyword">i</span> &lt;- <span class="number">0</span> <span class="keyword">to</span> <span class="number">2</span> )
+        <span class="keyword">print</span>( greetingString(<span class="keyword">i</span>))
+</code></pre><p>用括号传递给变量一个或多个值变量时, Scala会把它转换为对apply方法的调用.</p>
+<p>类似有update方法调用.</p>
+<p>scala对任何事物都追求概念的简洁性, 从数组到表达式,包括带有方法的对象.</p>
+<p>方法没有副作用是函数式风格编程的重要概念.</p>
+<p>为何列表不支持append, 性能差</p>
+<p>Scala程序员的平衡感:</p>
+<pre><code> 崇尚val, 不可变量和没有副作用的方法.
+ 首先想到他们.只有在特定需要和并加以权衡之后才选择var,可变对象和有副作用的方法.
+</code></pre><p>从文件里读取文本行:</p>
+<pre><code>    <span class="keyword">for</span>( <span class="built_in">line</span> &lt;- Source.fromFile(<span class="string">"scalaProject.iml"</span>).getLines())
+      println( <span class="built_in">line</span>.<span class="built_in">length</span> + <span class="string">" "</span> + <span class="built_in">line</span>)
+</code></pre><h1 id="4_类和对象">4 类和对象</h1>
+<p>保持对象健壮性的重要方法之一: 保证对象的状态.</p>
+<p>scala里方法参数的一个重要特征是他们都是val.</p>
+<p>方法的推荐风格是尽量避免return语句, 尤其是多条return语句.</p>
+<p>scala通常的风格:把操作符放在行尾和不是行头::</p>
+<pre><code>    <span class="title">x</span> +
+    y +
+    z
+</code></pre><p>scala不能定义静态成员,而代之定义单例对象.</p>
+<h1 id="5_基本类型和操作">5 基本类型和操作</h1>
+<p>值类型: Int,Long,Short,Byte,Float,Double,Char, Boolean<br>String</p>
+<p>符号字面值:  ‘&lt;标识符&gt;, Symbol(“cybmbal”)</p>
+<p>方法调用的空括号可以省略. 惯例是若方法带有副作用就加上括号, 如pringln(). 若没有副作用,就去掉括号.</p>
+<p>scala的==与java有差别.</p>
+<p>富包装器.</p>
+<h1 id="6_函数式对象">6 函数式对象</h1>
+<p>函数式对象: 不具有任何可改变状态的对象的类</p>
+<p>不可变对象的缺点: 有时需要负责很大的对象表, 而可变对象的更新可以在原址上发生.</p>
+<p>为朱构造器定义先决条件. 用require方法.</p>
+<p>不建议在标识符结尾使用下划线.</p>
+<p>scala的常量名, 习惯只是第一个字母必须大写.</p>
+<p>如果无技巧性地使用, 操作符方法和隐式转换都会让客户代码变得难以阅读和理解.</p>
+<p>在设计库的时候你应记在脑袋你的目标并不是仅仅让客户代码简洁, 而是让他变得更可读,更易懂.</p>
+<h1 id="7_内建控制结构">7 内建控制结构</h1>
+<p>由于while循环不产生值,因此他经常被纯函数式语言所舍弃.</p>
+<p>for 过滤:</p>
+<pre><code>    val filesHere = (<span class="keyword">new</span> java.io.<span class="keyword">File</span>(<span class="string">"."</span>) ).listFiles
+    <span class="keyword">for</span>( <span class="keyword">file</span> &lt;- filesHere <span class="keyword">if</span> <span class="keyword">file</span>.getname.endsWith(<span class="string">".scala"</span>)
+        <span class="keyword">println</span>( <span class="keyword">file</span>)
+
+    <span class="keyword">for</span>( 
+        <span class="keyword">file</span> &lt;- filesHere
+        <span class="keyword">if</span> <span class="keyword">file</span>.isFile;
+        <span class="keyword">if</span> <span class="keyword">file</span>.getName.endsWith(<span class="string">".scala"</span>)
+    ) <span class="keyword">println</span>(<span class="keyword">file</span>)
+</code></pre><p>嵌套枚举:</p>
+<pre><code>    <span class="keyword">def</span> fileLines(<span class="keyword">file</span>: java.io.<span class="keyword">File</span>) =
+        scala.io.<span class="keyword">Source</span>.fromFile(<span class="keyword">file</span>).getLines.<span class="keyword">toList</span>
+
+    <span class="keyword">def</span> <span class="keyword">grep</span>(pattern: String)=
+        <span class="keyword">for</span>(
+            <span class="keyword">file</span> &lt;- filesHere
+            <span class="keyword">if</span> <span class="keyword">file</span>.getName.endsWith(<span class="string">".scala"</span>);     <span class="comment">//必须有分号;</span>
+            line &lt;- fileLines(<span class="keyword">file</span>)
+            <span class="keyword">if</span> line.trim.matches(pattern)
+        )<span class="keyword">println</span>( <span class="keyword">file</span> + <span class="string">": "</span>+ line.trim )
+
+    <span class="keyword">grep</span> (<span class="string">".*gcd.*"</span>)
+</code></pre><p>可以使用花括号代替小括号包裹发生器和过滤器,优点:可以不写分号.</p>
+<p>以上有缺点, line.trim多次计算. 可以使用流间变量绑定::</p>
+<pre><code>    <span class="keyword">def</span> <span class="keyword">grep</span>(pattern: String)=
+        <span class="keyword">for</span> {
+            <span class="keyword">file</span> &lt;- filesHere
+            <span class="keyword">if</span> <span class="keyword">file</span>.getName.endsWith(<span class="string">".scala"</span>)
+            line &lt;- fileLines(<span class="keyword">file</span>)
+            trimmed = line.trim
+            <span class="keyword">if</span> trimmed.matches(pattern)
+        } <span class="keyword">println</span>( <span class="keyword">file</span> + <span class="string">": "</span>+ trimmed )
+</code></pre><p>制造新集合. 使用yield::</p>
+<pre><code>    <span class="keyword">for</span> {  子句 } <span class="keyword">yield</span> { 循环体}
+</code></pre><p>抛出异常的类型是Nothing.</p>
+<p>catch使用模式匹配::</p>
+<pre><code>    <span class="keyword">try</span>{
+        val f = <span class="keyword">new</span> FileReader(<span class="string">"input.txt"</span>)
+    }<span class="keyword">catch</span>{
+        <span class="keyword">case</span> ex:FileNotFoundException =&gt; <span class="comment">// 处理丢失的文件</span>
+        <span class="keyword">case</span> ex: IOException =&gt; <span class="comment">//处理io错误</span>
+    }
+</code></pre><p>finally也产生值.</p>
+<p>不再使用break和continue</p>
+<p>变量范围::</p>
+<pre><code>任何定义在花括号里的东西超出括号之后就脱离了范围. ( <span class="keyword">for</span>子句有例外)
+</code></pre><h1 id="8_函数和闭包">8 函数和闭包</h1>
+<p>函数式编程风格的重要设计原则: 程序应该被解构成若干小的函数.</p>
+<p>本地函数可以访问包含其函数的参数.</p>
+<p>函数字面值::</p>
+<pre><code>    <span class="function"><span class="params">(x: Int)</span> =&gt;</span> x + <span class="number">1</span>
+</code></pre><p>想让函数字面量包含多条语句,可以用花括号包住函数体,一行一语句 ::</p>
+<pre><code>    <span class="function"><span class="title">increase</span> = <span class="params">(x: Int)</span> =&gt;</span> {
+        println(<span class="string">"We"</span>)
+        println(<span class="string">"are"</span>)
+        println(<span class="string">"here!)
+        x + 1
+    }</span>
+</code></pre><p>其他例子::</p>
+<pre><code>    val someNumbers = List( -<span class="number">11</span>, -<span class="number">10</span>, -<span class="number">5</span>, <span class="number">0</span>, <span class="number">5</span>, <span class="number">10</span>)
+    someNumbers.foreach<span class="function"><span class="params">(  (x:Int) =&gt; println( x ) )</span>
+    <span class="title">someNumbers</span>.<span class="title">filter</span><span class="params">( (x:Int) =&gt; x &gt; <span class="number">0</span> )</span></span>
+</code></pre><p>函数字面量的短格式. ( 去除参数类型; 去除括号) ::</p>
+<pre><code><span class="attribute">    someNumbers.filter( x </span>=<span class="string">&gt; x &gt; 0 )</span>
+</code></pre><p>占位符语法(只要每个参数在函数字面量内仅出现一次)::</p>
+<pre><code>    someNumbers.<span class="built_in">filter</span>( _ &gt; <span class="number">0</span> )
+
+    val f = (_: <span class="built_in">Int</span> ) + (_ : <span class="built_in">Int</span> )
+    f(<span class="number">5</span>, <span class="number">10</span> )
+</code></pre><p>还可以用单个下划线代替整个参数列表::</p>
+<pre><code>    someNumbers.foreach( println _ )
+    def <span class="built_in">sum</span>(<span class="operator">a</span>: Int, b: Int, c:Int ) = <span class="operator">a</span> + b + c
+    val <span class="operator">a</span> = <span class="built_in">sum</span> _
+    <span class="operator">a</span>( <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> )
+
+    val b = <span class="built_in">sum</span>( <span class="number">1</span>, _:Int, <span class="number">3</span> )
+</code></pre><p> 写一个省略所以参数偏函数表达式, 如 println <em> 或 sum </em>, 在需要函数的地方可进一步去掉占位符::</p>
+<pre><code>    someNumbers.<span class="keyword">foreach</span>( println )
+
+    <span class="comment">//但不能这样写: val c = sum</span>
+    val d = sum _   <span class="comment">//必须带占位符</span>
+</code></pre><h1 id="9_控制抽象">9 控制抽象</h1>
+<h2 id="9-1_减少代码重复">9.1 减少代码重复</h2>
+<p>所有的函数都可以被分成通用部分, 以及非通用部分. 通用部分是函数体, 而非通用部分必须由参数提供.</p>
+<p>高阶函数: 带其他函数做参数的函数- 给你额外的机会去组织和简化代码.</p>
+<p>例如:</p>
+<pre><code>    object FileMatcher {
+        <span class="keyword">def</span> fileHere = (<span class="keyword">new</span> java.io.<span class="keyword">File</span>(<span class="string">"."</span>)).listFiles
+    <span class="keyword">def</span> filesEnding(query:String) =
+        <span class="keyword">for</span>(<span class="keyword">file</span> &lt;- fileHere; <span class="keyword">if</span> <span class="keyword">file</span>.getName.endsWith(query))
+        yield <span class="keyword">file</span>
+
+    <span class="keyword">def</span> filesContain(query:String) =
+        <span class="keyword">for</span>(<span class="keyword">file</span> &lt;- fileHere; <span class="keyword">if</span> <span class="keyword">file</span>.getName.contains(query))
+        yield <span class="keyword">file</span>
+
+    }
+</code></pre><p>以上filesEnding和FilesContain结构很像.</p>
+<pre><code>    def filesMatching(query:<span class="typename">String</span>, matcher: (<span class="typename">String</span>,<span class="typename">String</span>) =&gt;<span class="typename">Boolean</span>) =
+        <span class="keyword">for</span>(<span class="keyword">file</span> &lt;- fileHere; <span class="keyword">if</span> matcher(<span class="keyword">file</span>.getName, query))
+        yield <span class="keyword">file</span>
+</code></pre><p>那么原来两个方法可以简化为:</p>
+<pre><code>    def <span class="function">fileEnding</span>(query<span class="value">:String) = <span class="function">filesMatching</span>(query,_.<span class="function">endsWith</span>(_))
+    def <span class="function">fileContain</span>(query:String) = <span class="function">filesMatching</span>(query, _.<span class="function">contains</span>(_))</span>
+</code></pre><p>使用闭包可以更短.</p>
+<pre><code>    def <span class="function">filesMatching</span>(matcher<span class="value">: String =&gt; Boolean) =
+        <span class="function">for</span>(file &lt;- fileHere;</span> if <span class="function">matcher</span>(file<span class="class">.getName</span>))
+        yield file
+
+    def <span class="function">fileEnding</span>(query<span class="value">:String) = <span class="function">filesMatching</span>(_.<span class="function">endsWith</span>(query))
+    def <span class="function">fileContain</span>(query:String) = <span class="function">filesMatching</span>(_.<span class="function">endsWith</span>(query))</span>
+</code></pre><h2 id="9-2_简化客户代码">9.2 简化客户代码</h2>
+<p>例子: 判断是否有负数.</p>
+<pre><code>    <span class="function"><span class="keyword">def</span> <span class="title">containsNeg</span><span class="params">( nums: List[Int])</span>:</span>Boolean = {
+        var exists = false
+        <span class="keyword">for</span>(num&lt;-nums)
+        <span class="keyword">if</span> (num&lt;<span class="number">0</span>)
+            exists = true
+        exists   
+    }
+</code></pre><p>更简洁的方式, 是使用高阶函数exists:</p>
+<pre><code>   def containsNeg(num<span class="variable">s:</span> List[Int]) = nums.<span class="built_in">exists</span>( _ &lt; <span class="number">0</span>)
+   def containsOdd(num<span class="variable">s:</span> List[Int]) = nums.<span class="built_in">exists</span>( _ % <span class="number">2</span> == <span class="number">1</span>) 
+</code></pre><h2 id="9-3_柯里化(_currying_)">9.3 柯里化( currying )</h2>
+<p>例子：</p>
+<pre><code>    <span class="keyword">def</span> plainOldSum(x :<span class="keyword">Int</span>, y: <span class="keyword">Int</span>) = x + y
+    plainOldSum(<span class="number">1</span>,<span class="number">3</span>)
+    <span class="keyword">def</span> curriedSum(x:<span class="keyword">Int</span>)(y:<span class="keyword">Int</span>)= x + y
+    curriedSum(<span class="number">1</span>)(<span class="number">3</span>)
+    val first = curriedSum(<span class="number">1</span>)_
+    first(<span class="number">3</span>)
+</code></pre><h2 id="9-4_编写新的控制结构">9.4 编写新的控制结构</h2>
+<p>双倍控制结构:</p>
+<pre><code>    <span class="keyword">def</span> twice(op: <span class="keyword">Double</span> =&gt;<span class="keyword">Double</span>, x:<span class="keyword">Double</span>) = op(op(x))
+    twice(_ + <span class="number">1</span>, <span class="number">5</span>)
+</code></pre><p>代码模式: 打开一个资源, 对它进行操作, 然后释放资源: </p>
+<pre><code>    <span class="keyword">def</span> <span class="keyword">withPrintWriter</span>(<span class="keyword">file</span>: <span class="keyword">File</span>)(op: PrintWriter =&gt; Unit){
+        val writer = <span class="keyword">new</span> PrintWriter(<span class="keyword">file</span>)
+        <span class="keyword">try</span>{
+        op(writer)
+        }<span class="keyword">finally</span>{
+        writer.close()
+        }
+    }
+    val <span class="keyword">file</span> = <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"date.txt"</span>)
+    <span class="keyword">withPrintWriter</span>(<span class="keyword">file</span>){
+        writer =&gt; writer.<span class="keyword">println</span>(<span class="keyword">new</span> java.util.Date)
+    }
+</code></pre><p>scala的任何方法调用, 如果你确实只传入一个参数, 就能可选地使用花括号替代小括号包围参数.<br>目的: 是让客户程序员写出包围在花括号内的函数字面量,.</p>
+<h2 id="9-5_传名参数">9.5 传名参数</h2>
+<h1 id="10_组合与继承">10 组合与继承</h1>
+<h2 id="10-1_二维布局库">10.1 二维布局库</h2>
+<h2 id="10-3_定义无参数方法">10.3 定义无参数方法</h2>
+<p>scala鼓励使用不带参数且没有副作用的方法定义为无参数方法的风格, 即省略空括号.<br>无论何时当调用有副作用的方法, 应确保包含一对括号.</p>
+<p>scala里的字段和方法属于相同的命名空间.这让字段可以重写无参数方法.</p>
+<p>scala仅有两个命名空间:</p>
+<ul>
+<li>值</li>
+<li>类型</li>
+</ul>
+<h1 id="11_Scala的层级">11 Scala的层级</h1>
+<p>Scala中每个类都继承超类Any。在底层还定义了： Null和Nothing。 Nothing是所有其他类的子类。</p>
+<h2 id="11-1_Scala的类层级">11.1 Scala的类层级</h2>
+<p>Any两子类:</p>
+<ul>
+<li><p>AnyVal: 内建值类的父类， 有9个子类：</p>
+<ul>
+<li>Byte</li>
+<li>Short</li>
+<li>Char</li>
+<li>Int</li>
+<li>Long</li>
+<li>Float</li>
+<li>Double</li>
+<li>Boolean</li>
+<li>Unit</li>
+</ul>
+</li>
+<li><p>AnyRef：所有引用类的基类，就是java.lang.Object的别名。还继承自一个名为ScalaObject的特别的记号特质（ 用于编译优化）</p>
+</li>
+</ul>
+<h2 id="11-2_原始类型是如何实现的">11.2 原始类型是如何实现的</h2>
+<h2 id="11-3_底层类型">11.3 底层类型</h2>
+<p>Null类是null引用对象的类型, 是每个引用类的子类. 不兼容值类型.<br>Nothing类型在Scala的类层次的最底层.</p>
+<h1 id="12_特质">12 特质</h1>
+<p>特质封装了方法和字段的定义,并可以混入到类中重新定义它们.</p>
+<h1 id="13_包和引用">13 包和引用</h1>
+<p>做程序的时候, 使耦合最小化是很重要的. 减小耦合性的方式之一是使用模块化的风格编写代码.</p>
+<h1 id="13-1_包">13.1 包</h1>
+<p>scala采用java平台完整的包机制.</p>
+<ol>
+<li><p>和java相同:</p>
+<p> package bobosrockets.navigtion<br> class Navigtor</p>
+</li>
+<li><p>像C#的命名空间:</p>
+<p> package bobosrockets {</p>
+<pre><code> <span class="keyword">package</span> navigtion{
+     <span class="class"><span class="keyword">class</span> <span class="title">Navigtor</span></span>
+     <span class="keyword">package</span> tests{
+         <span class="class"><span class="keyword">class</span> <span class="title">NavigtorSuite</span></span>
+     }
+ }
+</code></pre><p> }</p>
+</li>
+</ol>
+<p>顶层包: <em>root</em></p>
+<h1 id="13-2_引用">13.2 引用</h1>
+<p>import子句让包活对象的成员可以子句通过名称访问而不是通过前缀包访问.<br>例子:</p>
+<pre><code><span class="preprocessor"><span class="keyword">import</span> bobosrockets.Fruit</span>
+<span class="preprocessor"><span class="keyword">import</span> bobosrockets._</span>
+<span class="preprocessor"><span class="keyword">import</span> bobosrockets.Fruit._</span>
+</code></pre><p>Scala的引用可以出现在任何地方.</p>
+<p>可以引用包本身.</p>
+<p>可以重命名或隐匿成员:</p>
+<pre><code><span class="preprocessor"><span class="keyword">import</span> Fruits.{Apple, Orange}</span>
+<span class="preprocessor"><span class="keyword">import</span> Fruits.{Apple =&gt; McIntosh, Orange}</span>
+<span class="preprocessor"><span class="keyword">import</span> java.sql.{Date =&gt; SDate}</span>
+
+<span class="preprocessor"><span class="keyword">import</span> Fruits.{Pear =&gt; _, _ }  // 引用了Fruits的所有成员,但Pear除外</span>
+</code></pre><h1 id="13-3_隐式引用">13.3 隐式引用</h1>
+<p>Scala为每个程序隐式地添加一些引用:</p>
+<pre><code><span class="preprocessor"><span class="keyword">import</span> java.lang._</span>
+<span class="preprocessor"><span class="keyword">import</span> scala._</span>
+<span class="preprocessor"><span class="keyword">import</span> Predef._</span>
+</code></pre><h1 id="13-4_访问修饰符">13.4 访问修饰符</h1>
+<p>private[X] 表示”直到”X的私有保护.</p>
+<p>private[this]标记的定义仅能在包含了定义同一个对象中被访问.</p>
+<p>类的所有访问权限都对伴生对象开放,反过来也是如此.</p>
+<h1 id="14_断言和单元测试">14 断言和单元测试</h1>
+<h1 id="21_隐式转换和参数">21 隐式转换和参数</h1>
+<p>隐式转换只是普通的方法, 但它一修饰符implicit开始.</p>
+<p>例子:</p>
+<pre><code>    implicit def stringWrpper(<span class="keyword">s</span>: String) = 
+            new RandomAccessSe<span class="string">q[Char]</span>  {
+            def <span class="keyword">length</span> = <span class="keyword">s</span>.<span class="keyword">length</span>
+            def apply(i: Int) = <span class="keyword">s</span>.charAt(i)
+    }
+</code></pre><p>优点:</p>
+<ul>
+<li>免费获取所有其它RandomAccessSeq的方法</li>
+<li>支持目标类型的转换</li>
+</ul>
+<p>隐性定义是指编译器为了修正类型错误而允许插入到程序中的定义.<br>例如: 若 x + y不能通过类型检查, 编译器可能会把它改为convert(x) + y</p>
+<p>标记规则: 只有标记为implicit的定义才是可用的.</p>
+<p>作用域规则: 插入的隐性转换必须以单一标识符的形式处于作用域中,或与转换的源或目标类型关联在一起.</p>
+<p>无歧义规则: 隐式转换唯有不存在其他可插入转换的前提下才能插入.</p>
+<p>单一调用规则: 只会尝试一个隐式操作, 编译器不会把 x +y 重写成convert1(convert2(x)) + y.</p>
+<p>显式操作先行规则: 若编写的代码类型检查无误, 则不会尝试任何隐式操作.</p>
+<p>命名隐式转换.</p>
+<p>隐式操作在哪里尝试:</p>
+<ul>
+<li>转换为期望类型</li>
+<li>指定(方法)调用者的转换</li>
+<li>隐式参数</li>
+</ul>
+<p>被所有Scala程序隐式引用的scala.Predef对象, 定义了把”较小的”数值类型转变为”较大的”类型的隐式转换.</p>
+<h2 id="转换为方法的接受者">转换为方法的接受者</h2>
+<p>例子:</p>
+<pre><code>    class Rational(n: Int, d: Int) {
+        <span class="keyword">...</span>
+        def + (that: Rational): Rational = <span class="keyword">...</span>
+        def + (that: Int): Rational = <span class="keyword">...</span>
+    }
+</code></pre><p>执行：</p>
+<pre><code>scala&gt; <span class="number">1</span> + oneHalf
+&lt;console&gt;:<span class="number">6</span>: error: overloaded <span class="function"><span class="keyword">method</span> <span class="title">value</span> + <span class="title">with</span>
+<span class="title">alternatives</span> <span class="params">(Double)</span><span class="title">Double</span> &lt;<span class="title">and</span>&gt; ... <span class="title">cannot</span> <span class="title">be</span> <span class="title">applied</span>
+
+<span class="title">scala</span>&gt; <span class="title">implicit</span> <span class="title">def</span> <span class="title">intToRational</span><span class="params">(x: Int)</span> = <span class="title">new</span> <span class="title">Rational</span><span class="params">(x, 1)</span>
+<span class="title">intToRational</span>:</span> (x: Int)Rational
+
+scala&gt; <span class="number">1</span> + oneHalf
+res2: Rational = <span class="number">3</span>/<span class="number">2</span>
+</code></pre><h2 id="模拟新的语法">模拟新的语法</h2>
+<p>例子:</p>
+<pre><code>    <span class="built_in">Map</span>(<span class="number">1</span> <span class="subst">-&gt;</span><span class="string">"one"</span>, <span class="number">2</span> <span class="subst">-&gt;</span><span class="string">"two"</span>, <span class="number">3</span> <span class="subst">-&gt;</span><span class="string">"three"</span>)
+</code></pre><p>“-&gt;”不是内建语法, -&gt;只是定义在标准Scala中类ArrowAssoc的方法, 定义了Any到ArrowAssoc的隐式转化.<br>编写 1-&gt;”one”的时候, 编译器会插入1到ArrowAssoc的转换以便找到-&gt;方法.</p>
+<pre><code>    package scala
+    object Predef {
+        class ArrowAssoc[A](x: A) {
+            def -&gt; [B](y: B): Tuple2[A, B] = Tuple2(x, y)
+        }
+        implicit def any2ArrowAssoc[A](x: A): ArrowAssoc[A] =
+        new ArrowAssoc(x)
+        <span class="keyword">...</span>
+    }
+</code></pre><h2 id="隐式参数">隐式参数</h2>
+<p>编译器有时会用someCall(a)(b)替换somCall(a) 或者用new someCall(a)(b)替换new someCall(a).<br>从而通过添加缺失参数列表以满足函数调用.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/03/07/ProgrammingInScala/" data-id="n7l1932ui6el72wb" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/03/10/evernote超效率数字笔记术/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          evernote超效率数字笔记术
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/03/07/scala快学/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">快学scala</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/golang/" style="font-size: 10.00px;">golang</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 13.33px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 10.00px;">think</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/14/Go并发编程实战/">Go并发编程实战</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/07/ProgrammingInScala/">Scala编程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Peter Yu<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">存档</a>
+  
+    <a href="/about" class="mobile-nav-link">关于</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>
