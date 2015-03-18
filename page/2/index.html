@@ -69,6 +69,257 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-javascript权威指南" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/18/javascript权威指南/" class="article-date">
+  <time datetime="2015-02-17T23:57:09.000Z" itemprop="datePublished">2月 18 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/18/javascript权威指南/">javascript权威指南</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_Javascript概述">1. Javascript概述</h1>
+<p>Javascript是面向Web的编程语言。</p>
+<p>前端工程师必须掌握的三大技能: </p>
+<ul>
+<li>描述网页内容的HTML </li>
+<li>描述网页样式的css </li>
+<li>描述网页行为的Javascript</li>
+</ul>
+<p>Firefox的插件Firebug: <a href="http://getfirebug.com/" target="_blank" rel="external">http://getfirebug.com/</a></p>
+<p>F12唤醒Firefox操作面板 Ctrl+Shift+J唤醒错误控制台(Error Console).</p>
+<h2 id="Javascript语言核心">Javascript语言核心</h2>
+<p>变量和赋值：</p>
+<pre><code><span class="title">var</span> x;
+<span class="title">x</span> = <span class="number">0</span>;
+
+<span class="title">x</span>
+x = <span class="number">1</span>;
+<span class="title">x</span> = <span class="number">0</span>.<span class="number">01</span>;
+<span class="title">x</span> = <span class="string">"hello world"</span>;
+<span class="title">x</span> = <span class="string">'hello world'</span>;
+<span class="title">x</span> = <span class="built_in">true</span>;
+<span class="title">x</span> = null;
+<span class="title">x</span> = undefined;
+</code></pre><p>复杂类型:</p>
+<pre><code><span class="keyword">var</span> book = {
+    topic: <span class="string">"Javascript"</span>,
+    fat: <span class="keyword">true</span>
+};
+
+book.topic
+book[<span class="string">'fat'</span>]
+book.author = <span class="string">'Flanagan'</span>;
+book.content = {};
+
+<span class="keyword">var</span> primes = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>];
+primes[<span class="number">0</span>]
+primes.length
+primes[primes.length -<span class="number">1</span> ]
+primes[<span class="number">4</span>] = <span class="number">9</span>;  <span class="comment">// 通过赋值添加新元素</span>
+primes[<span class="number">4</span>] = <span class="number">11</span>;
+<span class="keyword">var</span> <span class="keyword">empty</span> = []
+<span class="keyword">empty</span>.length
+
+<span class="keyword">var</span> points = [
+    {x:<span class="number">0</span>, y:<span class="number">0</span>},
+    {x:<span class="number">1</span>, y:<span class="number">1</span>}
+];
+
+<span class="keyword">var</span> data = {
+    trial1: [ [<span class="number">1</span>,<span class="number">2</span>],[<span class="number">3</span>,<span class="number">4</span>]],
+    trial2: [ [<span class="number">2</span>,<span class="number">3</span>],[<span class="number">3</span>,<span class="number">4</span>]]
+}
+</code></pre><p>表达式：</p>
+<pre><code><span class="number">3</span> + <span class="number">2</span>
+<span class="number">3</span> - <span class="number">2</span>
+<span class="number">3</span> * <span class="number">2</span>
+<span class="number">3</span> / <span class="number">2</span>                           <span class="comment">// =&gt; 1.5</span>
+points[<span class="number">1</span>].x - points[<span class="number">0</span>].x  
+<span class="string">"3"</span> + <span class="string">"2"</span>                       <span class="comment">// =&gt; "32" </span>
+
+<span class="keyword">var</span> <span class="built_in">count</span> = <span class="number">0</span>;
+<span class="built_in">count</span> ++;
+<span class="built_in">count</span> --;
+<span class="built_in">count</span> += <span class="number">2</span>;
+<span class="built_in">count</span> *= <span class="number">3</span>;
+<span class="built_in">count</span>
+
+<span class="keyword">var</span> x=<span class="number">2</span>, y=<span class="number">3</span>;
+x == y
+x != y
+x &lt; y
+<span class="string">"two"</span> &gt; <span class="string">"three"</span>
+
+(x == <span class="number">2</span>) &amp;&amp; (y==<span class="number">3</span>)
+</code></pre><p>函数:</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">plus1</span><span class="params">(x)</span></span>{
+    reutrn x +<span class="number">1</span>;
+}
+plus1(y)
+
+<span class="keyword">var</span> square = <span class="function"><span class="keyword">function</span><span class="params">(x)</span> </span>{
+    <span class="keyword">return</span> x * x;
+};
+
+square(plus1(y))
+</code></pre><p>将函数和对象合写在一起， 方法：</p>
+<pre><code><span class="keyword">var</span> a = [];
+a.push(<span class="number">1</span>, <span class="number">2</span> <span class="number">3</span>);
+a.reverse();
+
+<span class="comment">// "this"关键字是对定义方法对象的引用</span>
+points.dist = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>{
+    <span class="keyword">var</span> p1 = <span class="keyword">this</span>[<span class="number">0</span>];
+    <span class="keyword">var</span> p2 = <span class="keyword">this</span>[<span class="number">1</span>];
+    <span class="keyword">var</span> a = p2.x - p1.x
+    <span class="keyword">var</span> b = p2.y - p2.y;
+    <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(a*<span class="number">2</span> + b*b ）
+points.dist()
+</code></pre><p>控制语句：</p>
+<pre><code><span class="keyword">function</span> abs(x) {
+    <span class="keyword">if</span>(x &gt;=<span class="number">0</span>){
+        <span class="keyword">return</span> x;
+    }<span class="keyword">else</span>{
+        <span class="keyword">return</span> -x;
+    }
+}
+
+//<span class="keyword">...</span>    
+    <span class="keyword">for</span>(i=<span class="number">2</span>;i&lt;=n;i+){
+        //<span class="keyword">...</span>
+    }
+    <span class="keyword">while</span>(true){
+        //<span class="keyword">...</span>
+    }
+</code></pre><p>对象：</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">Point</span><span class="params">(x,y)</span></span>{
+    <span class="keyword">this</span>.x = x;
+    <span class="keyword">this</span>.y = y;
+}
+<span class="keyword">var</span> p = <span class="keyword">new</span> Point(<span class="number">1</span>,<span class="number">1</span>);
+
+Point.prototype.r = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>{
+    <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(
+        <span class="keyword">this</span>.x * <span class="keyword">this</span>.x + <span class="keyword">this</span>.y * <span class="keyword">this</span>.y);
+    };
+p.r();
+</code></pre><h1 id="2-_词法结构">2. 词法结构</h1>
+<h1 id="3-_类型，值和变量">3. 类型，值和变量</h1>
+<h1 id="4-_表达式和运算符">4. 表达式和运算符</h1>
+<h1 id="5-_语句">5. 语句</h1>
+<h1 id="6-_对象">6. 对象</h1>
+<p>对象是一种复合值: 将很多值聚合在一起， 可通过名字访问这些值。</p>
+<p>对象可以看做属性的无序集合，每个属性都是一个名/值对。</p>
+<p>属性名是字符串，因此我们可以吧对象看成从字符串到值的映射。</p>
+<p>对象不仅仅是字符串到值的映射，除了可以保持自有的属性，对象还可以从一个称为原型的对象继承属性。<br>对象的方法通常是继承的属性。</p>
+<p>“原型式继承”是Javascript的核心特征。</p>
+<h2 id="创建对象">创建对象</h2>
+<p>三种方式.</p>
+<h3 id="对象直接量">对象直接量</h3>
+<pre><code><span class="keyword">var</span> <span class="keyword">empty</span> = {}
+<span class="keyword">var</span> point = {x:<span class="number">0</span>, y:<span class="number">0</span>}
+<span class="keyword">var</span> book = {
+    <span class="string">"main title"</span>: <span class="string">"Javascript"</span>,
+    <span class="string">"sub-title"</span>:<span class="string">"The Definitive Guide"</span>
+}
+</code></pre><h3 id="new创建对象">new创建对象</h3>
+<pre><code><span class="keyword">var</span> o = <span class="keyword">new</span> <span class="built_in">Object</span>(); <span class="comment">// 创建一个空对象， 和{}一样</span>
+<span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">Array</span>(); <span class="comment">// 创建一个空数组, 和[]一样</span>
+<span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>(); 
+<span class="keyword">var</span> r = <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"js"</span>);
+</code></pre><p>除了这些内置构造函数， 也可以自定义构造函数来初始化新对象。</p>
+<h3 id="原型">原型</h3>
+<pre><code><span class="keyword">var</span> o1 = <span class="built_in">Object</span>.create({x:<span class="number">1</span>, y:<span class="number">2</span>}) <span class="comment">// o1 继承了属性x和y</span>
+<span class="keyword">var</span> o3 = <span class="built_in">Object</span>.create(<span class="built_in">Object</span>.prototype) <span class="comment">// o3 和 {} 一样</span>
+</code></pre><p>可以通过任何原型创建对象:</p>
+<p>function inherit(p){<br>    if(p==null) throw TypeError();<br>    if(Object.create) return Object.create(p);<br>    var t= typeof p;<br>    if(t!== “object”&amp;&amp; t!== “function”) throw TypeError();<br>    fucntion f() {} // 定义一个空构造函数<br>    f.prototype = p;<br>    return new f();<br>}</p>
+<h2 id="属性的查询和设置">属性的查询和设置</h2>
+<p>通过.和[]来获取属性的值。</p>
+<p>Javascript对象都是关联数组。</p>
+<p>属性访问错误，会抛出一个类型错误异常。</p>
+<p>避免错误的方法:</p>
+<pre><code><span class="keyword">var</span> <span class="built_in">len</span> = book &amp;&amp; book.subtitle &amp;&amp; book.subtitle.length;
+</code></pre><h2 id="删除属性">删除属性</h2>
+<p>delete book.author<br>delete book[“main title”]</p>
+<h2 id="检测属性">检测属性</h2>
+<h2 id="枚举属性">枚举属性</h2>
+<p>for/in循环可以在循环体中遍历对象中所有可枚举的属性。<br>对象继承的内置方法是不可枚举的。<br>d但在代码中给对象添加的属性是可枚举的。</p>
+<h2 id="属性getter和setter">属性getter和setter</h2>
+<h2 id="属性的特征">属性的特征</h2>
+<p>除了包含名字和值之外，属性还包含一些标识他们可写，可枚举和可配置的特性。</p>
+<h2 id="对象的三个属性">对象的三个属性</h2>
+<p>每个对象都有与之相关的原型(prototype), 类(class)和可扩展性().</p>
+<h2 id="序列化对象">序列化对象</h2>
+<h2 id="对象方法">对象方法</h2>
+<h1 id="7-_数组">7. 数组</h1>
+<h1 id="8-_函数">8. 函数</h1>
+<p>函数即对象。</p>
+<h2 id="函数定义">函数定义</h2>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">distance</span><span class="params">(x1, y1, x2, y2)</span></span>{
+    <span class="keyword">var</span> dx = x2 - x1;
+    <span class="keyword">var</span> dy = y2 - y1;
+    <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(dx*dx + dy*dy);
+}
+
+<span class="keyword">var</span> square = <span class="function"><span class="keyword">function</span><span class="params">(x)</span> </span>{<span class="keyword">return</span> x*x;}
+
+<span class="comment">// 函数表达式可以包含名称</span>
+<span class="keyword">var</span> f = <span class="function"><span class="keyword">function</span> <span class="title">fact</span><span class="params">(x)</span> </span>{ <span class="keyword">if</span>(x&lt;=<span class="number">1</span>) <span class="keyword">return</span> <span class="number">1</span>; <span class="keyword">else</span> <span class="keyword">return</span> x * faxt(x-<span class="number">1</span>);};
+
+data.sort(<span class="function"><span class="keyword">function</span><span class="params">(a,b)</span></span>{<span class="keyword">return</span> a-b;});
+</code></pre><p>嵌套函数：</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">hypotenuse</span><span class="params">(a,b)</span></span>{
+    <span class="function"><span class="keyword">function</span> <span class="title">square</span><span class="params">(x)</span></span>{<span class="keyword">return</span> x*x;}
+    reurn <span class="built_in">Math</span>.sqrt(square(a) +square(b));
+}
+</code></pre><h2 id="函数调用">函数调用</h2>
+<p>有四种方式.</p>
+<h3 id="函数调用-1">函数调用</h3>
+<h3 id="方法调用">方法调用</h3>
+<h1 id="9-_类和模块">9. 类和模块</h1>
+<h1 id="10-_正则表达式的模式匹配">10. 正则表达式的模式匹配</h1>
+<h1 id="11-_Javascript的子集和扩展">11. Javascript的子集和扩展</h1>
+<h1 id="12-_服务端Javascript">12. 服务端Javascript</h1>
+<h1 id="13-_Web浏览器中的Javascript">13. Web浏览器中的Javascript</h1>
+<h1 id="14-_windows对象">14. windows对象</h1>
+<h1 id="15-_脚本化文档">15. 脚本化文档</h1>
+<h1 id="16-_脚本化css">16. 脚本化css</h1>
+<h1 id="17-_事件处理">17. 事件处理</h1>
+<h1 id="18-_脚本化http">18. 脚本化http</h1>
+<h1 id="19-_JQuery类库">19. JQuery类库</h1>
+<h1 id="20-_客户端存储">20. 客户端存储</h1>
+<h1 id="21-_多媒体和图形编程">21. 多媒体和图形编程</h1>
+<h1 id="22-_HTML5_API">22. HTML5 API</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/02/18/javascript权威指南/" data-id="r2tcz3rjcn12u8oj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-node即学即用" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/02/17/node即学即用/" class="article-date">
@@ -1671,60 +1922,6 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
 
 
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/28/hello-world/" class="article-date">
-  <time datetime="2014-10-28T00:54:15.000Z" itemprop="datePublished">10月 28 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/28/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">trobuleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2>
-<h3 id="Create_a_new_post">Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2014/10/28/hello-world/" data-id="hk28xo2mr7djo4i3" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1740,7 +1937,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/golang/" style="font-size: 10.00px;">golang</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 13.33px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 10.00px;">think</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 12.50px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
     </div>
   </div>
 
@@ -1749,7 +1946,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -1759,6 +1956,10 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
+          </li>
         
           <li>
             <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
@@ -1774,10 +1975,6 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
         
           <li>
             <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/07/ProgrammingInScala/">Scala编程</a>
           </li>
         
       </ul>

@@ -314,11 +314,197 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
 </code></pre><h2 id="Scala继承层级">Scala继承层级</h2>
 <p>基本类型和Unit， 都扩展自AnyVal<br>类都扩展自AnyRef.</p>
 <p>AnyVal和AnyRef的基类是Any。Any是根节点.</p>
-<p>Any类定义了isInstanceOf, asInstanceOf方法， 以及用于相等性判断和哈希码的方法<br>AnyRef追加了来着Object类的jai</p>
-<h1 id="9_文件和正则表达式">9 文件和正则表达式</h1>
-<h1 id="10_特质">10 特质</h1>
-<h1 id="11_操作符">11 操作符</h1>
-<h1 id="12_高阶函数">12 高阶函数</h1>
+<p>Any类定义了isInstanceOf, asInstanceOf方法， 以及用于相等性判断和哈希码的方法<br>AnyRef追加了来着Object类的监视方法wait和notify/notifyAll.</p>
+<h2 id="对象相等性">对象相等性</h2>
+<pre><code><span class="keyword">final</span> override <span class="keyword">def</span> equals(other: <span class="keyword">Any</span>){
+    val that = other.asInstanceOf[Item]
+    <span class="keyword">if</span>(that == <span class="keyword">null</span>) <span class="keyword">false</span>
+    <span class="keyword">else</span> <span class="keyword">description</span> == that.<span class="keyword">description</span> &amp;&amp; price == that.price
+}
+</code></pre><p>注意：</p>
+<ul>
+<li>方法定义为final</li>
+<li>equals方法参数类型为Any.</li>
+<li>定义equals时，记得同事也定义hashCode, 计算hashCode时，只应使用那些你用来做相等性判断的字段。</li>
+</ul>
+<p>::</p>
+<pre><code>final override def hashCode = 13 <span class="keyword">*</span>description<span class="keyword">*</span>.hashCode +17 <span class="keyword">*</span> price.hashCode
+</code></pre><h1 id="9_文件和正则表达式">9 文件和正则表达式</h1>
+<p>要点:</p>
+<ul>
+<li>Source.fromFile(…).getLines.toArray 输出文件的所有行</li>
+<li>Source.fromFile(…).mkString 以字符串形式输出文件内容</li>
+<li>将字符串转成数字， 可以用toInt或toDouble方法。</li>
+<li>使用Java的PrintWriter写入文件</li>
+<li>“正则”.r是一个Regex对象。</li>
+<li>若你的正则表达式包含反斜杠或者引号的话，用”””…”””</li>
+<li>若正则模式包含分组，使用一些预发提取它们的内容： for(regex(变量,…,变量n)&lt;- 字符串）</li>
+</ul>
+<h2 id="读取">读取</h2>
+<p>从文件:</p>
+<pre><code><span class="keyword">import</span> scala.io.Source
+<span class="keyword">val</span> source = Source.fromFile(<span class="string">"myfile.txt"</span>, <span class="string">"UTF-8"</span>)
+<span class="keyword">val</span> lineIterator = source.getLines
+<span class="keyword">val</span> tokens = source.mkString.split(<span class="string">"\\S+"</span>)
+<span class="keyword">val</span> numbers = <span class="keyword">for</span>( w&lt;- tokens) <span class="keyword">yield</span> w.toDouble
+<span class="keyword">val</span> numbers = tokens.map(_.toDouble)
+</code></pre><p>从控制台读取:</p>
+<pre><code>val age = <span class="built_in">read</span>Int()
+</code></pre><p>其它源：</p>
+<pre><code>val <span class="built_in">source</span>1 = Source.fromURL(<span class="string">"http://horstamnn.com"</span>, <span class="string">"UTF-8"</span>)
+val <span class="built_in">source</span>2 = Source.fromString(<span class="string">"Hello, Wolle"</span>)
+val <span class="built_in">source</span>3 = Source.stdin
+</code></pre><p>二进制文件:</p>
+<pre><code>val <span class="built_in">file</span>  = <span class="built_in">new</span> File(filename)
+val <span class="operator">in</span>  = <span class="built_in">new</span> FileInputStream(<span class="built_in">file</span>)
+val <span class="keyword">bytes</span> = <span class="built_in">new</span> Array[Byte](<span class="built_in">file</span>.<span class="built_in">length</span>.toInt)
+<span class="operator">in</span>.<span class="built_in">read</span>(<span class="keyword">bytes</span>)
+<span class="operator">in</span>.<span class="built_in">close</span>()
+</code></pre><h2 id="写入">写入</h2>
+<pre><code>val <span class="keyword">out</span> = <span class="keyword">new</span> PrintWriter(<span class="string">"numbers.txt"</span>)
+<span class="keyword">for</span>(i&lt;-<span class="number">1</span> <span class="keyword">to</span> <span class="number">100</span>)<span class="keyword">out</span>.println(i)
+<span class="keyword">out</span>.close()
+</code></pre><h2 id="访问目录">访问目录</h2>
+<pre><code><span class="keyword">import</span> java.io.File
+
+<span class="function"><span class="keyword">def</span> <span class="title">subdirs</span><span class="params">(dir:File)</span>:</span> Iterator[File] = {
+    val children = dir.listFiles.filter(_.isDirectory)
+    children.toIterator ++ children.toIterator.flatMap(subdirs _)
+}
+</code></pre><p>在scala中， 我们通常喜欢用函数对象来制定过着内容。</p>
+<pre><code><span class="reserved">import</span> java.nio.file._
+implicit def makeFileVistor<span class="function"><span class="params">(f: (Path) =&gt; Unit)</span>= <span class="title">new</span> <span class="title">SimpleFileVisitor</span>[<span class="title">Path</span>] {
+    <span class="title">override</span> <span class="title">def</span> <span class="title">visitFile</span><span class="params">(p: Path, attrs: attribute.BasicFileAttributes)</span>= {
+        <span class="title">f</span><span class="params">(p)</span>
+        <span class="title">FileVisitResult</span>.<span class="title">CONTINUE</span>
+    } 
+}
+
+<span class="title">Files</span>.<span class="title">walkFileTree</span><span class="params">(dir.toPath, (f:Path) =&gt;println(f))</span></span>
+</code></pre><h2 id="序列化">序列化</h2>
+<pre><code><span class="annotation">@SerialVersionUID</span>(<span class="number">42</span>L) <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">extends</span> <span class="title">Serilizable</span></span>
+</code></pre><h2 id="进程控制">进程控制</h2>
+<p>scala.sys.process包提供了与shell程序交互的工具。</p>
+<pre><code><span class="keyword">import</span> sys.process._
+<span class="string">"ls -al .."</span>!   <span class="comment">//执行结果打印到标准输出</span>
+val result = <span class="string">"ls -al .."</span> !! <span class="comment">// !! 返回字符串</span>
+<span class="string">"ls -al .."</span> #&gt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>)  <span class="comment">// #&gt; 重定向到文件</span>
+<span class="string">"ls -al .."</span> #&gt;&gt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>)  <span class="comment">// #&gt;&gt; 追加到文件末尾</span>
+<span class="string">"grep sec"</span> #&lt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>) <span class="comment">// #&lt; 把文件内容作为输入</span>
+<span class="string">"grep Scala"</span> #&lt; <span class="keyword">new</span> URL(<span class="string">"http://horstmann.com/index.html"</span>) 
+</code></pre><h2 id="正则表达式">正则表达式</h2>
+<pre><code><span class="keyword">val</span> numPattern = <span class="string">"[0-9]+"</span>.r 
+<span class="keyword">for</span> (matchString &lt;- numPattern.findAllIn(<span class="string">"99 bottles, 98 bottles"</span>) )
+    处理matchString  <span class="comment">// 99, 98</span>
+
+<span class="keyword">val</span> m1 = numPattern.findFirstIn(<span class="string">"99 bottles, 98 bottles"</span>) <span class="comment">//Some()</span>
+numPattern.findPrefixOf(<span class="string">"99 bottles, 98 bottles"</span>) <span class="comment">// Some(99)</span>
+</code></pre><h2 id="正则表达式组">正则表达式组</h2>
+<pre><code>val numitemPatten = <span class="string">"([0-9]+) ([a-z]+)"</span>.r
+val numitemPatten(<span class="built_in">num</span>, <span class="keyword">item</span>) = <span class="string">"99 bottles"</span><span class="comment"> // num 设置为99 ， item设置为"bottles"</span>
+
+<span class="keyword">for</span> (numitemPatten(<span class="built_in">num</span>, <span class="keyword">item</span>) &lt;- numitemPatten.findAllIn(<span class="string">"99 bottles, 98 bottles"</span>) )
+    处理<span class="built_in">num</span>, <span class="keyword">item</span>
+</code></pre><h1 id="10_特质">10 特质</h1>
+<p>要点：</p>
+<ul>
+<li>类可以实现任意数量的特质</li>
+<li>特质要求实现他们的类具备特定的字段， 方法或超类</li>
+<li>和Java接口不同，Scala特质可以提供方法和字段的实现</li>
+<li>但你将多个特质叠加在一起时，顺序很重要 — 其方法先被执行的特质排在更后面</li>
+</ul>
+<h2 id="d当做接口使用的特质">d当做接口使用的特质</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">def</span> log(msg: String)
+}
+</code></pre><p>子类可以给出实现：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">ConsoleLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">def</span> log(msg: String) { println(msg)}
+}
+</code></pre><h2 id="带有具体实现的特质">带有具体实现的特质</h2>
+<h2 id="带有特质的对象">带有特质的对象</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">Logged</span> </span>{
+    <span class="keyword">def</span> log(msg: String){}
+}
+<span class="class"><span class="keyword">class</span> <span class="title">SavingsAccount</span> <span class="keyword">extends</span> <span class="title">Account</span> <span class="keyword">with</span> <span class="title">Logged</span> </span>{
+    <span class="keyword">def</span> withdraw(amount:Double){
+        <span class="keyword">if</span>(amout &gt; balance) log(<span class="string">"INsufficient funds"</span>)
+        <span class="keyword">else</span> ...
+    }
+}
+</code></pre><p>可以在构造具体对象时”混入”一个更好的日志记录器的实现：</p>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">ConsoleLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String) { println(msg)}
+}
+<span class="keyword">val</span> acct = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> ConsoleLogger
+<span class="keyword">val</span> acct2 = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> FileLogger
+</code></pre><h2 id="叠加在一起的特质">叠加在一起的特质</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">TimestampLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String){
+        <span class="keyword">super</span>.log(<span class="keyword">new</span> java.util.Date() +<span class="string">" "</span> +msg)
+    }
+}
+
+<span class="class"><span class="keyword">trait</span> <span class="title">ShorLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String){
+        <span class="keyword">super</span>.log(
+            <span class="keyword">if</span>(msg.length&lt;=maxLength) msg <span class="keyword">else</span> msg.substring(<span class="number">0</span>, maxLength -<span class="number">3</span>) + <span class="string">"..."</span>)
+    }
+}
+
+<span class="keyword">val</span> acct1 = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> ConsoleLogger <span class="keyword">with</span> TimestampLogger <span class="keyword">with</span> ShorLogger
+acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015 Insufficient...</span>
+</code></pre><p>特质从最后一个开始处理.</p>
+<h2 id="重写抽象方法">重写抽象方法</h2>
+<p>需要加上abstract关键字。</p>
+<h2 id="特质中的字段">特质中的字段</h2>
+<p>具体字段和抽象字段。</p>
+<h2 id="特质的构造顺序">特质的构造顺序</h2>
+<ul>
+<li>首先调用超类的构造器</li>
+<li>特质构造器在超类构造器之后，类构造器之前咨询</li>
+<li>特质从左到右构造</li>
+<li>每个特质当中，父特质先被构造</li>
+<li>若多个特质共有一个父特质，那么父特质构造只会被构造一次</li>
+<li>特质构造完毕后，子类被构造</li>
+</ul>
+<h2 id="初始化特质的字段">初始化特质的字段</h2>
+<p>trait FileLogger extends Logger {<br>    val filename:String<br>    val out = new PrintStream(filename)<br>    def log(msg: String) { out.println(msg);out.flush() }<br>}</p>
+<p>提前定义：</p>
+<pre><code><span class="keyword">val</span> acct = <span class="keyword">new</span> {
+    <span class="keyword">val</span> filename = <span class="string">"myapp.log"</span>
+} <span class="keyword">with</span> SavingsAccount <span class="keyword">with</span> FileLogger
+
+<span class="class"><span class="keyword">class</span> <span class="title">SavingsAccount</span> <span class="keyword">extends</span> </span>{
+    <span class="keyword">val</span> filename = <span class="string">"saving.log"</span>
+} <span class="keyword">with</span> Account <span class="keyword">with</span> FileLogger {
+    ...
+}
+</code></pre><h2 id="自身类型">自身类型</h2>
+<p>可限定被混入指定类型的子类。</p>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">LoggedException</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">this</span>:Exception =&gt;
+        <span class="keyword">def</span> log() { log(getMessage())}
+}
+
+<span class="keyword">val</span> f = <span class="keyword">new</span> JFrame <span class="keyword">with</span> LoggedException <span class="comment">// Error：JFrame不是Exception的子类。</span>
+
+<span class="class"><span class="keyword">trait</span> <span class="title">LoggedException</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">this</span>: { <span class="keyword">def</span> getMessage() :String } =&gt;
+    <span class="keyword">def</span> log(){log(getMessage()}
+} <span class="comment">// 特质可以混入任何拥有getMessage方法的类</span>
+</code></pre><h1 id="11_操作符">11 操作符</h1>
+<p>要点：</p>
+<ul>
+<li>标识符由字母，数字或运算符构成</li>
+<li>一元和二元操作符其实是方法调用</li>
+<li>操作符优先级取决于第一个字符，而结合性取决于最后一个字符</li>
+<li>apply和update方法在对expr(args)表达式求值时被调用。</li>
+<li>提取器从输入中提取元组或值的序列</li>
+</ul>
+<p>前置操作符(+,-,!, ~) 被转换成名为unary_操作符的方法调用。</p>
+<pre><code>-a  <span class="comment">// a.unary_- 一样</span>
+</code></pre><h1 id="12_高阶函数">12 高阶函数</h1>
 <h1 id="13_集合">13 集合</h1>
 <h1 id="14_模式匹配和样例类">14 模式匹配和样例类</h1>
 <h1 id="15_注解">15 注解</h1>
@@ -336,7 +522,7 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
       <a data-url="http://yuqiao.github.io/2015/03/07/scala快学/" data-id="vbw899bc9g9rfzk4" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scalao/">scalao</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
 
     </footer>
   </div>
@@ -374,7 +560,7 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/golang/" style="font-size: 10.00px;">golang</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 13.33px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 10.00px;">think</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 12.50px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
     </div>
   </div>
 
@@ -383,7 +569,7 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -393,6 +579,10 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
+          </li>
         
           <li>
             <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
@@ -408,10 +598,6 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
         
           <li>
             <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/07/ProgrammingInScala/">Scala编程</a>
           </li>
         
       </ul>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Joe&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. 走近Java
+1.1 概述
+Java不仅仅是一门编程语言, 它还是一个由一系列计算机软件和规范形成的技术体系.
+java优点:
+
+结构严谨, 编写对象
+摆脱了硬件平台的束缚
+提供了相对安全的内存管理和访问机制, 避免绝大部分的内存泄露和指针越界问题
+实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能
+有一套完善的应用程序接口, 还有无数第三方类库
+
+1.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Joe's Blog">
+<meta property="og:url" content="http://yuqiao.github.io/2015/03/17/深入理解JVM虚拟机/">
+<meta property="og:site_name" content="Joe's Blog">
+<meta property="og:description" content="1. 走近Java
+1.1 概述
+Java不仅仅是一门编程语言, 它还是一个由一系列计算机软件和规范形成的技术体系.
+java优点:
+
+结构严谨, 编写对象
+摆脱了硬件平台的束缚
+提供了相对安全的内存管理和访问机制, 避免绝大部分的内存泄露和指针越界问题
+实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能
+有一套完善的应用程序接口, 还有无数第三方类库
+
+1.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Joe's Blog">
+<meta name="twitter:description" content="1. 走近Java
+1.1 概述
+Java不仅仅是一门编程语言, 它还是一个由一系列计算机软件和规范形成的技术体系.
+java优点:
+
+结构严谨, 编写对象
+摆脱了硬件平台的束缚
+提供了相对安全的内存管理和访问机制, 避免绝大部分的内存泄露和指针越界问题
+实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能
+有一套完善的应用程序接口, 还有无数第三方类库
+
+1.">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Joe&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Carpe Diem</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">存档</a>
+        
+          <a class="main-nav-link" href="/about">关于</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yuqiao.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-深入理解JVM虚拟机" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/17/深入理解JVM虚拟机/" class="article-date">
+  <time datetime="2015-03-17T09:29:50.000Z" itemprop="datePublished">3月 17 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_走近Java">1. 走近Java</h1>
+<h2 id="1-1_概述">1.1 概述</h2>
+<p>Java不仅仅是一门编程语言, 它还是一个由一系列计算机软件和规范形成的技术体系.</p>
+<p>java优点:</p>
+<ul>
+<li>结构严谨, 编写对象</li>
+<li>摆脱了硬件平台的束缚</li>
+<li>提供了相对安全的内存管理和访问机制, 避免绝大部分的内存泄露和指针越界问题</li>
+<li>实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能</li>
+<li>有一套完善的应用程序接口, 还有无数第三方类库</li>
+</ul>
+<h2 id="1-2_Java技术体系">1.2 Java技术体系</h2>
+<p>Sun官方定义的Java技术体系:</p>
+<ul>
+<li>Java程序设计语言</li>
+<li>各种硬件平台上的Java虚拟机</li>
+<li>Class文件格式</li>
+<li>Java API类库</li>
+<li>第三方Java类库</li>
+<li>实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能</li>
+<li>有一套完善的应用程序接口, 还有无数第三方类库</li>
+</ul>
+<h2 id="1-3_Java发展史">1.3 Java发展史</h2>
+<h2 id="1-4_展望Java技术的未来">1.4 展望Java技术的未来</h2>
+<h3 id="模块化">模块化</h3>
+<h3 id="混合语言">混合语言</h3>
+<h3 id="多核并发">多核并发</h3>
+<h2 id="1-5_实战:_自己编译JDK">1.5 实战: 自己编译JDK</h2>
+<h1 id="2-_Java_内存区域与内存溢出异常">2. Java 内存区域与内存溢出异常</h1>
+<h2 id="2-2_运行时数据区域">2.2 运行时数据区域</h2>
+<ul>
+<li><p>执行引擎</p>
+</li>
+<li><p>本地库接口</p>
+</li>
+<li><p>运行时数据区域</p>
+<ul>
+<li>方法区 Method Area， 用以存储虚拟机加载的类信息， 常量，静态变量，即时编译器编译后的代码等数据. </li>
+<li>堆 Heap</li>
+<li>程序计数器 Program Couter Register</li>
+<li>虚拟机栈 VM Stack</li>
+<li>本地方法栈 Native method Stack</li>
+</ul>
+</li>
+<li><p>直接内存</p>
+</li>
+</ul>
+<h3 id="程序计数器">程序计数器</h3>
+<p>一块较小的内存空间, 作用可以看做是当前线程所执行的字节码的行号指示器.<br>字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令.<br>分支, 循环, 跳转,异常处理, 线程恢复等基础功能需要这个计数器来完成.</p>
+<p>每条线程都有自己一个独立的程序计数器. “线程私有”的内存.</p>
+<h3 id="Java虚拟机栈">Java虚拟机栈</h3>
+<p>线程私有.</p>
+<p>描述的是java方法执行的内存模型: 每个方法被执行的时候都会同时创建一个栈帧(Stack Frame)用于存储局部变量表,<br>操作数栈,动态链接, 方法出口等信息.<br>每一个方法被调用直至执行完成的过程, 就对应着在虚拟机栈中从入栈到出栈的过程.</p>
+<h3 id="Java虚拟机栈-1">Java虚拟机栈</h3>
+<p>线程私有.<br>字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令.<br>分支, 循环, 跳转,异常处理, 线程恢复等基础功能需要这个计数器来完成.</p>
+<p>每条线程都有自己一个独立的程序计数器. “线程私有”的内存.</p>
+<h3 id="Java堆">Java堆</h3>
+<p>采用分代收集算法。 堆可细分为：</p>
+<ul>
+<li>新生代</li>
+<li>老年代</li>
+</ul>
+<p>划分的目的：更好地回收内存，更快地分配内存</p>
+<p>-Xms, -Xmx 来配置堆大小。</p>
+<h2 id="OutOfMemoryError异常">OutOfMemoryError异常</h2>
+<h3 id="Java堆溢出">Java堆溢出</h3>
+<p>配置：</p>
+<ul>
+<li>-Xms</li>
+<li>-Xmx</li>
+<li>-XX:+HeapDumpOnOutOfMemeoryError</li>
+</ul>
+<p>堆溢出时， 异常堆栈信息”java.lang.OutOfMemoryError”会进一步提示”java heap space”</p>
+<p>解决该异常：</p>
+<ul>
+<li>通过内存映象分析工具对dump出来的堆转储快照进行分析。</li>
+<li>若是内存泄露， 进一步通过该工具查看泄露对象打GC Roots的引用链，从而找到泄露对象是通过怎样的路径与GC Roots相关联而导致无法垃圾收集。</li>
+<li>若不存在泄露， 需要检查虚拟机的堆参数（-Xms，-Xmx)</li>
+</ul>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<p>栈容量由-Xss参数设定。</p>
+<p>由两类异常：</p>
+<ul>
+<li>线程请求的深度大于虚拟机所允许的最大深度， 抛出StackOverflowError异常</li>
+<li>虚拟机在扩展栈是无法申请到足够的内存空间， 抛出OutOfMemoryError</li>
+</ul>
+<h3 id="运行时常量池异常/方法区溢出">运行时常量池异常/方法区溢出</h3>
+<p>溢出时， 异常堆栈信息”java.lang.OutOfMemoryError”会进一步提示”PermGen space”</p>
+<p>配置：</p>
+<ul>
+<li>-XX:PermSize</li>
+<li>-XX:MaxPermSize</li>
+</ul>
+<h1 id="3-_垃圾收集器与内存分配策略">3. 垃圾收集器与内存分配策略</h1>
+<h2 id="对象已死？">对象已死？</h2>
+<h3 id="引用计数算法">引用计数算法</h3>
+<p>很难解决对象之间的相互引用的问题。</p>
+<h3 id="根搜索算法">根搜索算法</h3>
+<p>GC Roots Tracing 判定对象是否存活。</p>
+<p>基本思路：</p>
+<pre><code>通过一系列名为<span class="string">"GC Roots"</span>的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为”引用链“(Reference Chain). 
+当一个对象到GC <span class="keyword">Roots</span>没有任何引用链相连，则证明此对象是不可用的。被判定为可回收对象。
+</code></pre><h3 id="Java引用">Java引用</h3>
+<ul>
+<li>强引用</li>
+<li>软引用</li>
+<li>弱引用</li>
+<li>虚引用</li>
+</ul>
+<h3 id="生存还是死亡？">生存还是死亡？</h3>
+<p>根搜索不可达的对象， 并非是”非死不可”, 暂时处于缓刑阶段。要真正宣告对象死亡， 至少经历两次标记。</p>
+<ol>
+<li>根搜索不到， 第一次标记</li>
+<li>是否有必要执行finalize()方法， 第二次标记。</li>
+</ol>
+<p>被判定有必要执行finalize()方法， 对象会被添加名为F-Queue的对了之中， 并在稍后有一条虚拟机自动建立的低优先级的Finalize线程执行。<br>若某个对象在finalize()方法中死循环，那么F-Queue后面的对象都将永久处于等待状态。</p>
+<p>永久代的垃圾收集主要回收两部分内容： 废弃常量和无用的类。</p>
+<h2 id="垃圾收集算法">垃圾收集算法</h2>
+<h3 id="标记-清除算法">标记-清除算法</h3>
+<p>标记出所需要回收的对象，在标记完成后统一回收掉。 </p>
+<p>缺点:</p>
+<ul>
+<li>效率问题: 标记和清除的效率不高</li>
+<li>空间问题: 产生大量不连续的内存碎片</li>
+</ul>
+<h3 id="复制算法">复制算法</h3>
+<p>将可用的内存按容量划分为大小相等的两块，每次使用其中一块。当这块内存用完，将存活的对象复制到另一块上面，然后在把已使用的内存空间一次清理掉。</p>
+<p>代价： 可用内存缩小到原来的一半。</p>
+<p>使用这种方式来回收新生代， 因为新生代的对象98%是朝生夕死的。</p>
+<p>实际划分： 一块较大的Eden空间和两块较小的Survivor空间。每次使用Eden空间和一块Survivor. 回收时讲Eden和Survivor中还存活的对象一次性拷贝到另一块Survivor空间上。</p>
+<p>一般Eden:Survivor空间之比是8：1， 那么空间浪费只有10%。</p>
+<p>若Survivor空间没有足够的空间存放上一次新生代存活下来的对象， 那么这些对象通过分配担保机制进入老年代。</p>
+<h3 id="标记-整理算法">标记-整理算法</h3>
+<p>让所有存活的对象向一段移动，然后清理端边界以外的内存。</p>
+<h3 id="分代收集算法">分代收集算法</h3>
+<p>根据对象的存活周期不同将内存划分为几块。根据各个年代的特点采用最恰当的收集算法。</p>
+<h2 id="垃圾收集器">垃圾收集器</h2>
+<p>垃圾收集器是内存回收的具体实现。</p>
+<h3 id="Serial收集器">Serial收集器</h3>
+<h1 id="4-_虚拟机性能监控与故障处理工具">4. 虚拟机性能监控与故障处理工具</h1>
+<h2 id="jps">jps</h2>
+<ul>
+<li>-l</li>
+<li>-m</li>
+</ul>
+<h2 id="jstat">jstat</h2>
+<p>例子</p>
+<pre><code><span class="tag">jstat</span> <span class="tag">-gcutil</span> <span class="attr_selector">[进程id]</span> <span class="attr_selector">[毫秒数]</span> <span class="attr_selector">[打印次数]</span>
+
+<span class="attr_selector">[admin@v189230231.sqa.zmf ~]</span>$ <span class="tag">jstat</span> <span class="tag">-gcutil</span> 6671 250 10
+<span class="tag">S0</span>     <span class="tag">S1</span>     <span class="tag">E</span>      <span class="tag">O</span>      <span class="tag">P</span>     <span class="tag">YGC</span>     <span class="tag">YGCT</span>    <span class="tag">FGC</span>    <span class="tag">FGCT</span>     <span class="tag">GCT</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.54</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.54</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.54</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+</code></pre><p>说明：</p>
+<ul>
+<li>S0: Survivor 0</li>
+<li>S1: Survivor 1</li>
+<li>E: Eden空间</li>
+<li>O: Old 老年代</li>
+<li>YGC: 新生代gc 次数</li>
+<li>YGCT:  新生代gc 时间. 单位为秒</li>
+<li>FGC： full gc 次数</li>
+<li>FGCT： full gc 时间</li>
+</ul>
+<h2 id="jstack">jstack</h2>
+<h1 id="5-_调优案例分析与实战">5. 调优案例分析与实战</h1>
+<h1 id="6-_类文件结构">6. 类文件结构</h1>
+<h1 id="7-_虚拟机类加载机制">7. 虚拟机类加载机制</h1>
+<h1 id="8-_虚拟机字节码执行引擎">8. 虚拟机字节码执行引擎</h1>
+<h1 id="9-_类加载及执行子系统的案例与实战">9. 类加载及执行子系统的案例与实战</h1>
+<h1 id="10-_早期(编译期)优化">10. 早期(编译期)优化</h1>
+<h1 id="11-_晚期(编译期)优化">11. 晚期(编译期)优化</h1>
+<h1 id="12-_Java内存模型与线程">12. Java内存模型与线程</h1>
+<h1 id="13-_线程安全与锁优化">13. 线程安全与锁优化</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/03/17/深入理解JVM虚拟机/" data-id="0l16szcs6cqupp2w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/03/15/思考，快与慢/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">思考，快与慢</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 12.50px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/14/Go并发编程实战/">Go并发编程实战</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Peter Yu<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">存档</a>
+  
+    <a href="/about" class="mobile-nav-link">关于</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

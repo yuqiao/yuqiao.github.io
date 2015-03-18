@@ -69,6 +69,214 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-深入理解JVM虚拟机" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/17/深入理解JVM虚拟机/" class="article-date">
+  <time datetime="2015-03-17T09:29:50.000Z" itemprop="datePublished">3月 17 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_走近Java">1. 走近Java</h1>
+<h2 id="1-1_概述">1.1 概述</h2>
+<p>Java不仅仅是一门编程语言, 它还是一个由一系列计算机软件和规范形成的技术体系.</p>
+<p>java优点:</p>
+<ul>
+<li>结构严谨, 编写对象</li>
+<li>摆脱了硬件平台的束缚</li>
+<li>提供了相对安全的内存管理和访问机制, 避免绝大部分的内存泄露和指针越界问题</li>
+<li>实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能</li>
+<li>有一套完善的应用程序接口, 还有无数第三方类库</li>
+</ul>
+<h2 id="1-2_Java技术体系">1.2 Java技术体系</h2>
+<p>Sun官方定义的Java技术体系:</p>
+<ul>
+<li>Java程序设计语言</li>
+<li>各种硬件平台上的Java虚拟机</li>
+<li>Class文件格式</li>
+<li>Java API类库</li>
+<li>第三方Java类库</li>
+<li>实现了热点代码检测和运行时编译及优化, 使java应用随着运行时间的增加而获取更高的性能</li>
+<li>有一套完善的应用程序接口, 还有无数第三方类库</li>
+</ul>
+<h2 id="1-3_Java发展史">1.3 Java发展史</h2>
+<h2 id="1-4_展望Java技术的未来">1.4 展望Java技术的未来</h2>
+<h3 id="模块化">模块化</h3>
+<h3 id="混合语言">混合语言</h3>
+<h3 id="多核并发">多核并发</h3>
+<h2 id="1-5_实战:_自己编译JDK">1.5 实战: 自己编译JDK</h2>
+<h1 id="2-_Java_内存区域与内存溢出异常">2. Java 内存区域与内存溢出异常</h1>
+<h2 id="2-2_运行时数据区域">2.2 运行时数据区域</h2>
+<ul>
+<li><p>执行引擎</p>
+</li>
+<li><p>本地库接口</p>
+</li>
+<li><p>运行时数据区域</p>
+<ul>
+<li>方法区 Method Area， 用以存储虚拟机加载的类信息， 常量，静态变量，即时编译器编译后的代码等数据. </li>
+<li>堆 Heap</li>
+<li>程序计数器 Program Couter Register</li>
+<li>虚拟机栈 VM Stack</li>
+<li>本地方法栈 Native method Stack</li>
+</ul>
+</li>
+<li><p>直接内存</p>
+</li>
+</ul>
+<h3 id="程序计数器">程序计数器</h3>
+<p>一块较小的内存空间, 作用可以看做是当前线程所执行的字节码的行号指示器.<br>字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令.<br>分支, 循环, 跳转,异常处理, 线程恢复等基础功能需要这个计数器来完成.</p>
+<p>每条线程都有自己一个独立的程序计数器. “线程私有”的内存.</p>
+<h3 id="Java虚拟机栈">Java虚拟机栈</h3>
+<p>线程私有.</p>
+<p>描述的是java方法执行的内存模型: 每个方法被执行的时候都会同时创建一个栈帧(Stack Frame)用于存储局部变量表,<br>操作数栈,动态链接, 方法出口等信息.<br>每一个方法被调用直至执行完成的过程, 就对应着在虚拟机栈中从入栈到出栈的过程.</p>
+<h3 id="Java虚拟机栈-1">Java虚拟机栈</h3>
+<p>线程私有.<br>字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令.<br>分支, 循环, 跳转,异常处理, 线程恢复等基础功能需要这个计数器来完成.</p>
+<p>每条线程都有自己一个独立的程序计数器. “线程私有”的内存.</p>
+<h3 id="Java堆">Java堆</h3>
+<p>采用分代收集算法。 堆可细分为：</p>
+<ul>
+<li>新生代</li>
+<li>老年代</li>
+</ul>
+<p>划分的目的：更好地回收内存，更快地分配内存</p>
+<p>-Xms, -Xmx 来配置堆大小。</p>
+<h2 id="OutOfMemoryError异常">OutOfMemoryError异常</h2>
+<h3 id="Java堆溢出">Java堆溢出</h3>
+<p>配置：</p>
+<ul>
+<li>-Xms</li>
+<li>-Xmx</li>
+<li>-XX:+HeapDumpOnOutOfMemeoryError</li>
+</ul>
+<p>堆溢出时， 异常堆栈信息”java.lang.OutOfMemoryError”会进一步提示”java heap space”</p>
+<p>解决该异常：</p>
+<ul>
+<li>通过内存映象分析工具对dump出来的堆转储快照进行分析。</li>
+<li>若是内存泄露， 进一步通过该工具查看泄露对象打GC Roots的引用链，从而找到泄露对象是通过怎样的路径与GC Roots相关联而导致无法垃圾收集。</li>
+<li>若不存在泄露， 需要检查虚拟机的堆参数（-Xms，-Xmx)</li>
+</ul>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<p>栈容量由-Xss参数设定。</p>
+<p>由两类异常：</p>
+<ul>
+<li>线程请求的深度大于虚拟机所允许的最大深度， 抛出StackOverflowError异常</li>
+<li>虚拟机在扩展栈是无法申请到足够的内存空间， 抛出OutOfMemoryError</li>
+</ul>
+<h3 id="运行时常量池异常/方法区溢出">运行时常量池异常/方法区溢出</h3>
+<p>溢出时， 异常堆栈信息”java.lang.OutOfMemoryError”会进一步提示”PermGen space”</p>
+<p>配置：</p>
+<ul>
+<li>-XX:PermSize</li>
+<li>-XX:MaxPermSize</li>
+</ul>
+<h1 id="3-_垃圾收集器与内存分配策略">3. 垃圾收集器与内存分配策略</h1>
+<h2 id="对象已死？">对象已死？</h2>
+<h3 id="引用计数算法">引用计数算法</h3>
+<p>很难解决对象之间的相互引用的问题。</p>
+<h3 id="根搜索算法">根搜索算法</h3>
+<p>GC Roots Tracing 判定对象是否存活。</p>
+<p>基本思路：</p>
+<pre><code>通过一系列名为<span class="string">"GC Roots"</span>的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为”引用链“(Reference Chain). 
+当一个对象到GC <span class="keyword">Roots</span>没有任何引用链相连，则证明此对象是不可用的。被判定为可回收对象。
+</code></pre><h3 id="Java引用">Java引用</h3>
+<ul>
+<li>强引用</li>
+<li>软引用</li>
+<li>弱引用</li>
+<li>虚引用</li>
+</ul>
+<h3 id="生存还是死亡？">生存还是死亡？</h3>
+<p>根搜索不可达的对象， 并非是”非死不可”, 暂时处于缓刑阶段。要真正宣告对象死亡， 至少经历两次标记。</p>
+<ol>
+<li>根搜索不到， 第一次标记</li>
+<li>是否有必要执行finalize()方法， 第二次标记。</li>
+</ol>
+<p>被判定有必要执行finalize()方法， 对象会被添加名为F-Queue的对了之中， 并在稍后有一条虚拟机自动建立的低优先级的Finalize线程执行。<br>若某个对象在finalize()方法中死循环，那么F-Queue后面的对象都将永久处于等待状态。</p>
+<p>永久代的垃圾收集主要回收两部分内容： 废弃常量和无用的类。</p>
+<h2 id="垃圾收集算法">垃圾收集算法</h2>
+<h3 id="标记-清除算法">标记-清除算法</h3>
+<p>标记出所需要回收的对象，在标记完成后统一回收掉。 </p>
+<p>缺点:</p>
+<ul>
+<li>效率问题: 标记和清除的效率不高</li>
+<li>空间问题: 产生大量不连续的内存碎片</li>
+</ul>
+<h3 id="复制算法">复制算法</h3>
+<p>将可用的内存按容量划分为大小相等的两块，每次使用其中一块。当这块内存用完，将存活的对象复制到另一块上面，然后在把已使用的内存空间一次清理掉。</p>
+<p>代价： 可用内存缩小到原来的一半。</p>
+<p>使用这种方式来回收新生代， 因为新生代的对象98%是朝生夕死的。</p>
+<p>实际划分： 一块较大的Eden空间和两块较小的Survivor空间。每次使用Eden空间和一块Survivor. 回收时讲Eden和Survivor中还存活的对象一次性拷贝到另一块Survivor空间上。</p>
+<p>一般Eden:Survivor空间之比是8：1， 那么空间浪费只有10%。</p>
+<p>若Survivor空间没有足够的空间存放上一次新生代存活下来的对象， 那么这些对象通过分配担保机制进入老年代。</p>
+<h3 id="标记-整理算法">标记-整理算法</h3>
+<p>让所有存活的对象向一段移动，然后清理端边界以外的内存。</p>
+<h3 id="分代收集算法">分代收集算法</h3>
+<p>根据对象的存活周期不同将内存划分为几块。根据各个年代的特点采用最恰当的收集算法。</p>
+<h2 id="垃圾收集器">垃圾收集器</h2>
+<p>垃圾收集器是内存回收的具体实现。</p>
+<h3 id="Serial收集器">Serial收集器</h3>
+<h1 id="4-_虚拟机性能监控与故障处理工具">4. 虚拟机性能监控与故障处理工具</h1>
+<h2 id="jps">jps</h2>
+<ul>
+<li>-l</li>
+<li>-m</li>
+</ul>
+<h2 id="jstat">jstat</h2>
+<p>例子</p>
+<pre><code><span class="tag">jstat</span> <span class="tag">-gcutil</span> <span class="attr_selector">[进程id]</span> <span class="attr_selector">[毫秒数]</span> <span class="attr_selector">[打印次数]</span>
+
+<span class="attr_selector">[admin@v189230231.sqa.zmf ~]</span>$ <span class="tag">jstat</span> <span class="tag">-gcutil</span> 6671 250 10
+<span class="tag">S0</span>     <span class="tag">S1</span>     <span class="tag">E</span>      <span class="tag">O</span>      <span class="tag">P</span>     <span class="tag">YGC</span>     <span class="tag">YGCT</span>    <span class="tag">FGC</span>    <span class="tag">FGCT</span>     <span class="tag">GCT</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.18</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.54</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.54</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+20<span class="class">.86</span>   0<span class="class">.00</span>  59<span class="class">.54</span>   7<span class="class">.79</span>  32<span class="class">.03</span>    448    9<span class="class">.656</span>     0    0<span class="class">.000</span>    9<span class="class">.656</span>
+</code></pre><p>说明：</p>
+<ul>
+<li>S0: Survivor 0</li>
+<li>S1: Survivor 1</li>
+<li>E: Eden空间</li>
+<li>O: Old 老年代</li>
+<li>YGC: 新生代gc 次数</li>
+<li>YGCT:  新生代gc 时间. 单位为秒</li>
+<li>FGC： full gc 次数</li>
+<li>FGCT： full gc 时间</li>
+</ul>
+<h2 id="jstack">jstack</h2>
+<h1 id="5-_调优案例分析与实战">5. 调优案例分析与实战</h1>
+<h1 id="6-_类文件结构">6. 类文件结构</h1>
+<h1 id="7-_虚拟机类加载机制">7. 虚拟机类加载机制</h1>
+<h1 id="8-_虚拟机字节码执行引擎">8. 虚拟机字节码执行引擎</h1>
+<h1 id="9-_类加载及执行子系统的案例与实战">9. 类加载及执行子系统的案例与实战</h1>
+<h1 id="10-_早期(编译期)优化">10. 早期(编译期)优化</h1>
+<h1 id="11-_晚期(编译期)优化">11. 晚期(编译期)优化</h1>
+<h1 id="12-_Java内存模型与线程">12. Java内存模型与线程</h1>
+<h1 id="13-_线程安全与锁优化">13. 线程安全与锁优化</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/03/17/深入理解JVM虚拟机/" data-id="0l16szcs6cqupp2w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-思考，快与慢" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/03/15/思考，快与慢/" class="article-date">
@@ -1160,11 +1368,197 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
 </code></pre><h2 id="Scala继承层级">Scala继承层级</h2>
 <p>基本类型和Unit， 都扩展自AnyVal<br>类都扩展自AnyRef.</p>
 <p>AnyVal和AnyRef的基类是Any。Any是根节点.</p>
-<p>Any类定义了isInstanceOf, asInstanceOf方法， 以及用于相等性判断和哈希码的方法<br>AnyRef追加了来着Object类的jai</p>
-<h1 id="9_文件和正则表达式">9 文件和正则表达式</h1>
-<h1 id="10_特质">10 特质</h1>
-<h1 id="11_操作符">11 操作符</h1>
-<h1 id="12_高阶函数">12 高阶函数</h1>
+<p>Any类定义了isInstanceOf, asInstanceOf方法， 以及用于相等性判断和哈希码的方法<br>AnyRef追加了来着Object类的监视方法wait和notify/notifyAll.</p>
+<h2 id="对象相等性">对象相等性</h2>
+<pre><code><span class="keyword">final</span> override <span class="keyword">def</span> equals(other: <span class="keyword">Any</span>){
+    val that = other.asInstanceOf[Item]
+    <span class="keyword">if</span>(that == <span class="keyword">null</span>) <span class="keyword">false</span>
+    <span class="keyword">else</span> <span class="keyword">description</span> == that.<span class="keyword">description</span> &amp;&amp; price == that.price
+}
+</code></pre><p>注意：</p>
+<ul>
+<li>方法定义为final</li>
+<li>equals方法参数类型为Any.</li>
+<li>定义equals时，记得同事也定义hashCode, 计算hashCode时，只应使用那些你用来做相等性判断的字段。</li>
+</ul>
+<p>::</p>
+<pre><code>final override def hashCode = 13 <span class="keyword">*</span>description<span class="keyword">*</span>.hashCode +17 <span class="keyword">*</span> price.hashCode
+</code></pre><h1 id="9_文件和正则表达式">9 文件和正则表达式</h1>
+<p>要点:</p>
+<ul>
+<li>Source.fromFile(…).getLines.toArray 输出文件的所有行</li>
+<li>Source.fromFile(…).mkString 以字符串形式输出文件内容</li>
+<li>将字符串转成数字， 可以用toInt或toDouble方法。</li>
+<li>使用Java的PrintWriter写入文件</li>
+<li>“正则”.r是一个Regex对象。</li>
+<li>若你的正则表达式包含反斜杠或者引号的话，用”””…”””</li>
+<li>若正则模式包含分组，使用一些预发提取它们的内容： for(regex(变量,…,变量n)&lt;- 字符串）</li>
+</ul>
+<h2 id="读取">读取</h2>
+<p>从文件:</p>
+<pre><code><span class="keyword">import</span> scala.io.Source
+<span class="keyword">val</span> source = Source.fromFile(<span class="string">"myfile.txt"</span>, <span class="string">"UTF-8"</span>)
+<span class="keyword">val</span> lineIterator = source.getLines
+<span class="keyword">val</span> tokens = source.mkString.split(<span class="string">"\\S+"</span>)
+<span class="keyword">val</span> numbers = <span class="keyword">for</span>( w&lt;- tokens) <span class="keyword">yield</span> w.toDouble
+<span class="keyword">val</span> numbers = tokens.map(_.toDouble)
+</code></pre><p>从控制台读取:</p>
+<pre><code>val age = <span class="built_in">read</span>Int()
+</code></pre><p>其它源：</p>
+<pre><code>val <span class="built_in">source</span>1 = Source.fromURL(<span class="string">"http://horstamnn.com"</span>, <span class="string">"UTF-8"</span>)
+val <span class="built_in">source</span>2 = Source.fromString(<span class="string">"Hello, Wolle"</span>)
+val <span class="built_in">source</span>3 = Source.stdin
+</code></pre><p>二进制文件:</p>
+<pre><code>val <span class="built_in">file</span>  = <span class="built_in">new</span> File(filename)
+val <span class="operator">in</span>  = <span class="built_in">new</span> FileInputStream(<span class="built_in">file</span>)
+val <span class="keyword">bytes</span> = <span class="built_in">new</span> Array[Byte](<span class="built_in">file</span>.<span class="built_in">length</span>.toInt)
+<span class="operator">in</span>.<span class="built_in">read</span>(<span class="keyword">bytes</span>)
+<span class="operator">in</span>.<span class="built_in">close</span>()
+</code></pre><h2 id="写入">写入</h2>
+<pre><code>val <span class="keyword">out</span> = <span class="keyword">new</span> PrintWriter(<span class="string">"numbers.txt"</span>)
+<span class="keyword">for</span>(i&lt;-<span class="number">1</span> <span class="keyword">to</span> <span class="number">100</span>)<span class="keyword">out</span>.println(i)
+<span class="keyword">out</span>.close()
+</code></pre><h2 id="访问目录">访问目录</h2>
+<pre><code><span class="keyword">import</span> java.io.File
+
+<span class="function"><span class="keyword">def</span> <span class="title">subdirs</span><span class="params">(dir:File)</span>:</span> Iterator[File] = {
+    val children = dir.listFiles.filter(_.isDirectory)
+    children.toIterator ++ children.toIterator.flatMap(subdirs _)
+}
+</code></pre><p>在scala中， 我们通常喜欢用函数对象来制定过着内容。</p>
+<pre><code><span class="reserved">import</span> java.nio.file._
+implicit def makeFileVistor<span class="function"><span class="params">(f: (Path) =&gt; Unit)</span>= <span class="title">new</span> <span class="title">SimpleFileVisitor</span>[<span class="title">Path</span>] {
+    <span class="title">override</span> <span class="title">def</span> <span class="title">visitFile</span><span class="params">(p: Path, attrs: attribute.BasicFileAttributes)</span>= {
+        <span class="title">f</span><span class="params">(p)</span>
+        <span class="title">FileVisitResult</span>.<span class="title">CONTINUE</span>
+    } 
+}
+
+<span class="title">Files</span>.<span class="title">walkFileTree</span><span class="params">(dir.toPath, (f:Path) =&gt;println(f))</span></span>
+</code></pre><h2 id="序列化">序列化</h2>
+<pre><code><span class="annotation">@SerialVersionUID</span>(<span class="number">42</span>L) <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">extends</span> <span class="title">Serilizable</span></span>
+</code></pre><h2 id="进程控制">进程控制</h2>
+<p>scala.sys.process包提供了与shell程序交互的工具。</p>
+<pre><code><span class="keyword">import</span> sys.process._
+<span class="string">"ls -al .."</span>!   <span class="comment">//执行结果打印到标准输出</span>
+val result = <span class="string">"ls -al .."</span> !! <span class="comment">// !! 返回字符串</span>
+<span class="string">"ls -al .."</span> #&gt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>)  <span class="comment">// #&gt; 重定向到文件</span>
+<span class="string">"ls -al .."</span> #&gt;&gt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>)  <span class="comment">// #&gt;&gt; 追加到文件末尾</span>
+<span class="string">"grep sec"</span> #&lt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>) <span class="comment">// #&lt; 把文件内容作为输入</span>
+<span class="string">"grep Scala"</span> #&lt; <span class="keyword">new</span> URL(<span class="string">"http://horstmann.com/index.html"</span>) 
+</code></pre><h2 id="正则表达式">正则表达式</h2>
+<pre><code><span class="keyword">val</span> numPattern = <span class="string">"[0-9]+"</span>.r 
+<span class="keyword">for</span> (matchString &lt;- numPattern.findAllIn(<span class="string">"99 bottles, 98 bottles"</span>) )
+    处理matchString  <span class="comment">// 99, 98</span>
+
+<span class="keyword">val</span> m1 = numPattern.findFirstIn(<span class="string">"99 bottles, 98 bottles"</span>) <span class="comment">//Some()</span>
+numPattern.findPrefixOf(<span class="string">"99 bottles, 98 bottles"</span>) <span class="comment">// Some(99)</span>
+</code></pre><h2 id="正则表达式组">正则表达式组</h2>
+<pre><code>val numitemPatten = <span class="string">"([0-9]+) ([a-z]+)"</span>.r
+val numitemPatten(<span class="built_in">num</span>, <span class="keyword">item</span>) = <span class="string">"99 bottles"</span><span class="comment"> // num 设置为99 ， item设置为"bottles"</span>
+
+<span class="keyword">for</span> (numitemPatten(<span class="built_in">num</span>, <span class="keyword">item</span>) &lt;- numitemPatten.findAllIn(<span class="string">"99 bottles, 98 bottles"</span>) )
+    处理<span class="built_in">num</span>, <span class="keyword">item</span>
+</code></pre><h1 id="10_特质">10 特质</h1>
+<p>要点：</p>
+<ul>
+<li>类可以实现任意数量的特质</li>
+<li>特质要求实现他们的类具备特定的字段， 方法或超类</li>
+<li>和Java接口不同，Scala特质可以提供方法和字段的实现</li>
+<li>但你将多个特质叠加在一起时，顺序很重要 — 其方法先被执行的特质排在更后面</li>
+</ul>
+<h2 id="d当做接口使用的特质">d当做接口使用的特质</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">def</span> log(msg: String)
+}
+</code></pre><p>子类可以给出实现：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">ConsoleLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">def</span> log(msg: String) { println(msg)}
+}
+</code></pre><h2 id="带有具体实现的特质">带有具体实现的特质</h2>
+<h2 id="带有特质的对象">带有特质的对象</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">Logged</span> </span>{
+    <span class="keyword">def</span> log(msg: String){}
+}
+<span class="class"><span class="keyword">class</span> <span class="title">SavingsAccount</span> <span class="keyword">extends</span> <span class="title">Account</span> <span class="keyword">with</span> <span class="title">Logged</span> </span>{
+    <span class="keyword">def</span> withdraw(amount:Double){
+        <span class="keyword">if</span>(amout &gt; balance) log(<span class="string">"INsufficient funds"</span>)
+        <span class="keyword">else</span> ...
+    }
+}
+</code></pre><p>可以在构造具体对象时”混入”一个更好的日志记录器的实现：</p>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">ConsoleLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String) { println(msg)}
+}
+<span class="keyword">val</span> acct = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> ConsoleLogger
+<span class="keyword">val</span> acct2 = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> FileLogger
+</code></pre><h2 id="叠加在一起的特质">叠加在一起的特质</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">TimestampLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String){
+        <span class="keyword">super</span>.log(<span class="keyword">new</span> java.util.Date() +<span class="string">" "</span> +msg)
+    }
+}
+
+<span class="class"><span class="keyword">trait</span> <span class="title">ShorLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String){
+        <span class="keyword">super</span>.log(
+            <span class="keyword">if</span>(msg.length&lt;=maxLength) msg <span class="keyword">else</span> msg.substring(<span class="number">0</span>, maxLength -<span class="number">3</span>) + <span class="string">"..."</span>)
+    }
+}
+
+<span class="keyword">val</span> acct1 = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> ConsoleLogger <span class="keyword">with</span> TimestampLogger <span class="keyword">with</span> ShorLogger
+acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015 Insufficient...</span>
+</code></pre><p>特质从最后一个开始处理.</p>
+<h2 id="重写抽象方法">重写抽象方法</h2>
+<p>需要加上abstract关键字。</p>
+<h2 id="特质中的字段">特质中的字段</h2>
+<p>具体字段和抽象字段。</p>
+<h2 id="特质的构造顺序">特质的构造顺序</h2>
+<ul>
+<li>首先调用超类的构造器</li>
+<li>特质构造器在超类构造器之后，类构造器之前咨询</li>
+<li>特质从左到右构造</li>
+<li>每个特质当中，父特质先被构造</li>
+<li>若多个特质共有一个父特质，那么父特质构造只会被构造一次</li>
+<li>特质构造完毕后，子类被构造</li>
+</ul>
+<h2 id="初始化特质的字段">初始化特质的字段</h2>
+<p>trait FileLogger extends Logger {<br>    val filename:String<br>    val out = new PrintStream(filename)<br>    def log(msg: String) { out.println(msg);out.flush() }<br>}</p>
+<p>提前定义：</p>
+<pre><code><span class="keyword">val</span> acct = <span class="keyword">new</span> {
+    <span class="keyword">val</span> filename = <span class="string">"myapp.log"</span>
+} <span class="keyword">with</span> SavingsAccount <span class="keyword">with</span> FileLogger
+
+<span class="class"><span class="keyword">class</span> <span class="title">SavingsAccount</span> <span class="keyword">extends</span> </span>{
+    <span class="keyword">val</span> filename = <span class="string">"saving.log"</span>
+} <span class="keyword">with</span> Account <span class="keyword">with</span> FileLogger {
+    ...
+}
+</code></pre><h2 id="自身类型">自身类型</h2>
+<p>可限定被混入指定类型的子类。</p>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">LoggedException</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">this</span>:Exception =&gt;
+        <span class="keyword">def</span> log() { log(getMessage())}
+}
+
+<span class="keyword">val</span> f = <span class="keyword">new</span> JFrame <span class="keyword">with</span> LoggedException <span class="comment">// Error：JFrame不是Exception的子类。</span>
+
+<span class="class"><span class="keyword">trait</span> <span class="title">LoggedException</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">this</span>: { <span class="keyword">def</span> getMessage() :String } =&gt;
+    <span class="keyword">def</span> log(){log(getMessage()}
+} <span class="comment">// 特质可以混入任何拥有getMessage方法的类</span>
+</code></pre><h1 id="11_操作符">11 操作符</h1>
+<p>要点：</p>
+<ul>
+<li>标识符由字母，数字或运算符构成</li>
+<li>一元和二元操作符其实是方法调用</li>
+<li>操作符优先级取决于第一个字符，而结合性取决于最后一个字符</li>
+<li>apply和update方法在对expr(args)表达式求值时被调用。</li>
+<li>提取器从输入中提取元组或值的序列</li>
+</ul>
+<p>前置操作符(+,-,!, ~) 被转换成名为unary_操作符的方法调用。</p>
+<pre><code>-a  <span class="comment">// a.unary_- 一样</span>
+</code></pre><h1 id="12_高阶函数">12 高阶函数</h1>
 <h1 id="13_集合">13 集合</h1>
 <h1 id="14_模式匹配和样例类">14 模式匹配和样例类</h1>
 <h1 id="15_注解">15 注解</h1>
@@ -1182,7 +1576,7 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
       <a data-url="http://yuqiao.github.io/2015/03/07/scala快学/" data-id="vbw899bc9g9rfzk4" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scalao/">scalao</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
 
     </footer>
   </div>
@@ -1519,257 +1913,6 @@ println(myCounter.current)   <span class="comment">//对取值器不使用()</sp
 
 
   
-    <article id="post-javascript权威指南" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/02/18/javascript权威指南/" class="article-date">
-  <time datetime="2015-02-17T23:57:09.000Z" itemprop="datePublished">2月 18 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/18/javascript权威指南/">javascript权威指南</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-_Javascript概述">1. Javascript概述</h1>
-<p>Javascript是面向Web的编程语言。</p>
-<p>前端工程师必须掌握的三大技能: </p>
-<ul>
-<li>描述网页内容的HTML </li>
-<li>描述网页样式的css </li>
-<li>描述网页行为的Javascript</li>
-</ul>
-<p>Firefox的插件Firebug: <a href="http://getfirebug.com/" target="_blank" rel="external">http://getfirebug.com/</a></p>
-<p>F12唤醒Firefox操作面板 Ctrl+Shift+J唤醒错误控制台(Error Console).</p>
-<h2 id="Javascript语言核心">Javascript语言核心</h2>
-<p>变量和赋值：</p>
-<pre><code><span class="title">var</span> x;
-<span class="title">x</span> = <span class="number">0</span>;
-
-<span class="title">x</span>
-x = <span class="number">1</span>;
-<span class="title">x</span> = <span class="number">0</span>.<span class="number">01</span>;
-<span class="title">x</span> = <span class="string">"hello world"</span>;
-<span class="title">x</span> = <span class="string">'hello world'</span>;
-<span class="title">x</span> = <span class="built_in">true</span>;
-<span class="title">x</span> = null;
-<span class="title">x</span> = undefined;
-</code></pre><p>复杂类型:</p>
-<pre><code><span class="keyword">var</span> book = {
-    topic: <span class="string">"Javascript"</span>,
-    fat: <span class="keyword">true</span>
-};
-
-book.topic
-book[<span class="string">'fat'</span>]
-book.author = <span class="string">'Flanagan'</span>;
-book.content = {};
-
-<span class="keyword">var</span> primes = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>];
-primes[<span class="number">0</span>]
-primes.length
-primes[primes.length -<span class="number">1</span> ]
-primes[<span class="number">4</span>] = <span class="number">9</span>;  <span class="comment">// 通过赋值添加新元素</span>
-primes[<span class="number">4</span>] = <span class="number">11</span>;
-<span class="keyword">var</span> <span class="keyword">empty</span> = []
-<span class="keyword">empty</span>.length
-
-<span class="keyword">var</span> points = [
-    {x:<span class="number">0</span>, y:<span class="number">0</span>},
-    {x:<span class="number">1</span>, y:<span class="number">1</span>}
-];
-
-<span class="keyword">var</span> data = {
-    trial1: [ [<span class="number">1</span>,<span class="number">2</span>],[<span class="number">3</span>,<span class="number">4</span>]],
-    trial2: [ [<span class="number">2</span>,<span class="number">3</span>],[<span class="number">3</span>,<span class="number">4</span>]]
-}
-</code></pre><p>表达式：</p>
-<pre><code><span class="number">3</span> + <span class="number">2</span>
-<span class="number">3</span> - <span class="number">2</span>
-<span class="number">3</span> * <span class="number">2</span>
-<span class="number">3</span> / <span class="number">2</span>                           <span class="comment">// =&gt; 1.5</span>
-points[<span class="number">1</span>].x - points[<span class="number">0</span>].x  
-<span class="string">"3"</span> + <span class="string">"2"</span>                       <span class="comment">// =&gt; "32" </span>
-
-<span class="keyword">var</span> <span class="built_in">count</span> = <span class="number">0</span>;
-<span class="built_in">count</span> ++;
-<span class="built_in">count</span> --;
-<span class="built_in">count</span> += <span class="number">2</span>;
-<span class="built_in">count</span> *= <span class="number">3</span>;
-<span class="built_in">count</span>
-
-<span class="keyword">var</span> x=<span class="number">2</span>, y=<span class="number">3</span>;
-x == y
-x != y
-x &lt; y
-<span class="string">"two"</span> &gt; <span class="string">"three"</span>
-
-(x == <span class="number">2</span>) &amp;&amp; (y==<span class="number">3</span>)
-</code></pre><p>函数:</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">plus1</span><span class="params">(x)</span></span>{
-    reutrn x +<span class="number">1</span>;
-}
-plus1(y)
-
-<span class="keyword">var</span> square = <span class="function"><span class="keyword">function</span><span class="params">(x)</span> </span>{
-    <span class="keyword">return</span> x * x;
-};
-
-square(plus1(y))
-</code></pre><p>将函数和对象合写在一起， 方法：</p>
-<pre><code><span class="keyword">var</span> a = [];
-a.push(<span class="number">1</span>, <span class="number">2</span> <span class="number">3</span>);
-a.reverse();
-
-<span class="comment">// "this"关键字是对定义方法对象的引用</span>
-points.dist = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>{
-    <span class="keyword">var</span> p1 = <span class="keyword">this</span>[<span class="number">0</span>];
-    <span class="keyword">var</span> p2 = <span class="keyword">this</span>[<span class="number">1</span>];
-    <span class="keyword">var</span> a = p2.x - p1.x
-    <span class="keyword">var</span> b = p2.y - p2.y;
-    <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(a*<span class="number">2</span> + b*b ）
-points.dist()
-</code></pre><p>控制语句：</p>
-<pre><code><span class="keyword">function</span> abs(x) {
-    <span class="keyword">if</span>(x &gt;=<span class="number">0</span>){
-        <span class="keyword">return</span> x;
-    }<span class="keyword">else</span>{
-        <span class="keyword">return</span> -x;
-    }
-}
-
-//<span class="keyword">...</span>    
-    <span class="keyword">for</span>(i=<span class="number">2</span>;i&lt;=n;i+){
-        //<span class="keyword">...</span>
-    }
-    <span class="keyword">while</span>(true){
-        //<span class="keyword">...</span>
-    }
-</code></pre><p>对象：</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">Point</span><span class="params">(x,y)</span></span>{
-    <span class="keyword">this</span>.x = x;
-    <span class="keyword">this</span>.y = y;
-}
-<span class="keyword">var</span> p = <span class="keyword">new</span> Point(<span class="number">1</span>,<span class="number">1</span>);
-
-Point.prototype.r = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>{
-    <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(
-        <span class="keyword">this</span>.x * <span class="keyword">this</span>.x + <span class="keyword">this</span>.y * <span class="keyword">this</span>.y);
-    };
-p.r();
-</code></pre><h1 id="2-_词法结构">2. 词法结构</h1>
-<h1 id="3-_类型，值和变量">3. 类型，值和变量</h1>
-<h1 id="4-_表达式和运算符">4. 表达式和运算符</h1>
-<h1 id="5-_语句">5. 语句</h1>
-<h1 id="6-_对象">6. 对象</h1>
-<p>对象是一种复合值: 将很多值聚合在一起， 可通过名字访问这些值。</p>
-<p>对象可以看做属性的无序集合，每个属性都是一个名/值对。</p>
-<p>属性名是字符串，因此我们可以吧对象看成从字符串到值的映射。</p>
-<p>对象不仅仅是字符串到值的映射，除了可以保持自有的属性，对象还可以从一个称为原型的对象继承属性。<br>对象的方法通常是继承的属性。</p>
-<p>“原型式继承”是Javascript的核心特征。</p>
-<h2 id="创建对象">创建对象</h2>
-<p>三种方式.</p>
-<h3 id="对象直接量">对象直接量</h3>
-<pre><code><span class="keyword">var</span> <span class="keyword">empty</span> = {}
-<span class="keyword">var</span> point = {x:<span class="number">0</span>, y:<span class="number">0</span>}
-<span class="keyword">var</span> book = {
-    <span class="string">"main title"</span>: <span class="string">"Javascript"</span>,
-    <span class="string">"sub-title"</span>:<span class="string">"The Definitive Guide"</span>
-}
-</code></pre><h3 id="new创建对象">new创建对象</h3>
-<pre><code><span class="keyword">var</span> o = <span class="keyword">new</span> <span class="built_in">Object</span>(); <span class="comment">// 创建一个空对象， 和{}一样</span>
-<span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">Array</span>(); <span class="comment">// 创建一个空数组, 和[]一样</span>
-<span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>(); 
-<span class="keyword">var</span> r = <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"js"</span>);
-</code></pre><p>除了这些内置构造函数， 也可以自定义构造函数来初始化新对象。</p>
-<h3 id="原型">原型</h3>
-<pre><code><span class="keyword">var</span> o1 = <span class="built_in">Object</span>.create({x:<span class="number">1</span>, y:<span class="number">2</span>}) <span class="comment">// o1 继承了属性x和y</span>
-<span class="keyword">var</span> o3 = <span class="built_in">Object</span>.create(<span class="built_in">Object</span>.prototype) <span class="comment">// o3 和 {} 一样</span>
-</code></pre><p>可以通过任何原型创建对象:</p>
-<p>function inherit(p){<br>    if(p==null) throw TypeError();<br>    if(Object.create) return Object.create(p);<br>    var t= typeof p;<br>    if(t!== “object”&amp;&amp; t!== “function”) throw TypeError();<br>    fucntion f() {} // 定义一个空构造函数<br>    f.prototype = p;<br>    return new f();<br>}</p>
-<h2 id="属性的查询和设置">属性的查询和设置</h2>
-<p>通过.和[]来获取属性的值。</p>
-<p>Javascript对象都是关联数组。</p>
-<p>属性访问错误，会抛出一个类型错误异常。</p>
-<p>避免错误的方法:</p>
-<pre><code><span class="keyword">var</span> <span class="built_in">len</span> = book &amp;&amp; book.subtitle &amp;&amp; book.subtitle.length;
-</code></pre><h2 id="删除属性">删除属性</h2>
-<p>delete book.author<br>delete book[“main title”]</p>
-<h2 id="检测属性">检测属性</h2>
-<h2 id="枚举属性">枚举属性</h2>
-<p>for/in循环可以在循环体中遍历对象中所有可枚举的属性。<br>对象继承的内置方法是不可枚举的。<br>d但在代码中给对象添加的属性是可枚举的。</p>
-<h2 id="属性getter和setter">属性getter和setter</h2>
-<h2 id="属性的特征">属性的特征</h2>
-<p>除了包含名字和值之外，属性还包含一些标识他们可写，可枚举和可配置的特性。</p>
-<h2 id="对象的三个属性">对象的三个属性</h2>
-<p>每个对象都有与之相关的原型(prototype), 类(class)和可扩展性().</p>
-<h2 id="序列化对象">序列化对象</h2>
-<h2 id="对象方法">对象方法</h2>
-<h1 id="7-_数组">7. 数组</h1>
-<h1 id="8-_函数">8. 函数</h1>
-<p>函数即对象。</p>
-<h2 id="函数定义">函数定义</h2>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">distance</span><span class="params">(x1, y1, x2, y2)</span></span>{
-    <span class="keyword">var</span> dx = x2 - x1;
-    <span class="keyword">var</span> dy = y2 - y1;
-    <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(dx*dx + dy*dy);
-}
-
-<span class="keyword">var</span> square = <span class="function"><span class="keyword">function</span><span class="params">(x)</span> </span>{<span class="keyword">return</span> x*x;}
-
-<span class="comment">// 函数表达式可以包含名称</span>
-<span class="keyword">var</span> f = <span class="function"><span class="keyword">function</span> <span class="title">fact</span><span class="params">(x)</span> </span>{ <span class="keyword">if</span>(x&lt;=<span class="number">1</span>) <span class="keyword">return</span> <span class="number">1</span>; <span class="keyword">else</span> <span class="keyword">return</span> x * faxt(x-<span class="number">1</span>);};
-
-data.sort(<span class="function"><span class="keyword">function</span><span class="params">(a,b)</span></span>{<span class="keyword">return</span> a-b;});
-</code></pre><p>嵌套函数：</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">hypotenuse</span><span class="params">(a,b)</span></span>{
-    <span class="function"><span class="keyword">function</span> <span class="title">square</span><span class="params">(x)</span></span>{<span class="keyword">return</span> x*x;}
-    reurn <span class="built_in">Math</span>.sqrt(square(a) +square(b));
-}
-</code></pre><h2 id="函数调用">函数调用</h2>
-<p>有四种方式.</p>
-<h3 id="函数调用-1">函数调用</h3>
-<h3 id="方法调用">方法调用</h3>
-<h1 id="9-_类和模块">9. 类和模块</h1>
-<h1 id="10-_正则表达式的模式匹配">10. 正则表达式的模式匹配</h1>
-<h1 id="11-_Javascript的子集和扩展">11. Javascript的子集和扩展</h1>
-<h1 id="12-_服务端Javascript">12. 服务端Javascript</h1>
-<h1 id="13-_Web浏览器中的Javascript">13. Web浏览器中的Javascript</h1>
-<h1 id="14-_windows对象">14. windows对象</h1>
-<h1 id="15-_脚本化文档">15. 脚本化文档</h1>
-<h1 id="16-_脚本化css">16. 脚本化css</h1>
-<h1 id="17-_事件处理">17. 事件处理</h1>
-<h1 id="18-_脚本化http">18. 脚本化http</h1>
-<h1 id="19-_JQuery类库">19. JQuery类库</h1>
-<h1 id="20-_客户端存储">20. 客户端存储</h1>
-<h1 id="21-_多媒体和图形编程">21. 多媒体和图形编程</h1>
-<h1 id="22-_HTML5_API">22. HTML5 API</h1>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2015/02/18/javascript权威指南/" data-id="r2tcz3rjcn12u8oj" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1785,7 +1928,7 @@ data.sort(<span class="function"><span class="keyword">function</span><span clas
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 10.00px;">Erlang</a><a href="/tags/Ice/" style="font-size: 10.00px;">Ice</a><a href="/tags/Vim/" style="font-size: 10.00px;">Vim</a><a href="/tags/golang/" style="font-size: 10.00px;">golang</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hbase/" style="font-size: 10.00px;">hbase</a><a href="/tags/java/" style="font-size: 16.67px;">java</a><a href="/tags/javascript/" style="font-size: 13.33px;">javascript</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/program/" style="font-size: 10.00px;">program</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 10.00px;">think</a><a href="/tags/tool/" style="font-size: 13.33px;">tool</a><a href="/tags/分布式系统/" style="font-size: 10.00px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 10.00px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 10.00px;">管理</a><a href="/tags/读书笔记/" style="font-size: 10.00px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 12.50px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
     </div>
   </div>
 
@@ -1794,7 +1937,7 @@ data.sort(<span class="function"><span class="keyword">function</span><span clas
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -1804,6 +1947,10 @@ data.sort(<span class="function"><span class="keyword">function</span><span clas
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
+          </li>
         
           <li>
             <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
@@ -1819,10 +1966,6 @@ data.sort(<span class="function"><span class="keyword">function</span><span clas
         
           <li>
             <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/07/ProgrammingInScala/">Scala编程</a>
           </li>
         
       </ul>
