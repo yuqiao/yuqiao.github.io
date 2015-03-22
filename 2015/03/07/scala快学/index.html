@@ -504,10 +504,256 @@ acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015
 </ul>
 <p>前置操作符(+,-,!, ~) 被转换成名为unary_操作符的方法调用。</p>
 <pre><code>-a  <span class="comment">// a.unary_- 一样</span>
+</code></pre><h2 id="apply和update方法">apply和update方法</h2>
+<p>f(arg1, arg2, …) // =&gt; f.apply(arg1, arg2, …)</p>
+<p>f(arg1, arg2, …) = value // =&gt; f.update(arg1, arg2, …, value)</p>
+<p>被用于数组和映射。</p>
+<p>apply进程用于伴生对象中， 用来构造对象而不用显式使用new.</p>
+<pre><code>class Fraction(n: Int, d: Int){
+    <span class="keyword">...</span>
+}
+
+object Fraction {
+    def apply(n:Int, d:Int)= new Fraction(n,d)
+}
+</code></pre><h2 id="提取器">提取器</h2>
+<p>如前所示，apply从分子和分母创建一个分数。而unapply方法就是取出分子和分母：</p>
+<pre><code><span class="attribute">var Fraction(a,b) </span>=<span class="string"> Fraction(3,4) *Fraction(2,5)</span>
+</code></pre><p>或者用于模式匹配：</p>
+<pre><code>case Fraction(a,b) =&gt; <span class="keyword">...</span> // a, b 被绑定到分子和分母
+</code></pre><p>unapply方法返回的是一个Option, 包含一个元组：</p>
+<pre><code><span class="class"><span class="keyword">object</span> <span class="title">Fraction</span> </span>{
+    <span class="keyword">def</span> unapply(input:Fraction) =
+        <span class="keyword">if</span>(input.den == <span class="number">0</span>) None <span class="keyword">else</span> Some((input.num, input.den))
+}
+</code></pre><p>样例类自动具备apply和unapply方法。</p>
+<p>带来单个参数：</p>
+<pre><code>object Number {
+    <span class="function"><span class="keyword">def</span> <span class="title">unapply</span><span class="params">(input: String)</span>:</span> Option[Int] = 
+        <span class="keyword">try</span>{
+            Some(Integer.parseInt(input.trim)
+        }catch{
+            case ex: NumberFormatException =&gt;<span class="keyword">None</span>
+        }
+}
+
+val Number(n) = <span class="string">"1729"</span>
+</code></pre><p>提取器只是测试输入：</p>
+<pre><code><span class="class"><span class="keyword">object</span> <span class="title">IsCompound</span> </span>{
+    <span class="keyword">def</span> unapply(input: String)= input.contains(<span class="string">" "</span>)
+}
+</code></pre><p>给模式增加一个测试:</p>
+<pre><code>authon match {
+    case Name(first, last @ IsCompound()) =&gt; <span class="keyword">...</span>
+    case Name(first, last) =&gt; <span class="keyword">...</span>
+}
+</code></pre><h2 id="unapplySeq方法">unapplySeq方法</h2>
+<p>要提取任意长度的值的序列， 使用unapplySeq:</p>
+<pre><code>object Nmae {
+    def unapplySeq(input: String): Option[Seq[String]] =
+        <span class="keyword">if</span>(input.trim == <span class="string">""</span>) None <span class="keyword">else</span> Some(input.trim.split(<span class="string">"\\s+"</span>))
+}
+
+author match {
+    case Name(first, last) =&gt; <span class="keyword">...</span>
+    case Name(first, middle, last) =&gt; <span class="keyword">...</span>
+    case Name(first, <span class="string">"van"</span>, <span class="string">"der"</span>, last) =&gt; <span class="keyword">...</span>
+}
 </code></pre><h1 id="12_高阶函数">12 高阶函数</h1>
+<p>要点：</p>
+<ul>
+<li>函数是“头等公民”， 跟数字一样</li>
+<li>可创建匿名函数， 一般交给其他函数</li>
+<li>函数参数可以给出需要稍后执行的行为</li>
+<li>许多集合方法都接受函数参数</li>
+<li>有很多预发简写</li>
+<li>可以参加操作代码块的函数，看上去像内建的控制语句</li>
+</ul>
+<p>作为值的函数：</p>
+<pre><code><span class="keyword">val</span> num = <span class="number">3.14</span>
+<span class="keyword">val</span> <span class="keyword">fun</span> = ceil _  <span class="comment">// _ 意味着你确实自动是这个函数。从技术上讲_将ceil方法转成了函数</span>
+</code></pre><p>调用：</p>
+<pre><code><span class="keyword">fun</span>(num) <span class="comment">// = 4</span>
+</code></pre><p>传递:</p>
+<pre><code><span class="keyword">Array</span>(<span class="number">3.14</span>, <span class="number">1.42</span>, <span class="number">2.0</span>).<span class="keyword">map</span>(fun) // = <span class="keyword">Array</span>(<span class="number">4.0</span>, <span class="number">2.0</span>, <span class="number">2.0</span>)
+</code></pre><p>带函数参数的函数：</p>
+<pre><code>def valueAtOneQuarter<span class="function"><span class="params">(f: (Double) =&gt; Double)</span> = <span class="title">f</span><span class="params">(<span class="number">0.25</span>)</span>
+<span class="title">valueAtOneQuarter</span><span class="params">(ceil _ )</span>// 1.0</span>
+</code></pre><p>参数推断：</p>
+<pre><code>valueAtOneQuarter(<span class="number">3</span> * _)
+<span class="keyword">val</span> <span class="keyword">fun</span> = <span class="number">3</span> *_ <span class="comment">// 错误：无法推断类型</span>
+<span class="keyword">val</span> <span class="keyword">fun</span> = <span class="number">3</span> *(_:Double) <span class="comment">//OK</span>
+<span class="keyword">val</span> <span class="keyword">fun</span>:(Double)=&gt;Double = <span class="number">3</span> * _ <span class="comment">//OK</span>
+</code></pre><p>一些高价函数：</p>
+<ul>
+<li>map</li>
+<li>filter</li>
+<li>reduceLeft :   ( 1 to 9 ).reduceLeft(<em> * </em>)</li>
+</ul>
 <h1 id="13_集合">13 集合</h1>
-<h1 id="14_模式匹配和样例类">14 模式匹配和样例类</h1>
+<p>要点：</p>
+<ul>
+<li>所有集合都扩展自Iterable特质</li>
+<li>三大类：序列，集和映射。</li>
+<li>都提供可变和不可变版本</li>
+<li>列表要么是空的，要么拥有一头一尾，尾部本身又是一个列表。</li>
+<li>集是无先后次序的集合</li>
+<li>用LinkedHashSet来保留插入次序，或用SortedSet来安顺序进行迭代</li>
+<li><ul>
+<li>将元素添加到无先后次序的集合中， +: 和 :+ 向前或向后追加序列。 ++把两集合串联在一起; - 和 — 移除元素。</li>
+</ul>
+</li>
+<li>Iterator和Seq特质有数十个常见操作的方法。</li>
+<li>映射、折叠和拉链操作是很有用的技巧。</li>
+</ul>
+<p>:: 操作符从头到尾创建一个新列表：</p>
+<pre><code>9 <span class="comment">:: List(4, 2)</span>
+9 <span class="comment">:: 4 :: 2 :: Nil</span>
+</code></pre><p>可用迭代器遍历列表:</p>
+<pre><code>def sum(<span class="keyword">ls</span><span class="variable">t:</span> List[Int]) = 
+    <span class="keyword">if</span>(lst == Nil) <span class="number">0</span> <span class="keyword">else</span> lst.head + sum(lst.tail)
+</code></pre><p>或者模式匹配：</p>
+<pre><code>def sum(lst: <span class="keyword">List</span>[Int]) =  lst match {
+    <span class="keyword">case</span> Nil =&gt;<span class="number">0</span> 
+    <span class="keyword">case</span> h :: t =&gt; h +sum(t)
+}
+</code></pre><p>scala类库已经有了sum方法。</p>
+<p>iterator的重要方法：</p>
+<ul>
+<li>head, last, headOption, lastOption</li>
+<li>tail, init</li>
+<li>length, isEmpty</li>
+<li>map(f), foreach(f), flatMap(f), collect(f)</li>
+<li>reduceLeft(op), reduceRight(op), aggregate(init)(op, combineOp)</li>
+<li>reduce(op)<br>…    </li>
+</ul>
+<p>与java集合的互操作：</p>
+<pre><code><span class="keyword">import</span> scala<span class="built_in">.</span>collection<span class="built_in">.</span>JavaConversions<span class="built_in">.</span>_ <span class="comment">// import scala.collection.JavaConversions.propertiesAsScalaMap</span>
+val props: scala<span class="built_in">.</span>collection<span class="built_in">.</span>mutable<span class="built_in">.</span><span class="built_in">Map</span><span class="preprocessor">[</span><span class="built_in">String</span>,<span class="built_in">String</span><span class="preprocessor">]</span><span class="markup"> = System.getProperties()</span>
+</code></pre><p>从Scala集合到java的转换：</p>
+<ul>
+<li>asJavaCollection</li>
+<li>asJavaIterable</li>
+<li>asJavaIterator</li>
+<li>asJavaEnumeration</li>
+<li>…</li>
+</ul>
+<p>从Java集合到scala的转换:</p>
+<ul>
+<li>collectionAsScalaIterable</li>
+<li>…</li>
+</ul>
+<p>线程安全的集合, 可混入以下六特质：</p>
+<ul>
+<li>SynchronizedBuffer</li>
+<li>SynchronizedMap</li>
+<li>SynchronizedPriorityQueue</li>
+<li>SynchronizedQueue</li>
+<li>SynchronizedSet</li>
+<li>SynchronizedStack</li>
+</ul>
+<p>并行集合:</p>
+<pre><code>coll.par.sum
+coll.par.count(<span class="variable">_</span> <span class="comment">% 2 == 0)</span>
+<span class="function"><span class="title">for</span><span class="params">(i &lt;- (<span class="number">0</span> until <span class="number">100</span>)</span>.<span class="title">par</span>) <span class="title">print</span><span class="params">(i + <span class="string">" "</span>)</span></span>
+</code></pre><h1 id="14_模式匹配和样例类">14 模式匹配和样例类</h1>
+<p>要点:</p>
+<ul>
+<li>match表达式是一个更好的switch</li>
+<li>若没有模式匹配， 会抛出MatchError. 可用case _模式来避免。</li>
+<li>模式可包含一个随意定义的条件，称为守卫。</li>
+<li>可对表达式类型进行匹配； 优先选用模式而不是isInstanceOf/asInstanceOf.</li>
+<li>可以匹配数组，元组和样例类的么偶是，然后将匹配到的不同部分绑定到变量。</li>
+<li>在for表达式中，不能匹配的情况会被安静地跳过。</li>
+<li>样例类是编译器会为之自动产出模式匹配所需要的方法的类。</li>
+<li>样例类继承层级中的公共超类是sealed的。</li>
+<li>用Option来存放对于可能存在也可能不存在的值- 比null更安全。</li>
+</ul>
+<p>守卫：</p>
+<pre><code>ch match {
+    <span class="reserved">case</span> <span class="string">'+'</span><span class="function"> =&gt;</span> sign = <span class="number">1</span>
+    <span class="reserved">case</span> <span class="string">'-'</span><span class="function"> =&gt;</span> sign = -<span class="number">1</span>
+    <span class="reserved">case</span> _ <span class="keyword">if</span> Character.isDigit<span class="function"><span class="params">(ch)</span> =&gt;</span> digit = Character.digit(ch,<span class="number">10</span>)
+    <span class="reserved">case</span> _<span class="function"> =&gt;</span>sign = <span class="number">0</span>
+}
+</code></pre><p>类型模式：</p>
+<pre><code>obj match {
+    <span class="keyword">case</span> x: Int =&gt; x
+    <span class="keyword">case</span> s: String =&gt; Integer.parseInt(s)
+    <span class="keyword">case</span> _: BigInt =&gt;Int.MaxValue
+    <span class="keyword">case</span> _ =&gt;<span class="number">0</span>
+}
+</code></pre><p>匹配数组，列表和元组:</p>
+<pre><code>arr match {
+    <span class="reserved">case</span> Array<span class="function"><span class="params">(<span class="number">0</span>)</span> =&gt;</span><span class="string">"0"</span>
+    <span class="reserved">case</span> Array<span class="function"><span class="params">(x,y)</span> =&gt;</span> x + <span class="string">" "</span>+ y
+    <span class="reserved">case</span> Array<span class="function"><span class="params">(<span class="number">0</span>, _*)</span> =&gt;</span> <span class="string">"0 ..."</span>
+    <span class="reserved">case</span> _<span class="function"> =&gt;</span> <span class="string">"something else"</span>
+}
+
+lst match {
+    <span class="reserved">case</span> <span class="number">0</span> ::Nil<span class="function"> =&gt;</span><span class="string">"0"</span>
+    <span class="reserved">case</span> x :: y ::Nil<span class="function"> =&gt;</span> x+ <span class="string">" "</span> + y
+    <span class="reserved">case</span> _<span class="function"> =&gt;</span> <span class="string">"something else"</span>
+}
+</code></pre><h3 id="样例类">样例类</h3>
+<pre><code><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Amount</span></span>
+<span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Dollar</span><span class="params">(value: Double)</span> <span class="keyword">extends</span> <span class="title">Amount</span></span>
+<span class="keyword">case</span> calss Currency(value: Doublie, unit: String) <span class="keyword">extends</span> Amount
+</code></pre><p>也可以针对单例的样例对象:</p>
+<pre><code><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Nothing</span> <span class="keyword">extends</span> <span class="title">Amount</span></span>
+</code></pre><p>使用模式匹配:</p>
+<pre><code>amt match {
+    <span class="reserved">case</span> Dollar<span class="function"><span class="params">(v)</span> =&gt;</span>  <span class="string">"$"</span> +v
+    <span class="reserved">case</span> Currency(_, u) = &gt; <span class="string">"Oh nose, I got "</span>+ u
+    <span class="reserved">case</span> Nothing<span class="function"> =&gt;</span><span class="string">""</span>
+}
+</code></pre><p>声明样例类，自动发送以下事情：</p>
+<ul>
+<li>构造器中的每个参数都成为val</li>
+<li>在伴生对象中提供apply方法让你不用new关键字就构造出相应对象</li>
+<li>提供unapply方法让模式匹配可以工作</li>
+<li>将生成toString, equals, hashCode和copy方法— 除非显式给出这些方法的定义</li>
+</ul>
+<p>copy方法,创建一个域现有对象值相同的新对象。</p>
+<h3 id="匹配嵌套结构">匹配嵌套结构</h3>
+<h3 id="密封类">密封类</h3>
+<pre><code><span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Amount</span></span>
+</code></pre><p>模拟枚举：</p>
+<pre><code><span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TrafficColor</span></span>
+<span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Red</span> <span class="keyword">extends</span> <span class="title">TrafficColor</span></span>
+<span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Yellow</span> <span class="keyword">extends</span> <span class="title">TrafficColor</span></span>
+<span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Green</span> <span class="keyword">extends</span> <span class="title">TrafficColor</span></span>
+
+color <span class="keyword">match</span> {
+    <span class="keyword">case</span> Red =&gt; <span class="string">"stop"</span>
+    <span class="keyword">case</span> Green =&gt; <span class="string">"go"</span>
+    <span class="keyword">case</span> Yellow =&gt; <span class="string">"Hurry up"</span>
+}
+</code></pre><h3 id="Option_类型">Option 类型</h3>
+<p>表示可能存在，也不可能存在。<br>支持泛型。</p>
+<pre><code>val aliceScore = scores.<span class="keyword">get</span>(<span class="string">"Alice"</span>)
+<span class="keyword">if</span>(aliceScore.isEmpty) <span class="built_in">println</span>(<span class="string">"no score"</span>)
+<span class="keyword">else</span> <span class="built_in">println</span>(aliceScore.<span class="keyword">get</span>)
+
+<span class="built_in">println</span>(aliceScore.getOrElse(<span class="string">"no score"</span>))
+<span class="built_in">println</span>(scores.getOrElse(<span class="string">"Alice"</span>, <span class="string">"no score"</span>))
+</code></pre><p>若想略过None:</p>
+<pre><code><span class="keyword">for</span>(score &lt;- scores.<span class="keyword">get</span>(<span class="string">"Alice"</span>)) <span class="built_in">println</span>(score)
+scores.<span class="keyword">get</span>(<span class="string">"Alice"</span>).foreach(<span class="built_in">println</span> <span class="number">_</span>)
+</code></pre><h2 id="偏函数">偏函数</h2>
+<p>被包在花括号内的一组case语句是一个偏函数 —  一个并非对所有输入值都有定义的函数。</p>
 <h1 id="15_注解">15 注解</h1>
+<ul>
+<li>可以为类， 方法，字段， 局部变量，参数，表达式，类型参数以及各种类型添加注解</li>
+<li>对于表达式和类型，注解跟在被注解条目之后</li>
+<li>注解的形式: @Annotation @Annotation(value) 或 @Annotation(name1=value1,…)</li>
+<li>@volatile @transient @strictfp 和@native分别生成等效的java修饰符</li>
+<li>@throws来生成与java兼容的throws规格说明</li>
+<li>@tailrec注解让你校验某个递归函数使用了尾递归优化</li>
+<li>assert函数利用了@eldable注解，你可以移除所有断言</li>
+<li>@deprecated注解标记已过时的特性</li>
+</ul>
 <h1 id="16_XML处理">16 XML处理</h1>
 <h1 id="17_类型参数">17 类型参数</h1>
 <h1 id="18_高级类型">18 高级类型</h1>
@@ -560,7 +806,7 @@ acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 12.50px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 15.00px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
     </div>
   </div>
 
@@ -569,7 +815,7 @@ acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -579,6 +825,10 @@ acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/03/19/代码的未来/">代码的未来</a>
+          </li>
         
           <li>
             <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
@@ -594,10 +844,6 @@ acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015
         
           <li>
             <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/10/evernote超效率数字笔记术/">evernote超效率数字笔记术</a>
           </li>
         
       </ul>

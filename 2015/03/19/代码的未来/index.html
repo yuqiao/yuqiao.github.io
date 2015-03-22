@@ -3,74 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>javascript高级程序设计 | Joe&#39;s Blog</title>
+  <title>代码的未来 | Joe&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1 Javascript简介
-Javascript从一个简单的输入验证器发展成了一门强大的语言。
-javascript由三部分组成：
-
-核心(ECMAScipt)
-文档对象模型(DOM)
-浏览器对象模型(BOM)
-
-2 在HTML中使用Javascript
-使用元素
-定义了6个属性:
-
-async
-charset
-defer
-language. 已废弃
-src
-type
-
-标签的位置一般放在元素中">
+  <meta name="description" content="enjoy life">
 <meta property="og:type" content="article">
-<meta property="og:title" content="javascript高级程序设计">
-<meta property="og:url" content="http://yuqiao.github.io/2015/03/12/javascript高级程序设计/">
+<meta property="og:title" content="代码的未来">
+<meta property="og:url" content="http://yuqiao.github.io/2015/03/19/代码的未来/">
 <meta property="og:site_name" content="Joe's Blog">
-<meta property="og:description" content="1 Javascript简介
-Javascript从一个简单的输入验证器发展成了一门强大的语言。
-javascript由三部分组成：
-
-核心(ECMAScipt)
-文档对象模型(DOM)
-浏览器对象模型(BOM)
-
-2 在HTML中使用Javascript
-使用元素
-定义了6个属性:
-
-async
-charset
-defer
-language. 已废弃
-src
-type
-
-标签的位置一般放在元素中">
+<meta property="og:description" content="enjoy life">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="javascript高级程序设计">
-<meta name="twitter:description" content="1 Javascript简介
-Javascript从一个简单的输入验证器发展成了一门强大的语言。
-javascript由三部分组成：
-
-核心(ECMAScipt)
-文档对象模型(DOM)
-浏览器对象模型(BOM)
-
-2 在HTML中使用Javascript
-使用元素
-定义了6个属性:
-
-async
-charset
-defer
-language. 已废弃
-src
-type
-
-标签的位置一般放在元素中">
+<meta name="twitter:title" content="代码的未来">
+<meta name="twitter:description" content="enjoy life">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -124,10 +67,10 @@ type
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-javascript高级程序设计" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-代码的未来" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/03/12/javascript高级程序设计/" class="article-date">
-  <time datetime="2015-03-12T00:12:57.000Z" itemprop="datePublished">3月 12 2015</time>
+    <a href="/2015/03/19/代码的未来/" class="article-date">
+  <time datetime="2015-03-19T08:06:04.000Z" itemprop="datePublished">3月 19 2015</time>
 </a>
     
   </div>
@@ -138,7 +81,7 @@ type
         
   
     <h1 class="article-title" itemprop="name">
-      javascript高级程序设计
+      代码的未来
     </h1>
   
 
@@ -146,95 +89,14 @@ type
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1_Javascript简介">1 Javascript简介</h1>
-<p>Javascript从一个简单的输入验证器发展成了一门强大的语言。</p>
-<p>javascript由三部分组成：</p>
-<ul>
-<li>核心(ECMAScipt)</li>
-<li>文档对象模型(DOM)</li>
-<li>浏览器对象模型(BOM)</li>
-</ul>
-<h1 id="2_在HTML中使用Javascript">2 在HTML中使用Javascript</h1>
-<h2 id="使用元素">使用<script>元素</h2>
-<p><script>定义了6个属性:</p>
-<ul>
-<li>async</li>
-<li>charset</li>
-<li>defer</li>
-<li>language. 已废弃</li>
-<li>src</li>
-<li>type</li>
-</ul>
-<p>标签的位置一般放在<body>元素中页面内容的后面,为了避免延迟。</p>
-<p>使用src属性引用外部脚本。最好的做法是引入外部脚本：</p>
-<ul>
-<li>可维护性</li>
-<li>可缓存</li>
-<li>适应未来</li>
-</ul>
-<h2 id="文档模式">文档模式</h2>
-<h2 id="元素"><noscript>元素</h2>
-<p>用以在不支持javascipt的浏览器中。</p>
-<h1 id="3_基本概念">3 基本概念</h1>
-<h2 id="语法">语法</h2>
-<ul>
-<li>区分大小写</li>
-<li>标识符</li>
-<li>注释</li>
-<li>严格模式</li>
-<li>语句</li>
-<li>关键字和保留字</li>
-<li>变量：松散类型</li>
-</ul>
-<h2 id="数据类型">数据类型</h2>
-<p>5种简单类型：</p>
-<ul>
-<li>Undefined:只有一个值, undefiend. var声明但未初始化. </li>
-<li>Null: 只有一个值: null.</li>
-<li>Boolean</li>
-<li>Number<ul>
-<li>浮点数值</li>
-<li>数值范围</li>
-<li>NaN</li>
-<li></li>
-</ul>
-</li>
-<li>String</li>
-</ul>
-<p>1种复杂数据类型： Object</p>
-<p>typeof操作符， 注意它不是函数</p>
-<h2 id="流控制语句">流控制语句</h2>
-<h2 id="函数">函数</h2>
-<h1 id="4_变量，作用域和内存问题">4 变量，作用域和内存问题</h1>
-<h1 id="5_引用类型">5 引用类型</h1>
-<h1 id="6_面向对象的程序设计">6 面向对象的程序设计</h1>
-<h1 id="7_函数表达式">7 函数表达式</h1>
-<h1 id="8_BOM">8 BOM</h1>
-<h1 id="9_客户端检测">9 客户端检测</h1>
-<h1 id="10_DOM">10 DOM</h1>
-<h1 id="11_DOM扩展">11 DOM扩展</h1>
-<h1 id="12_DOM2和DOM3">12 DOM2和DOM3</h1>
-<h1 id="13_事件">13 事件</h1>
-<h1 id="14_表单脚本">14 表单脚本</h1>
-<h1 id="15_使用Canvas绘图">15 使用Canvas绘图</h1>
-<h1 id="16_HTML5脚本编程">16 HTML5脚本编程</h1>
-<h1 id="17_错误处理和调试">17 错误处理和调试</h1>
-<h1 id="18_Javascript与XML">18 Javascript与XML</h1>
-<h1 id="19_E4X(ECMAScipt_for_XML)">19 E4X(ECMAScipt for XML)</h1>
-<h1 id="20_JSON">20 JSON</h1>
-<h1 id="21_Ajax与Comet">21 Ajax与Comet</h1>
-<h1 id="22_高级技巧">22 高级技巧</h1>
-<h1 id="23_离线应用与客户端存储">23 离线应用与客户端存储</h1>
-<h1 id="24_最佳实践">24 最佳实践</h1>
-<h1 id="25_新兴的API">25 新兴的API</h1>
-</script></h2>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2015/03/12/javascript高级程序设计/" data-id="yl793uiqyiwu57xr" class="article-share-link">Share</a>
+      <a data-url="http://yuqiao.github.io/2015/03/19/代码的未来/" data-id="6kzq8e5d3084oda1" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/program/">program</a></li></ul>
 
     </footer>
   </div>
@@ -242,19 +104,10 @@ type
     
 <nav id="article-nav">
   
-    <a href="/2015/03/14/Go并发编程实战/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Go并发编程实战
-        
-      </div>
-    </a>
   
-  
-    <a href="/2015/03/10/evernote超效率数字笔记术/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2015/03/17/深入理解JVM虚拟机/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">evernote超效率数字笔记术</div>
+      <div class="article-nav-title"></div>
     </a>
   
 </nav>
