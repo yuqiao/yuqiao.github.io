@@ -69,6 +69,758 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-scala快学" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/07/scala快学/" class="article-date">
+  <time datetime="2015-03-07T01:10:50.000Z" itemprop="datePublished">3月 7 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/07/scala快学/">快学scala</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1_基础">1 基础</h1>
+<h2 id="scala解释器">scala解释器</h2>
+<h2 id="声明值和变量">声明值和变量</h2>
+<p>变量或函数的类型总是写在变量或函数名称的后面。 使得我们更容易阅读那些负责类型的声明。</p>
+<pre><code><span class="keyword">val</span> greeting: String = <span class="keyword">null</span>
+<span class="keyword">val</span> greeting: Any = <span class="string">"Hello"</span>
+</code></pre><p>可以将多个值或变量放在一起声明:</p>
+<pre><code>val xmax, ymax = <span class="number">100</span> <span class="comment">//将xmax和ymax设为100</span>
+valgreeting, message: <span class="built_in">String</span> = <span class="literal">null</span>
+</code></pre><h2 id="常用类型">常用类型</h2>
+<p>7种数值类型： Byte, Char, Short, Int, Long, Float和Double, Boolean</p>
+<p>不需要包装类型，基本类型和包装类型自己的转换是scala编译器的工作。</p>
+<p>在scala中，我们用方法，而不是强制类型转换， 来做数值类型之间的转换：</p>
+<pre><code><span class="number">99.44</span>.toInt <span class="comment">//= 99</span>
+<span class="number">99.</span>toChar   <span class="comment">//='c'</span>
+</code></pre><h2 id="算术和操作符重载是">算术和操作符重载是</h2>
+<p>“a 方法 b”  是 “a.方法(b)” 的简写</p>
+<p>scala没有++， — 操作符</p>
+<h2 id="apply方法">apply方法</h2>
+<p>“hello”(4)是”hello”.apply(4)的缩写。</p>
+<p>使用伴生对象的apply方法。</p>
+<h2 id="Scaladoc">Scaladoc</h2>
+<p>www.scala-lang.org/api<br>或者www.scala-lang.org/downloads#api</p>
+<p>类名旁边的O(伴生对象）和C（类）</p>
+<p>scala文档小窍门:</p>
+<ul>
+<li>想使用数值类型， 记得看看RichInt, RichDouble等， 字符串，记得看看StringOps.</li>
+<li>数值函数位于scala.math包中。</li>
+<li>名称比较奇怪的函数。 如BigInt有个方法unary_-, 就是你定义前置的负操作符-x的方式</li>
+<li>标记位implicit的方法对应的是自动（隐式）转换。</li>
+<li>方法可以以函数为常数</li>
+</ul>
+<h1 id="2_控制结构和函数">2 控制结构和函数</h1>
+<h2 id="变长参数">变长参数</h2>
+<p>使用Int<em>, 若传入的数组后面要加上”:_</em>“转换</p>
+<pre><code>def sum(args:<span class="type">Int</span>*) = {
+  <span class="keyword">var</span> <span class="literal">result</span> = <span class="number">0</span>
+  <span class="keyword">for</span>(arg &lt;- args) <span class="literal">result</span> += arg
+  <span class="literal">result</span>
+}
+val s = sum(<span class="number">1</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">9</span>)
+val s2 = sum(<span class="number">1</span> to <span class="number">10</span>: _*)
+</code></pre><h2 id="懒值">懒值</h2>
+<p>但val被声明为lazy时，它的初始化将被推迟，直到我们首次对它取值。</p>
+<p>lazy val words = scala.io.Source.fromFile(“/usr/share/dict/words”).mkString</p>
+<h2 id="异常">异常</h2>
+<p>throws表达式有特殊的类型Nothing.</p>
+<h1 id="3_数组相关操作">3 数组相关操作</h1>
+<p>要点：</p>
+<ul>
+<li>长度固定使用Array， 长度可能变化用ArrayBuffer</li>
+<li>提供初始值不用使用new</li>
+<li>用()来访问元素</li>
+<li>用for(elem &lt;- arr)来遍历元素</li>
+<li>用for(elem &lt;- arr if …)… yeild .. 来将原数组转型为新数组</li>
+<li>scala数组和Java数组可以互操作；用ArrayBuffer, 使用scala.collection.JavaConversions中的转换函数。</li>
+</ul>
+<h2 id="与java的互操作">与java的互操作</h2>
+<p>转成java的List:</p>
+<pre><code>import scala.collection.JavaConversions.bufferAsJavaList
+val <span class="command"><span class="keyword">command</span> = <span class="title">ArrayBuffer</span>(<span class="string">"ls"</span>, <span class="string">"-la"</span>, <span class="string">"/home/"</span>)</span>
+val pb = <span class="built_in">new</span> ProcessBuilder(<span class="command"><span class="keyword">command</span>)</span>
+</code></pre><p>将java的List转成BufferArray:</p>
+<pre><code>import scala.collection.JavaConversions.asScalaBuffer
+<span class="keyword">val</span> cmd:<span class="keyword">mutable</span>.Buffer[String] = pb.command()
+</code></pre><h1 id="4_映射和元组">4 映射和元组</h1>
+<pre><code>val scores <span class="subst">=</span> <span class="built_in">Map</span>(<span class="string">"Alice"</span> <span class="subst">-&gt; </span><span class="number">10</span>, <span class="string">"Bob"</span> <span class="subst">-&gt; </span><span class="number">3</span>, <span class="string">"Cindy"</span> <span class="subst">-&gt; </span><span class="number">5</span>)
+val ms <span class="subst">=</span> scala<span class="built_in">.</span>collection<span class="built_in">.</span>mutable<span class="built_in">.</span><span class="built_in">Map</span>(<span class="string">"Alice"</span> <span class="subst">-&gt; </span><span class="number">10</span>, <span class="string">"Bob"</span> <span class="subst">-&gt; </span><span class="number">3</span>, <span class="string">"Cindy"</span> <span class="subst">-&gt; </span><span class="number">5</span>)
+println(scores(<span class="string">"Bob"</span>))
+println(scores<span class="built_in">.</span>getOrElse(<span class="string">"yuqiao"</span>, <span class="number">0</span>))
+</code></pre><p>与Java的互操作：</p>
+<pre><code><span class="preprocessor"><span class="keyword">import</span> scala.collection.JavaConversions.mapAsScalaMap</span>
+</code></pre><p>使用zip:</p>
+<pre><code>val symbols = Array(<span class="string">"&lt;"</span>, <span class="string">"-"</span>, <span class="string">"&gt;"</span>)
+val counts = Array(<span class="number">2</span>, <span class="number">10</span>, <span class="number">2</span>)
+val <span class="built_in">pairs</span> = symbols.zip(counts)
+<span class="keyword">for</span>((k,v)&lt;-<span class="built_in">pairs</span>){
+  <span class="built_in">print</span>(k*v)
+}
+</code></pre><p>使用toMap将对偶集合转换成映射Map.</p>
+<h1 id="5_类">5 类</h1>
+<p>要点:</p>
+<ul>
+<li>类中字段自动带有getter和setter方法</li>
+<li>可以用定制的getter/setter方法替换掉字段的定义</li>
+<li>用@BeanProperty注解来生成JavaBeans的getXXX/setXXX方法</li>
+<li>每个类都有一个主要的构造器, 它的参数直接成为类的字段。</li>
+<li>辅助构造器是可选的， 叫做this.</li>
+</ul>
+<p>定义类:</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Counter</span> </span>{
+    <span class="keyword">private</span> <span class="keyword">var</span> value = <span class="number">0</span>
+    <span class="keyword">def</span> increment() { value +=<span class="number">1</span>}
+    <span class="keyword">def</span> current() = value
+}
+
+<span class="keyword">val</span> myCounter = <span class="keyword">new</span> Counter
+myCounter.increment()        <span class="comment">//对改值器使用()</span>
+println(myCounter.current)   <span class="comment">//对取值器不使用()</span>
+</code></pre><p>在scala中， getter和setter分别是age和age_=</p>
+<p>统一访问原则</p>
+<p>对象私有字段</p>
+<p>Bean属性</p>
+<p>主构造器:</p>
+<pre><code><span class="keyword">class</span> Person(val name:String, val age: <span class="keyword">Int</span>) {
+
+<span class="keyword">def</span> <span class="keyword">description</span> = name + <span class="string">" is "</span> + age + <span class="string">" years old"</span>
+}
+</code></pre><p>Martin Odesky建议: 在scala中, 类也接受参数， 就像方法一样。</p>
+<p>嵌套类:</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Network</span> </span>{
+    <span class="class"><span class="keyword">class</span> <span class="title">Member</span><span class="params">(val name:String)</span></span>{
+        <span class="keyword">val</span> contacts = <span class="keyword">new</span> ArrayBuffer[Member]()
+    }
+
+    <span class="keyword">private</span> <span class="keyword">val</span> members = <span class="keyword">new</span> ArrayBuffer[Member]()
+
+    <span class="keyword">def</span> join(name:String)={
+        <span class="keyword">val</span> m = <span class="keyword">new</span> Member(name)
+        members += m
+        m
+    }
+}
+
+<span class="keyword">val</span> chatter = <span class="keyword">new</span> Network
+<span class="keyword">val</span> myFace = <span class="keyword">new</span> Network
+</code></pre><p>每个实例都有它自己的Member类。chatter.Member和myFace.Member是不同的类。</p>
+<p>可以放在Network的伴生对象。</p>
+<h1 id="6_对象">6 对象</h1>
+<p>scala没有静态方法或静态字段， 可以用object这个语法结构达到同样目的。</p>
+<p>枚举通过扩展Enumeration实现：</p>
+<pre><code><span class="class"><span class="keyword">object</span> <span class="title">TrafficColor</span> <span class="keyword">extends</span> <span class="title">Enumeration</span></span>{
+    <span class="keyword">type</span> TrafficColor = Value
+    <span class="keyword">val</span> Red, Yellow, Geen = Value
+}
+
+<span class="keyword">def</span> doWhat(color: TrafficColor) ={
+  <span class="keyword">if</span>(color == Red)  <span class="string">"stop"</span>
+  <span class="keyword">else</span> <span class="keyword">if</span>(color==Geen) <span class="string">"go"</span>
+  <span class="keyword">else</span> <span class="string">"hurry up"</span>
+}
+
+<span class="keyword">def</span> testEnum(): Unit = {
+  <span class="keyword">for</span>(c &lt;- TrafficColor.values) println(c.id + <span class="string">":"</span> + c + <span class="string">" "</span> + doWhat(c))
+}
+</code></pre><h1 id="7_包和引入">7 包和引入</h1>
+<p>要点:</p>
+<ul>
+<li>包也可以像内部类那样嵌套</li>
+<li>包路径不是绝对路径</li>
+<li>包声明链x.y.z并不自动将中间包x.y变成可见</li>
+<li>位于文件顶部不带花括号的包声明在整个文件范围内有效</li>
+<li>包对象可以持有函数和变量</li>
+<li>引入语句可以引入包，类和对象</li>
+<li>引入语句可以出现在任何地方</li>
+<li>引入语句可以重命名和隐藏特定成员</li>
+<li>java.lang, scala和predef总是被引入</li>
+</ul>
+<h1 id="8_继承">8 继承</h1>
+<p>要点:</p>
+<ul>
+<li>extends, final关键字和java相同</li>
+<li>重写方法必须用override</li>
+<li>只有主构造器可以钓鱼超类的主构造器</li>
+<li>你可以重写字段</li>
+</ul>
+<p>类型检查和转换:</p>
+<pre><code><span class="keyword">if</span>(p.isInstanceOf[Employee]){
+    val s = p.asInstanceOf[Employee]
+    <span class="keyword">...</span>
+}
+</code></pre><p>若想测试p指向的是一个Employee对象但又不是其子类：</p>
+<pre><code><span class="keyword">if</span>(p.getClasss == <span class="class"><span class="keyword">class</span><span class="title">Of</span>[<span class="title">Employee</span>])</span>
+</code></pre><p>classOf定义在scala.Predef对象中。</p>
+<p>模式匹配通常是更好的选择：</p>
+<pre><code>p match {
+    case s:Employee =&gt; <span class="keyword">...</span> // 将s作为Employee处理
+    case _ =&gt; // p 不是Employee
+}
+</code></pre><p>超类的构造：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Employee</span><span class="params">(name: String, age: Int, val salary: Double)</span><span class="keyword">extends</span> <span class="title">Person</span><span class="params">(name, age)</span></span>
+</code></pre><p>可以用val重写抽象def. 但def只能重写def, var只能重写另一个抽象的var</p>
+<p>匿名子类：</p>
+<pre><code>val alien = <span class="keyword">new</span> Person(<span class="string">"Fred"</span>) {
+    <span class="keyword">def</span> greeting = <span class="string">"Greetings, Earthinling! My name is Fred!"</span>
+}
+
+<span class="keyword">def</span> meet(p: Person{<span class="keyword">def</span> greeting: String}){
+    <span class="keyword">println</span>(p.name +<span class="string">"says: "</span> + p.greeting)
+}
+</code></pre><p>抽象类：用abstract标记不能实例化的类。</p>
+<p>重写超类的抽象方法， 不需要override.</p>
+<p>类可以有抽象字段。</p>
+<p>构造顺序和提前定义。 </p>
+<p>提前定义， 让你可以在超类的构造器之前初始化子类的val字段：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Ant</span> <span class="keyword">extends</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">val</span> range = <span class="number">2</span>
+} <span class="keyword">with</span> Creature
+</code></pre><h2 id="Scala继承层级">Scala继承层级</h2>
+<p>基本类型和Unit， 都扩展自AnyVal<br>类都扩展自AnyRef.</p>
+<p>AnyVal和AnyRef的基类是Any。Any是根节点.</p>
+<p>Any类定义了isInstanceOf, asInstanceOf方法， 以及用于相等性判断和哈希码的方法<br>AnyRef追加了来着Object类的监视方法wait和notify/notifyAll.</p>
+<h2 id="对象相等性">对象相等性</h2>
+<pre><code><span class="keyword">final</span> override <span class="keyword">def</span> equals(other: <span class="keyword">Any</span>){
+    val that = other.asInstanceOf[Item]
+    <span class="keyword">if</span>(that == <span class="keyword">null</span>) <span class="keyword">false</span>
+    <span class="keyword">else</span> <span class="keyword">description</span> == that.<span class="keyword">description</span> &amp;&amp; price == that.price
+}
+</code></pre><p>注意：</p>
+<ul>
+<li>方法定义为final</li>
+<li>equals方法参数类型为Any.</li>
+<li>定义equals时，记得同事也定义hashCode, 计算hashCode时，只应使用那些你用来做相等性判断的字段。</li>
+</ul>
+<p>::</p>
+<pre><code>final override def hashCode = 13 <span class="keyword">*</span>description<span class="keyword">*</span>.hashCode +17 <span class="keyword">*</span> price.hashCode
+</code></pre><h1 id="9_文件和正则表达式">9 文件和正则表达式</h1>
+<p>要点:</p>
+<ul>
+<li>Source.fromFile(…).getLines.toArray 输出文件的所有行</li>
+<li>Source.fromFile(…).mkString 以字符串形式输出文件内容</li>
+<li>将字符串转成数字， 可以用toInt或toDouble方法。</li>
+<li>使用Java的PrintWriter写入文件</li>
+<li>“正则”.r是一个Regex对象。</li>
+<li>若你的正则表达式包含反斜杠或者引号的话，用”””…”””</li>
+<li>若正则模式包含分组，使用一些预发提取它们的内容： for(regex(变量,…,变量n)&lt;- 字符串）</li>
+</ul>
+<h2 id="读取">读取</h2>
+<p>从文件:</p>
+<pre><code><span class="keyword">import</span> scala.io.Source
+<span class="keyword">val</span> source = Source.fromFile(<span class="string">"myfile.txt"</span>, <span class="string">"UTF-8"</span>)
+<span class="keyword">val</span> lineIterator = source.getLines
+<span class="keyword">val</span> tokens = source.mkString.split(<span class="string">"\\S+"</span>)
+<span class="keyword">val</span> numbers = <span class="keyword">for</span>( w&lt;- tokens) <span class="keyword">yield</span> w.toDouble
+<span class="keyword">val</span> numbers = tokens.map(_.toDouble)
+</code></pre><p>从控制台读取:</p>
+<pre><code>val age = <span class="built_in">read</span>Int()
+</code></pre><p>其它源：</p>
+<pre><code>val <span class="built_in">source</span>1 = Source.fromURL(<span class="string">"http://horstamnn.com"</span>, <span class="string">"UTF-8"</span>)
+val <span class="built_in">source</span>2 = Source.fromString(<span class="string">"Hello, Wolle"</span>)
+val <span class="built_in">source</span>3 = Source.stdin
+</code></pre><p>二进制文件:</p>
+<pre><code>val <span class="built_in">file</span>  = <span class="built_in">new</span> File(filename)
+val <span class="operator">in</span>  = <span class="built_in">new</span> FileInputStream(<span class="built_in">file</span>)
+val <span class="keyword">bytes</span> = <span class="built_in">new</span> Array[Byte](<span class="built_in">file</span>.<span class="built_in">length</span>.toInt)
+<span class="operator">in</span>.<span class="built_in">read</span>(<span class="keyword">bytes</span>)
+<span class="operator">in</span>.<span class="built_in">close</span>()
+</code></pre><h2 id="写入">写入</h2>
+<pre><code>val <span class="keyword">out</span> = <span class="keyword">new</span> PrintWriter(<span class="string">"numbers.txt"</span>)
+<span class="keyword">for</span>(i&lt;-<span class="number">1</span> <span class="keyword">to</span> <span class="number">100</span>)<span class="keyword">out</span>.println(i)
+<span class="keyword">out</span>.close()
+</code></pre><h2 id="访问目录">访问目录</h2>
+<pre><code><span class="keyword">import</span> java.io.File
+
+<span class="function"><span class="keyword">def</span> <span class="title">subdirs</span><span class="params">(dir:File)</span>:</span> Iterator[File] = {
+    val children = dir.listFiles.filter(_.isDirectory)
+    children.toIterator ++ children.toIterator.flatMap(subdirs _)
+}
+</code></pre><p>在scala中， 我们通常喜欢用函数对象来制定过着内容。</p>
+<pre><code><span class="reserved">import</span> java.nio.file._
+implicit def makeFileVistor<span class="function"><span class="params">(f: (Path) =&gt; Unit)</span>= <span class="title">new</span> <span class="title">SimpleFileVisitor</span>[<span class="title">Path</span>] {
+    <span class="title">override</span> <span class="title">def</span> <span class="title">visitFile</span><span class="params">(p: Path, attrs: attribute.BasicFileAttributes)</span>= {
+        <span class="title">f</span><span class="params">(p)</span>
+        <span class="title">FileVisitResult</span>.<span class="title">CONTINUE</span>
+    } 
+}
+
+<span class="title">Files</span>.<span class="title">walkFileTree</span><span class="params">(dir.toPath, (f:Path) =&gt;println(f))</span></span>
+</code></pre><h2 id="序列化">序列化</h2>
+<pre><code><span class="annotation">@SerialVersionUID</span>(<span class="number">42</span>L) <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">extends</span> <span class="title">Serilizable</span></span>
+</code></pre><h2 id="进程控制">进程控制</h2>
+<p>scala.sys.process包提供了与shell程序交互的工具。</p>
+<pre><code><span class="keyword">import</span> sys.process._
+<span class="string">"ls -al .."</span>!   <span class="comment">//执行结果打印到标准输出</span>
+val result = <span class="string">"ls -al .."</span> !! <span class="comment">// !! 返回字符串</span>
+<span class="string">"ls -al .."</span> #&gt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>)  <span class="comment">// #&gt; 重定向到文件</span>
+<span class="string">"ls -al .."</span> #&gt;&gt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>)  <span class="comment">// #&gt;&gt; 追加到文件末尾</span>
+<span class="string">"grep sec"</span> #&lt; <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"output.txt"</span>) <span class="comment">// #&lt; 把文件内容作为输入</span>
+<span class="string">"grep Scala"</span> #&lt; <span class="keyword">new</span> URL(<span class="string">"http://horstmann.com/index.html"</span>) 
+</code></pre><h2 id="正则表达式">正则表达式</h2>
+<pre><code><span class="keyword">val</span> numPattern = <span class="string">"[0-9]+"</span>.r 
+<span class="keyword">for</span> (matchString &lt;- numPattern.findAllIn(<span class="string">"99 bottles, 98 bottles"</span>) )
+    处理matchString  <span class="comment">// 99, 98</span>
+
+<span class="keyword">val</span> m1 = numPattern.findFirstIn(<span class="string">"99 bottles, 98 bottles"</span>) <span class="comment">//Some()</span>
+numPattern.findPrefixOf(<span class="string">"99 bottles, 98 bottles"</span>) <span class="comment">// Some(99)</span>
+</code></pre><h2 id="正则表达式组">正则表达式组</h2>
+<pre><code>val numitemPatten = <span class="string">"([0-9]+) ([a-z]+)"</span>.r
+val numitemPatten(<span class="built_in">num</span>, <span class="keyword">item</span>) = <span class="string">"99 bottles"</span><span class="comment"> // num 设置为99 ， item设置为"bottles"</span>
+
+<span class="keyword">for</span> (numitemPatten(<span class="built_in">num</span>, <span class="keyword">item</span>) &lt;- numitemPatten.findAllIn(<span class="string">"99 bottles, 98 bottles"</span>) )
+    处理<span class="built_in">num</span>, <span class="keyword">item</span>
+</code></pre><h1 id="10_特质">10 特质</h1>
+<p>要点：</p>
+<ul>
+<li>类可以实现任意数量的特质</li>
+<li>特质要求实现他们的类具备特定的字段， 方法或超类</li>
+<li>和Java接口不同，Scala特质可以提供方法和字段的实现</li>
+<li>但你将多个特质叠加在一起时，顺序很重要 — 其方法先被执行的特质排在更后面</li>
+</ul>
+<h2 id="d当做接口使用的特质">d当做接口使用的特质</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">def</span> log(msg: String)
+}
+</code></pre><p>子类可以给出实现：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">ConsoleLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">def</span> log(msg: String) { println(msg)}
+}
+</code></pre><h2 id="带有具体实现的特质">带有具体实现的特质</h2>
+<h2 id="带有特质的对象">带有特质的对象</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">Logged</span> </span>{
+    <span class="keyword">def</span> log(msg: String){}
+}
+<span class="class"><span class="keyword">class</span> <span class="title">SavingsAccount</span> <span class="keyword">extends</span> <span class="title">Account</span> <span class="keyword">with</span> <span class="title">Logged</span> </span>{
+    <span class="keyword">def</span> withdraw(amount:Double){
+        <span class="keyword">if</span>(amout &gt; balance) log(<span class="string">"INsufficient funds"</span>)
+        <span class="keyword">else</span> ...
+    }
+}
+</code></pre><p>可以在构造具体对象时”混入”一个更好的日志记录器的实现：</p>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">ConsoleLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String) { println(msg)}
+}
+<span class="keyword">val</span> acct = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> ConsoleLogger
+<span class="keyword">val</span> acct2 = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> FileLogger
+</code></pre><h2 id="叠加在一起的特质">叠加在一起的特质</h2>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">TimestampLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String){
+        <span class="keyword">super</span>.log(<span class="keyword">new</span> java.util.Date() +<span class="string">" "</span> +msg)
+    }
+}
+
+<span class="class"><span class="keyword">trait</span> <span class="title">ShorLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">override</span> <span class="keyword">def</span> log(msg: String){
+        <span class="keyword">super</span>.log(
+            <span class="keyword">if</span>(msg.length&lt;=maxLength) msg <span class="keyword">else</span> msg.substring(<span class="number">0</span>, maxLength -<span class="number">3</span>) + <span class="string">"..."</span>)
+    }
+}
+
+<span class="keyword">val</span> acct1 = <span class="keyword">new</span> SavingsAccount <span class="keyword">with</span> ConsoleLogger <span class="keyword">with</span> TimestampLogger <span class="keyword">with</span> ShorLogger
+acct1.withdraw() <span class="comment">// 打印： Wed Mar 18 07:40:16 CST 2015 Insufficient...</span>
+</code></pre><p>特质从最后一个开始处理.</p>
+<h2 id="重写抽象方法">重写抽象方法</h2>
+<p>需要加上abstract关键字。</p>
+<h2 id="特质中的字段">特质中的字段</h2>
+<p>具体字段和抽象字段。</p>
+<h2 id="特质的构造顺序">特质的构造顺序</h2>
+<ul>
+<li>首先调用超类的构造器</li>
+<li>特质构造器在超类构造器之后，类构造器之前咨询</li>
+<li>特质从左到右构造</li>
+<li>每个特质当中，父特质先被构造</li>
+<li>若多个特质共有一个父特质，那么父特质构造只会被构造一次</li>
+<li>特质构造完毕后，子类被构造</li>
+</ul>
+<h2 id="初始化特质的字段">初始化特质的字段</h2>
+<p>trait FileLogger extends Logger {<br>    val filename:String<br>    val out = new PrintStream(filename)<br>    def log(msg: String) { out.println(msg);out.flush() }<br>}</p>
+<p>提前定义：</p>
+<pre><code><span class="keyword">val</span> acct = <span class="keyword">new</span> {
+    <span class="keyword">val</span> filename = <span class="string">"myapp.log"</span>
+} <span class="keyword">with</span> SavingsAccount <span class="keyword">with</span> FileLogger
+
+<span class="class"><span class="keyword">class</span> <span class="title">SavingsAccount</span> <span class="keyword">extends</span> </span>{
+    <span class="keyword">val</span> filename = <span class="string">"saving.log"</span>
+} <span class="keyword">with</span> Account <span class="keyword">with</span> FileLogger {
+    ...
+}
+</code></pre><h2 id="自身类型">自身类型</h2>
+<p>可限定被混入指定类型的子类。</p>
+<pre><code><span class="class"><span class="keyword">trait</span> <span class="title">LoggedException</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">this</span>:Exception =&gt;
+        <span class="keyword">def</span> log() { log(getMessage())}
+}
+
+<span class="keyword">val</span> f = <span class="keyword">new</span> JFrame <span class="keyword">with</span> LoggedException <span class="comment">// Error：JFrame不是Exception的子类。</span>
+
+<span class="class"><span class="keyword">trait</span> <span class="title">LoggedException</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>{
+    <span class="keyword">this</span>: { <span class="keyword">def</span> getMessage() :String } =&gt;
+    <span class="keyword">def</span> log(){log(getMessage()}
+} <span class="comment">// 特质可以混入任何拥有getMessage方法的类</span>
+</code></pre><h1 id="11_操作符">11 操作符</h1>
+<p>要点：</p>
+<ul>
+<li>标识符由字母，数字或运算符构成</li>
+<li>一元和二元操作符其实是方法调用</li>
+<li>操作符优先级取决于第一个字符，而结合性取决于最后一个字符</li>
+<li>apply和update方法在对expr(args)表达式求值时被调用。</li>
+<li>提取器从输入中提取元组或值的序列</li>
+</ul>
+<p>前置操作符(+,-,!, ~) 被转换成名为unary_操作符的方法调用。</p>
+<pre><code>-a  <span class="comment">// a.unary_- 一样</span>
+</code></pre><h2 id="apply和update方法">apply和update方法</h2>
+<p>f(arg1, arg2, …) // =&gt; f.apply(arg1, arg2, …)</p>
+<p>f(arg1, arg2, …) = value // =&gt; f.update(arg1, arg2, …, value)</p>
+<p>被用于数组和映射。</p>
+<p>apply进程用于伴生对象中， 用来构造对象而不用显式使用new.</p>
+<pre><code>class Fraction(n: Int, d: Int){
+    <span class="keyword">...</span>
+}
+
+object Fraction {
+    def apply(n:Int, d:Int)= new Fraction(n,d)
+}
+</code></pre><h2 id="提取器">提取器</h2>
+<p>如前所示，apply从分子和分母创建一个分数。而unapply方法就是取出分子和分母：</p>
+<pre><code><span class="attribute">var Fraction(a,b) </span>=<span class="string"> Fraction(3,4) *Fraction(2,5)</span>
+</code></pre><p>或者用于模式匹配：</p>
+<pre><code>case Fraction(a,b) =&gt; <span class="keyword">...</span> // a, b 被绑定到分子和分母
+</code></pre><p>unapply方法返回的是一个Option, 包含一个元组：</p>
+<pre><code><span class="class"><span class="keyword">object</span> <span class="title">Fraction</span> </span>{
+    <span class="keyword">def</span> unapply(input:Fraction) =
+        <span class="keyword">if</span>(input.den == <span class="number">0</span>) None <span class="keyword">else</span> Some((input.num, input.den))
+}
+</code></pre><p>样例类自动具备apply和unapply方法。</p>
+<p>带来单个参数：</p>
+<pre><code>object Number {
+    <span class="function"><span class="keyword">def</span> <span class="title">unapply</span><span class="params">(input: String)</span>:</span> Option[Int] = 
+        <span class="keyword">try</span>{
+            Some(Integer.parseInt(input.trim)
+        }catch{
+            case ex: NumberFormatException =&gt;<span class="keyword">None</span>
+        }
+}
+
+val Number(n) = <span class="string">"1729"</span>
+</code></pre><p>提取器只是测试输入：</p>
+<pre><code><span class="class"><span class="keyword">object</span> <span class="title">IsCompound</span> </span>{
+    <span class="keyword">def</span> unapply(input: String)= input.contains(<span class="string">" "</span>)
+}
+</code></pre><p>给模式增加一个测试:</p>
+<pre><code>authon match {
+    case Name(first, last @ IsCompound()) =&gt; <span class="keyword">...</span>
+    case Name(first, last) =&gt; <span class="keyword">...</span>
+}
+</code></pre><h2 id="unapplySeq方法">unapplySeq方法</h2>
+<p>要提取任意长度的值的序列， 使用unapplySeq:</p>
+<pre><code>object Nmae {
+    def unapplySeq(input: String): Option[Seq[String]] =
+        <span class="keyword">if</span>(input.trim == <span class="string">""</span>) None <span class="keyword">else</span> Some(input.trim.split(<span class="string">"\\s+"</span>))
+}
+
+author match {
+    case Name(first, last) =&gt; <span class="keyword">...</span>
+    case Name(first, middle, last) =&gt; <span class="keyword">...</span>
+    case Name(first, <span class="string">"van"</span>, <span class="string">"der"</span>, last) =&gt; <span class="keyword">...</span>
+}
+</code></pre><h1 id="12_高阶函数">12 高阶函数</h1>
+<p>要点：</p>
+<ul>
+<li>函数是“头等公民”， 跟数字一样</li>
+<li>可创建匿名函数， 一般交给其他函数</li>
+<li>函数参数可以给出需要稍后执行的行为</li>
+<li>许多集合方法都接受函数参数</li>
+<li>有很多预发简写</li>
+<li>可以参加操作代码块的函数，看上去像内建的控制语句</li>
+</ul>
+<p>作为值的函数：</p>
+<pre><code><span class="keyword">val</span> num = <span class="number">3.14</span>
+<span class="keyword">val</span> <span class="keyword">fun</span> = ceil _  <span class="comment">// _ 意味着你确实自动是这个函数。从技术上讲_将ceil方法转成了函数</span>
+</code></pre><p>调用：</p>
+<pre><code><span class="keyword">fun</span>(num) <span class="comment">// = 4</span>
+</code></pre><p>传递:</p>
+<pre><code><span class="keyword">Array</span>(<span class="number">3.14</span>, <span class="number">1.42</span>, <span class="number">2.0</span>).<span class="keyword">map</span>(fun) // = <span class="keyword">Array</span>(<span class="number">4.0</span>, <span class="number">2.0</span>, <span class="number">2.0</span>)
+</code></pre><p>带函数参数的函数：</p>
+<pre><code>def valueAtOneQuarter<span class="function"><span class="params">(f: (Double) =&gt; Double)</span> = <span class="title">f</span><span class="params">(<span class="number">0.25</span>)</span>
+<span class="title">valueAtOneQuarter</span><span class="params">(ceil _ )</span>// 1.0</span>
+</code></pre><p>参数推断：</p>
+<pre><code>valueAtOneQuarter(<span class="number">3</span> * _)
+<span class="keyword">val</span> <span class="keyword">fun</span> = <span class="number">3</span> *_ <span class="comment">// 错误：无法推断类型</span>
+<span class="keyword">val</span> <span class="keyword">fun</span> = <span class="number">3</span> *(_:Double) <span class="comment">//OK</span>
+<span class="keyword">val</span> <span class="keyword">fun</span>:(Double)=&gt;Double = <span class="number">3</span> * _ <span class="comment">//OK</span>
+</code></pre><p>一些高价函数：</p>
+<ul>
+<li>map</li>
+<li>filter</li>
+<li>reduceLeft :   ( 1 to 9 ).reduceLeft(<em> * </em>)</li>
+</ul>
+<h1 id="13_集合">13 集合</h1>
+<p>要点：</p>
+<ul>
+<li>所有集合都扩展自Iterable特质</li>
+<li>三大类：序列，集和映射。</li>
+<li>都提供可变和不可变版本</li>
+<li>列表要么是空的，要么拥有一头一尾，尾部本身又是一个列表。</li>
+<li>集是无先后次序的集合</li>
+<li>用LinkedHashSet来保留插入次序，或用SortedSet来安顺序进行迭代</li>
+<li><ul>
+<li>将元素添加到无先后次序的集合中， +: 和 :+ 向前或向后追加序列。 ++把两集合串联在一起; - 和 — 移除元素。</li>
+</ul>
+</li>
+<li>Iterator和Seq特质有数十个常见操作的方法。</li>
+<li>映射、折叠和拉链操作是很有用的技巧。</li>
+</ul>
+<p>:: 操作符从头到尾创建一个新列表：</p>
+<pre><code>9 <span class="comment">:: List(4, 2)</span>
+9 <span class="comment">:: 4 :: 2 :: Nil</span>
+</code></pre><p>可用迭代器遍历列表:</p>
+<pre><code>def sum(<span class="keyword">ls</span><span class="variable">t:</span> List[Int]) = 
+    <span class="keyword">if</span>(lst == Nil) <span class="number">0</span> <span class="keyword">else</span> lst.head + sum(lst.tail)
+</code></pre><p>或者模式匹配：</p>
+<pre><code>def sum(lst: <span class="keyword">List</span>[Int]) =  lst match {
+    <span class="keyword">case</span> Nil =&gt;<span class="number">0</span> 
+    <span class="keyword">case</span> h :: t =&gt; h +sum(t)
+}
+</code></pre><p>scala类库已经有了sum方法。</p>
+<p>iterator的重要方法：</p>
+<ul>
+<li>head, last, headOption, lastOption</li>
+<li>tail, init</li>
+<li>length, isEmpty</li>
+<li>map(f), foreach(f), flatMap(f), collect(f)</li>
+<li>reduceLeft(op), reduceRight(op), aggregate(init)(op, combineOp)</li>
+<li>reduce(op)<br>…    </li>
+</ul>
+<p>与java集合的互操作：</p>
+<pre><code><span class="keyword">import</span> scala<span class="built_in">.</span>collection<span class="built_in">.</span>JavaConversions<span class="built_in">.</span>_ <span class="comment">// import scala.collection.JavaConversions.propertiesAsScalaMap</span>
+val props: scala<span class="built_in">.</span>collection<span class="built_in">.</span>mutable<span class="built_in">.</span><span class="built_in">Map</span><span class="preprocessor">[</span><span class="built_in">String</span>,<span class="built_in">String</span><span class="preprocessor">]</span><span class="markup"> = System.getProperties()</span>
+</code></pre><p>从Scala集合到java的转换：</p>
+<ul>
+<li>asJavaCollection</li>
+<li>asJavaIterable</li>
+<li>asJavaIterator</li>
+<li>asJavaEnumeration</li>
+<li>…</li>
+</ul>
+<p>从Java集合到scala的转换:</p>
+<ul>
+<li>collectionAsScalaIterable</li>
+<li>…</li>
+</ul>
+<p>线程安全的集合, 可混入以下六特质：</p>
+<ul>
+<li>SynchronizedBuffer</li>
+<li>SynchronizedMap</li>
+<li>SynchronizedPriorityQueue</li>
+<li>SynchronizedQueue</li>
+<li>SynchronizedSet</li>
+<li>SynchronizedStack</li>
+</ul>
+<p>并行集合:</p>
+<pre><code>coll.par.sum
+coll.par.count(<span class="variable">_</span> <span class="comment">% 2 == 0)</span>
+<span class="function"><span class="title">for</span><span class="params">(i &lt;- (<span class="number">0</span> until <span class="number">100</span>)</span>.<span class="title">par</span>) <span class="title">print</span><span class="params">(i + <span class="string">" "</span>)</span></span>
+</code></pre><h1 id="14_模式匹配和样例类">14 模式匹配和样例类</h1>
+<p>要点:</p>
+<ul>
+<li>match表达式是一个更好的switch</li>
+<li>若没有模式匹配， 会抛出MatchError. 可用case _模式来避免。</li>
+<li>模式可包含一个随意定义的条件，称为守卫。</li>
+<li>可对表达式类型进行匹配； 优先选用模式而不是isInstanceOf/asInstanceOf.</li>
+<li>可以匹配数组，元组和样例类的么偶是，然后将匹配到的不同部分绑定到变量。</li>
+<li>在for表达式中，不能匹配的情况会被安静地跳过。</li>
+<li>样例类是编译器会为之自动产出模式匹配所需要的方法的类。</li>
+<li>样例类继承层级中的公共超类是sealed的。</li>
+<li>用Option来存放对于可能存在也可能不存在的值- 比null更安全。</li>
+</ul>
+<p>守卫：</p>
+<pre><code>ch match {
+    <span class="reserved">case</span> <span class="string">'+'</span><span class="function"> =&gt;</span> sign = <span class="number">1</span>
+    <span class="reserved">case</span> <span class="string">'-'</span><span class="function"> =&gt;</span> sign = -<span class="number">1</span>
+    <span class="reserved">case</span> _ <span class="keyword">if</span> Character.isDigit<span class="function"><span class="params">(ch)</span> =&gt;</span> digit = Character.digit(ch,<span class="number">10</span>)
+    <span class="reserved">case</span> _<span class="function"> =&gt;</span>sign = <span class="number">0</span>
+}
+</code></pre><p>类型模式：</p>
+<pre><code>obj match {
+    <span class="keyword">case</span> x: Int =&gt; x
+    <span class="keyword">case</span> s: String =&gt; Integer.parseInt(s)
+    <span class="keyword">case</span> _: BigInt =&gt;Int.MaxValue
+    <span class="keyword">case</span> _ =&gt;<span class="number">0</span>
+}
+</code></pre><p>匹配数组，列表和元组:</p>
+<pre><code>arr match {
+    <span class="reserved">case</span> Array<span class="function"><span class="params">(<span class="number">0</span>)</span> =&gt;</span><span class="string">"0"</span>
+    <span class="reserved">case</span> Array<span class="function"><span class="params">(x,y)</span> =&gt;</span> x + <span class="string">" "</span>+ y
+    <span class="reserved">case</span> Array<span class="function"><span class="params">(<span class="number">0</span>, _*)</span> =&gt;</span> <span class="string">"0 ..."</span>
+    <span class="reserved">case</span> _<span class="function"> =&gt;</span> <span class="string">"something else"</span>
+}
+
+lst match {
+    <span class="reserved">case</span> <span class="number">0</span> ::Nil<span class="function"> =&gt;</span><span class="string">"0"</span>
+    <span class="reserved">case</span> x :: y ::Nil<span class="function"> =&gt;</span> x+ <span class="string">" "</span> + y
+    <span class="reserved">case</span> _<span class="function"> =&gt;</span> <span class="string">"something else"</span>
+}
+</code></pre><h3 id="样例类">样例类</h3>
+<pre><code><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Amount</span></span>
+<span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Dollar</span><span class="params">(value: Double)</span> <span class="keyword">extends</span> <span class="title">Amount</span></span>
+<span class="keyword">case</span> calss Currency(value: Doublie, unit: String) <span class="keyword">extends</span> Amount
+</code></pre><p>也可以针对单例的样例对象:</p>
+<pre><code><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Nothing</span> <span class="keyword">extends</span> <span class="title">Amount</span></span>
+</code></pre><p>使用模式匹配:</p>
+<pre><code>amt match {
+    <span class="reserved">case</span> Dollar<span class="function"><span class="params">(v)</span> =&gt;</span>  <span class="string">"$"</span> +v
+    <span class="reserved">case</span> Currency(_, u) = &gt; <span class="string">"Oh nose, I got "</span>+ u
+    <span class="reserved">case</span> Nothing<span class="function"> =&gt;</span><span class="string">""</span>
+}
+</code></pre><p>声明样例类，自动发送以下事情：</p>
+<ul>
+<li>构造器中的每个参数都成为val</li>
+<li>在伴生对象中提供apply方法让你不用new关键字就构造出相应对象</li>
+<li>提供unapply方法让模式匹配可以工作</li>
+<li>将生成toString, equals, hashCode和copy方法— 除非显式给出这些方法的定义</li>
+</ul>
+<p>copy方法,创建一个域现有对象值相同的新对象。</p>
+<h3 id="匹配嵌套结构">匹配嵌套结构</h3>
+<h3 id="密封类">密封类</h3>
+<pre><code><span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Amount</span></span>
+</code></pre><p>模拟枚举：</p>
+<pre><code><span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TrafficColor</span></span>
+<span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Red</span> <span class="keyword">extends</span> <span class="title">TrafficColor</span></span>
+<span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Yellow</span> <span class="keyword">extends</span> <span class="title">TrafficColor</span></span>
+<span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Green</span> <span class="keyword">extends</span> <span class="title">TrafficColor</span></span>
+
+color <span class="keyword">match</span> {
+    <span class="keyword">case</span> Red =&gt; <span class="string">"stop"</span>
+    <span class="keyword">case</span> Green =&gt; <span class="string">"go"</span>
+    <span class="keyword">case</span> Yellow =&gt; <span class="string">"Hurry up"</span>
+}
+</code></pre><h3 id="Option_类型">Option 类型</h3>
+<p>表示可能存在，也不可能存在。<br>支持泛型。</p>
+<pre><code>val aliceScore = scores.<span class="keyword">get</span>(<span class="string">"Alice"</span>)
+<span class="keyword">if</span>(aliceScore.isEmpty) <span class="built_in">println</span>(<span class="string">"no score"</span>)
+<span class="keyword">else</span> <span class="built_in">println</span>(aliceScore.<span class="keyword">get</span>)
+
+<span class="built_in">println</span>(aliceScore.getOrElse(<span class="string">"no score"</span>))
+<span class="built_in">println</span>(scores.getOrElse(<span class="string">"Alice"</span>, <span class="string">"no score"</span>))
+</code></pre><p>若想略过None:</p>
+<pre><code><span class="keyword">for</span>(score &lt;- scores.<span class="keyword">get</span>(<span class="string">"Alice"</span>)) <span class="built_in">println</span>(score)
+scores.<span class="keyword">get</span>(<span class="string">"Alice"</span>).foreach(<span class="built_in">println</span> <span class="number">_</span>)
+</code></pre><h2 id="偏函数">偏函数</h2>
+<p>被包在花括号内的一组case语句是一个偏函数 —  一个并非对所有输入值都有定义的函数。</p>
+<h1 id="15_注解">15 注解</h1>
+<ul>
+<li>可以为类， 方法，字段， 局部变量，参数，表达式，类型参数以及各种类型添加注解</li>
+<li>对于表达式和类型，注解跟在被注解条目之后</li>
+<li>注解的形式: @Annotation @Annotation(value) 或 @Annotation(name1=value1,…)</li>
+<li>@volatile @transient @strictfp 和@native分别生成等效的java修饰符</li>
+<li>@throws来生成与java兼容的throws规格说明</li>
+<li>@tailrec注解让你校验某个递归函数使用了尾递归优化</li>
+<li>assert函数利用了@eldable注解，你可以移除所有断言</li>
+<li>@deprecated注解标记已过时的特性</li>
+</ul>
+<h1 id="16_XML处理">16 XML处理</h1>
+<h1 id="17_类型参数">17 类型参数</h1>
+<h1 id="18_高级类型">18 高级类型</h1>
+<h1 id="19_解析">19 解析</h1>
+<h1 id="20_Actor">20 Actor</h1>
+<h1 id="21_隐式转换和隐式参数">21 隐式转换和隐式参数</h1>
+<h1 id="22_定界延续">22 定界延续</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/03/07/scala快学/" data-id="vbw899bc9g9rfzk4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-如何记笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/04/如何记笔记/" class="article-date">
+  <time datetime="2015-03-04T06:30:39.000Z" itemprop="datePublished">3月 4 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/04/如何记笔记/">如何记笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="记笔记的目的">记笔记的目的</h1>
+<ul>
+<li>加深记忆, 稳定心绪. (看书有时候看不进去，通过记笔记，可以稳定心绪)</li>
+<li>系统整理书的知识体系</li>
+<li>看笔记就能想起书的内容, 可以完整反应书本内容， 可以扔掉原书</li>
+</ul>
+<h1 id="方法">方法</h1>
+<ol>
+<li><p>一本书应该被读两遍，而且只读两遍。</p>
+<ul>
+<li>第一步正常通读，放松欣赏</li>
+<li>第二遍写下读书笔记，可以供以后重温，直接看笔记即可</li>
+</ul>
+</li>
+<li><p>按照原书的章节给读书笔记划分章节，甚至保留各章的标题. 写下每章作者到底想说什么。<br>写出作者的逻辑脉络。</p>
+</li>
+<li><p>颜色和字体的变化可以起到自动突出重点和分类的作用。</p>
+</li>
+<li><p>要注意给将来使用搜索引擎留下线索。也就是说要把关键字，人名地名组织名等记好</p>
+</li>
+<li><p>主动式的阅读。在笔记中写下自己对此书的评论。统一做法是把自己的评论全部放在方括号【】中。</p>
+</li>
+</ol>
+<h1 id="参考">参考</h1>
+<ul>
+<li>用强力研读书: <a href="http://www.geekonomics10000.com/376" target="_blank" rel="external">http://www.geekonomics10000.com/376</a></li>
+<li>三遍读书法: <a href="http://www.codeceo.com/article/how-i-read-programming-books.html" target="_blank" rel="external">http://www.codeceo.com/article/how-i-read-programming-books.html</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/03/04/如何记笔记/" data-id="h0er2ax0f7tpdgt7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/如何记笔记/">如何记笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-p专业主义" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/02/27/p专业主义/" class="article-date">
@@ -269,6 +1021,60 @@
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/管理/">管理</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-java核心技术" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/27/java核心技术/" class="article-date">
+  <time datetime="2015-02-27T09:11:30.000Z" itemprop="datePublished">2月 27 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/27/java核心技术/">java核心技术</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_流与文件">1. 流与文件</h1>
+<h2 id="流">流</h2>
+<p>输入流</p>
+<p>输出流</p>
+<p>抽象类：InputStream和OutputStream</p>
+<h1 id="2-_XML">2. XML</h1>
+<h1 id="3-_网络">3. 网络</h1>
+<h1 id="4-_数据库编程">4. 数据库编程</h1>
+<h1 id="5-_国际化">5. 国际化</h1>
+<h1 id="6-_高级swing">6. 高级swing</h1>
+<h1 id="7-_高级AWT">7. 高级AWT</h1>
+<h1 id="8-_JavaBean构件">8. JavaBean构件</h1>
+<h1 id="9-_安全">9. 安全</h1>
+<h1 id="10-_脚本，编译与注解处理">10. 脚本，编译与注解处理</h1>
+<h1 id="11-_分布式对象">11. 分布式对象</h1>
+<h1 id="12-_本地方法">12. 本地方法</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2015/02/27/java核心技术/" data-id="g4fg92x6t3nqeuwt" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
 
     </footer>
   </div>
@@ -1650,422 +2456,6 @@ usersTable.close();
 
 
   
-    <article id="post-Programming-Erlang" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/11/21/Programming-Erlang/" class="article-date">
-  <time datetime="2014-11-21T00:09:31.000Z" itemprop="datePublished">11月 21 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="前言">前言</h1>
-<p>Erlang是函数式编程语言，在Erlang里，改变进程的状态是允许的，但一个进程改变另一个进程的状态则不行。<br>Erlang里没有互斥，没有同步方法，也没有内存共享式编程的各种设备。</p>
-<p>每个进程能且只能用一种方法交互，就是<strong>交换消息</strong> . </p>
-<p>编写Erlang程序时，实现的方式不是让单个进程执行所有任务， 而是生成大量只做简单事情的小进程，并让他们通信。</p>
-<p>本书介绍并发性，分布，容错和函数式编程，阐述如何编写一个没有锁和互斥，只是纯粹使用消息传到的分布式并发系统，<br>如何在多核CPU上自动加速程序， 如何编写让人们互相交流的分布式应用程序。<br>还介绍了如何编写容错和分布式系统的设计模式，如何给并发性建模,再把这些模型映射到计算机程序上。</p>
-<h1 id="1-_什么是并发">1. 什么是并发</h1>
-<h2 id="给并发建模">给并发建模</h2>
-<p>编程模型基于对现实世界的观察。</p>
-<h2 id="并发的益处">并发的益处</h2>
-<ol>
-<li>性能分析</li>
-<li>可扩展性</li>
-<li>容错性</li>
-<li>清晰性</li>
-</ol>
-<h1 id="2-_Erlang速览">2. Erlang速览</h1>
-<h2 id="进程，m模块和编译">进程，m模块和编译</h2>
-<p>例子(hello.erl)：</p>
-<figure class="highlight erlang"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(hello)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([start/<span class="number">0</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">start</span><span class="params">()</span> -&gt;</span></div><div class="line">    <span class="function_name">io:format</span>(<span class="string">"Hello world~n"</span>).</div></pre></td></tr></table></figure>
-
-<p>shell运行：</p>
-<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">hello</span>).
-{<span class="ok">ok</span>,<span class="function_or_atom">hello</span>}
-<span class="prompt">2&gt; </span><span class="function_or_atom">hello:start</span>().
-<span class="variable">Hello</span> <span class="function_or_atom">world</span>
-<span class="ok">ok</span>
-<span class="prompt">3&gt; </span>
-</code></pre><p>c(hello)命令编译hello.erl文件里的代码。</p>
-<p>编译:</p>
-<pre><code>$ erlc hello.erl                                                                                                  
-$ erl -noshell <span class="operator">-s</span> hello start <span class="operator">-s</span> init stop                                                                       
-Hello world
-</code></pre><p>$erl … 命令加载hello模块并执行hello:start()函数， 随后执行了init:stop(), 这个表达式终止了Erlang会话。</p>
-<p>Erlang的基本并发单元：进程。<br>一个进程是一个轻量级的虚拟机，只能通过发送和接收消息来与其他进程通信。</p>
-<h2 id="你好，并发">你好，并发</h2>
-<h3 id="文件服务器进程">文件服务器进程</h3>
-<p>文件服务器：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">-<span class="built_in">module</span>(afile_server).</div><div class="line">-<span class="reserved">export</span>([start/<span class="number">1</span>,<span class="keyword">loop</span>/<span class="number">1</span>]).</div><div class="line"></div><div class="line">start<span class="function"><span class="params">(Dir)</span> -&gt;</span> spawn(afile_server, <span class="keyword">loop</span>, [Dir]).</div><div class="line"></div><div class="line"><span class="keyword">loop</span><span class="function"><span class="params">(Dir)</span> -&gt;</span></div><div class="line">    receive</div><div class="line">        {Client, list_dir}<span class="function"> -&gt;</span></div><div class="line">            Client ! {self(), <span class="attribute">file</span>:list_dir(Dir)};</div><div class="line">        {Client, {get_file, File} }<span class="function"> -&gt;</span></div><div class="line">            Full = <span class="attribute">filename</span>:join(Dir, File),</div><div class="line">            Client ! {self(), <span class="attribute">file</span>:read_file(Full)}</div><div class="line">    end,</div><div class="line">    <span class="keyword">loop</span>(Dir).</div></pre></td></tr></table></figure>
-
-<p>模式：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">loop(Dir) -&gt;</div><div class="line">    %% 等待指令</div><div class="line">    receive</div><div class="line">        Command -&gt;</div><div class="line">            <span class="keyword">...</span> 做点什么 <span class="keyword">...</span></div><div class="line">    end,</div><div class="line">    loop(Dir).</div></pre></td></tr></table></figure>
-
-<p>shell测试：</p>
-<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">afile_server</span>).
-{<span class="ok">ok</span>,<span class="function_or_atom">afile_server</span>}
-<span class="prompt">2&gt; </span><span class="variable">FileServer</span> = <span class="function_or_atom">afile_server:start</span>(<span class="string">"."</span>)
-<span class="prompt">2&gt; </span>.
-&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;
-<span class="prompt">3&gt; </span><span class="variable">FileServer</span> <span class="exclamation_mark">!</span> {<span class="function_or_atom">self</span>(), <span class="function_or_atom">list_dir</span>}.
-{&lt;<span class="number">0.32</span>.<span class="number">0</span>&gt;,<span class="function_or_atom">list_dir</span>}
-<span class="prompt">4&gt; </span><span class="function_or_atom">receive</span> <span class="variable">X</span> <span class="arrow">-&gt;</span> <span class="variable">X</span> <span class="function_or_atom">end</span>.
-{&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;,
-{<span class="ok">ok</span>,[<span class="string">"afile_server.beam"</span>,<span class="string">"afile_server.erl"</span>,<span class="string">"hello.beam"</span>,
-    <span class="string">"hello.erl"</span>]}
-</code></pre><h3 id="客户端代码">客户端代码</h3>
-<p>客户端模块的目的：隐藏底层通信的细节。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(afile_client)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([ls/<span class="number">1</span>,get_file/<span class="number">2</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">ls</span><span class="params">(<span class="variable">Server</span>)</span>-&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), list_dir}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">FileList</span>}</span> -&gt;</div><div class="line">            <span class="variable">FileList</span></div><div class="line">    <span class="keyword">end</span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">get_file</span><span class="params">(<span class="variable">Server</span>, <span class="variable">File</span>)</span> -&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), <span class="tuple">{get_file, <span class="variable">File</span>}</span>}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">Content</span>}</span> -&gt;</div><div class="line">            <span class="variable">Content</span></div><div class="line">    <span class="keyword">end</span>.</div></pre></td></tr></table></figure>
-
-<h1 id="3-_基本概念">3. 基本概念</h1>
-<p>Erlang的遍历不可变，一次性赋值变量。</p>
-<h2 id="停止Erlang_shell">停止Erlang shell</h2>
-<p>q().</p>
-<h2 id="简单的整数运算">简单的整数运算</h2>
-<h2 id="变量">变量</h2>
-<p>变量名必须以<strong>大写字母</strong>开头.</p>
-<p>Erlang的变量不会变。</p>
-<p>变量绑定和模式匹配。</p>
-<p>没有副作用意味着可以让程序并行。</p>
-<h2 id="浮点数">浮点数</h2>
-<h2 id="原子">原子</h2>
-<h2 id="元组">元组</h2>
-<h2 id="列表">列表</h2>
-<h2 id="字符串">字符串</h2>
-<h2 id="模式匹配">模式匹配</h2>
-<h1 id="4-_模块和函数">4. 模块和函数</h1>
-<h2 id="模块是存放代码的地方">模块是存放代码的地方</h2>
-<ul>
-<li>逗号(,)分隔函数调用，数据构造和模式中的参数。</li>
-<li>分号(;)分隔子句。</li>
-<li>句号(.)分各个函数整体。</li>
-</ul>
-<h2 id="fun:_基本的抽象单元">fun: 基本的抽象单元</h2>
-<h1 id="5-_记录与映射组">5. 记录与映射组</h1>
-<h1 id="6-_顺序程序的错误处理">6. 顺序程序的错误处理</h1>
-<h1 id="7-_二进制与位语法">7. 二进制与位语法</h1>
-<h1 id="8-_Erlang顺序编程补遗">8. Erlang顺序编程补遗</h1>
-<h1 id="9-_类型">9. 类型</h1>
-<h1 id="10-_编译和运行程序">10. 编译和运行程序</h1>
-<h1 id="11-_现实世界中的并发">11. 现实世界中的并发</h1>
-<h1 id="12-_并发编程">12. 并发编程</h1>
-<h1 id="13-_并发程序中的错误">13. 并发程序中的错误</h1>
-<h1 id="14-_分布式编程">14. 分布式编程</h1>
-<h1 id="15-_接口技术">15. 接口技术</h1>
-<h1 id="16-_文件编程">16. 文件编程</h1>
-<h1 id="17-_套接字编程">17. 套接字编程</h1>
-<h1 id="18-_用WebSocket和Erlang进行浏览">18. 用WebSocket和Erlang进行浏览</h1>
-<h1 id="19-_用ETS和DETS存储编程">19. 用ETS和DETS存储编程</h1>
-<h1 id="20-_Mnesia:_Erlang数据库">20. Mnesia: Erlang数据库</h1>
-<h1 id="21-_性能分析，调试与跟踪">21. 性能分析，调试与跟踪</h1>
-<h1 id="22-_OTP介绍">22. OTP介绍</h1>
-<h1 id="23-_用OTP构建系统">23. 用OTP构建系统</h1>
-<h1 id="24-_编程术语">24. 编程术语</h1>
-<h1 id="25-_第三方程序">25. 第三方程序</h1>
-<h1 id="26-_多核CPU编程">26. 多核CPU编程</h1>
-<h1 id="27-_福尔摩斯的最后一案">27. 福尔摩斯的最后一案</h1>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2014/11/21/Programming-Erlang/" data-id="so1gv6al5i4a57vi" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Erlang/">Erlang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Pratical-Vim" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/11/17/Pratical-Vim/" class="article-date">
-  <time datetime="2014-11-17T13:33:49.000Z" itemprop="datePublished">11月 17 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/17/Pratical-Vim/">Pratical Vim</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-_Vim解决问题的方式">1. Vim解决问题的方式</h1>
-<h2 id="不要自我重复">不要自我重复</h2>
-<p>使用.命令</p>
-<p>减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A</p>
-<p>使移动可以重复： ;命令会重复上次f命令查找的字符</p>
-<h2 id="执行，重复，回退">执行，重复，回退</h2>
-<table>
-<thead>
-<tr>
-<th>用途</th>
-<th>操作</th>
-<th>重复</th>
-<th>回退</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>做出一个修改</td>
-<td>{edit}</td>
-<td>.</td>
-<td>u</td>
-</tr>
-<tr>
-<td>在行内操作下一指定字符</td>
-<td>f{char}/t{char}</td>
-<td>;</td>
-<td>,</td>
-</tr>
-<tr>
-<td>执行替换</td>
-<td>:s/target/replacement</td>
-<td>&amp;</td>
-<td>u</td>
-</tr>
-<tr>
-<td>执行一系列修改</td>
-<td>qx{changes}q</td>
-<td>@x</td>
-<td>u</td>
-</tr>
-</tbody>
-</table>
-<h1 id="2-_普通模式">2. 普通模式</h1>
-<h2 id="停顿时请移开画笔">停顿时请移开画笔</h2>
-<p>就像画家只花一小部分时间涂色一样， 程序员也只花一小部分时间编写代码。绝大多数时间用来思考，阅读已经在代码中穿梭浏览。<br>而且当确定需要修改时，也不一定要切换到插入模式，我们可以重新调整代码的格式，复制它们，移动其位置或是删除它们。<br>在普通模式中， 我们有众多的工具可以利用。</p>
-<h2 id="把撤销单元切成块">把撤销单元切成块</h2>
-<p>更喜欢用<esc>o, 而不是<cr></cr></esc></p>
-<h2 id="构造可重复的修改">构造可重复的修改</h2>
-<p>删除单词： dbx bdw daw</p>
-<p>daw 可以发挥.命令的最大威力， 推荐用daw.</p>
-<h2 id="用次数做简单的算术运算">用次数做简单的算术运算</h2>
-<p>180<c-x></c-x></p>
-<h2 id="能够重复，就别用次数">能够重复，就别用次数</h2>
-<p>删除两单词：d2w 2dw dw.</p>
-<p>只在必要时采用次数</p>
-<h2 id="双剑合璧，天下无敌">双剑合璧，天下无敌</h2>
-<p>vim的请打很多程度上源自操作符与动作命令相结合。</p>
-<p>操作符 + 动作命令 = 操作 </p>
-<pre><code>d<span class="list">{motion}</span>: dl daw dap
-c<span class="list">{motion}</span>:
-y<span class="list">{motion}</span>
-
-g~ gu gU
-</code></pre><p>vim的语法有个额外规则：当一个操作符命令被连续调用两次时，它会作用于当前行， 如dd, &gt;&gt;.<br>gU有个特殊的情况， gUU作用于当前行，而不用gUgU.</p>
-<p>操作符命令：</p>
-<pre><code>c
-d
-y
-g~
-gu
-gU
-&gt;
-&lt;
-<span class="header">=   自动缩进</span>
-!   使用外部程序过滤{motion}所跨越的行
-</code></pre><p>可以定义自己的操作符， Tim Pope的commentary.vim定义新的操作符\<br>参考： h :map-operator</p>
-<p>自定义动作命令, 参考Kana Natsuno的textobj-entire插件，增加了两文本对象ie和ae.<br>参考：h omap-info</p>
-<p>操作符待决模式</p>
-<h1 id="3-_插入模式">3. 插入模式</h1>
-<p>在插入模式中即时更正错误：</p>
-<pre><code><span class="input"><span class="prompt">&lt;C-h&gt;</span> 删除前一个字符</span>
-<span class="input"><span class="prompt">&lt;C-w&gt;</span> 删除前一个单词</span>
-<span class="input"><span class="prompt">&lt;C-u&gt;</span> 删到行首</span>
-</code></pre><p>返回普通模式：</p>
-<pre><code><span class="input"><span class="prompt">&lt;Esc&gt;</span> </span>
-<span class="input"><span class="prompt">&lt;C-[&gt;</span> 切换到普通模式</span>
-<span class="input"><span class="prompt">&lt;C-o&gt;</span> 切换到插入-普通模式</span>
-</code></pre><p>插入普通模式：能让我妈执行一次普通模式的命令. (重新回到插入模式）</p>
-<p>不离开插入模式，粘贴寄存器中的文本： <c-r>0<br>问题：会出现不必要的缩进或换行。 —&gt; <c-r><c-p>{register}</c-p></c-r></c-r></p>
-<p>随时随地做计算：<c-r>=6*35<cr></cr></c-r></p>
-<p>用字符编码插入非常用字符:</p>
-<pre><code>按键               | 用途
--------------------|------------------------------------
-&lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span>         | 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
-&lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span>       | 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
-&lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span>    | 按原意插入非数字字符
-&lt;<span class="keyword">C</span>-k&gt;<span class="list">{char1}</span><span class="list">{char2}</span>| 插入以二合字母表示的字符. &lt;<span class="keyword">C</span>-k&gt;<span class="number">12</span> ½
-</code></pre><p>c查询字符编码： 在字符上按命令ga</p>
-<p>二合字符集：h digraphs-default</p>
-<p>命令：:digraphs查看可用的二合字母列表。 :h digraphs-table</p>
-<p>t替换模式替换又有文本: R命令（由普通模式进入替换模式）</p>
-<p>虚拟替换模式：gR命令。会把制表符当做一组空格进行处理。</p>
-<p>单次版本：r和gr.</p>
-<h1 id="4-_可视模式">4. 可视模式</h1>
-<p>三种不同的可视模式： 操作字符文本， 行文本，块文本。</p>
-<p>激活可视模式：</p>
-<pre><code>按键  <span class="string">| 用途</span>
-------<span class="string">|------------------------</span>
-v     <span class="string">| 激活面向字符的可视模式</span>
-V     <span class="string">| 激活面向行的可视模式</span>
-&lt;C-v&gt; <span class="string">| 激活面向列块的可视模式</span>
-gv    <span class="string">| 重选上次的高亮选区</span>
-</code></pre><p>在可视模式间切换:</p>
-<pre><code><span class="input"><span class="prompt">按键          | 用途
---------------|----------------
-&lt;Esc&gt;</span> / &lt;<span class="constant">C</span>-[&gt; | 回到普通模式</span>
-<span class="input"><span class="prompt">v / V / &lt;C-v&gt;</span> | 切换到普通模式</span>
-<span class="input"><span class="prompt">v             | 
-V             |
-&lt;C-v&gt;</span>         |
-o             | 切换高亮选区的活动端</span>
-</code></pre><p>vit 选择标签里的内容, gUit</p>
-<p>只要可能，最好用操作符命令，而不是可视命令。</p>
-<p>用面向内部的可视模式编辑表格数据。</p>
-<h1 id="5-_命令行模式">5. 命令行模式</h1>
-<p>Ex命令， :h ex-cmd-index 可获取完整列表</p>
-<p>特殊按键: <c-w>, <c-u>, <c-v>, <c-k>, <c-r>{register}</c-r></c-k></c-v></c-u></c-w></p>
-<p>使用’:t’和’:m’命令复制和移动行</p>
-<p>在指定范围上执行普通模式命令. :%normal A;</p>
-<p>重复上次的Ex命令： @：</p>
-<p>把当前单词插入到命令行中：<c-r><c-w></c-w></c-r></p>
-<p>回溯历史命令。 在.vimrc可以设置保存的上限： set history=200</p>
-<h1 id="6-_管理多个文件">6. 管理多个文件</h1>
-<p>缓冲区相关命令:</p>
-<pre><code><span class="symbol">:ls</span> 列出载入到内存中的缓冲区的列表。
-<span class="symbol">:bn</span>  切换到下一个缓冲区
-<span class="symbol">:bprev</span> 
-<span class="symbol">:bfirst</span>
-<span class="symbol">:blast</span>
-<span class="symbol">:b</span> <span class="constant">N</span>
-<span class="symbol">:bd</span> 
-</code></pre><p>用参数列表将缓冲区分组： :args</p>
-<pre><code>:args <span class="keyword">*</span><span class="keyword">*</span>/<span class="keyword">*</span>.md
-</code></pre><p>将工作区切分成窗口：</p>
-<pre><code><span class="input"><span class="prompt">&lt;C-w&gt;</span> s  水平切分</span>
-<span class="input"><span class="prompt">&lt;C-w&gt;</span> v  垂直切分</span>
-<span class="input"><span class="prompt">&lt;C-w&gt;</span> c  g关闭当前窗口. <span class="symbol">:clo</span>[se] </span>
-<span class="input"><span class="prompt">&lt;C-w&gt;</span> o  只保留当前窗口. <span class="symbol">:on</span>[ly]</span>
-<span class="symbol">:sp</span> {file} 水平切分，并在新窗口载入{file}
-<span class="symbol">:vsp</span> {file} 垂直切分，并在新窗口载入{file}
-</code></pre><p>用标签页将窗口分组</p>
-<h1 id="7-_打开和保存文件">7. 打开和保存文件</h1>
-<p>使用netrw管理文件系统.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2014/11/17/Pratical-Vim/" data-id="8eby20mex83fqb1i" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vim/">Vim</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Git子模块" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/29/Git子模块/" class="article-date">
-  <time datetime="2014-10-29T01:46:39.000Z" itemprop="datePublished">10月 29 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/29/Git子模块/">Git子模块</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="http://git-scm.com/book/zh/v1/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97" target="_blank" rel="external">参考</a></p>
-<h1 id="子模块">子模块</h1>
-<p>经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。</p>
-<p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
-<h1 id="初步">初步</h1>
-<ol>
-<li><p>添加子模块。 通过git submodule add将外部项目加为子模块:</p>
-<pre><code> $ git submodule add git:<span class="comment">//github.com/chneukirchen/rack.git rack</span>
- Initialized empty Git repository <span class="keyword">in</span> /opt/subtest/rack/.git/
- remote: Counting objects: <span class="number">3181</span>, <span class="keyword">done</span>.
- remote: Compressing objects: <span class="number">100</span>% (<span class="number">1534</span>/<span class="number">1534</span>), <span class="keyword">done</span>.
- remote: Total <span class="number">3181</span> (delta <span class="number">1951</span>), reused <span class="number">2623</span> (delta <span class="number">1603</span>)
- Receiving objects: <span class="number">100</span>% (<span class="number">3181</span>/<span class="number">3181</span>), <span class="number">675.42</span> KiB | <span class="number">422</span> KiB/s, <span class="keyword">done</span>.
- Resolving deltas: <span class="number">100</span>% (<span class="number">1951</span>/<span class="number">1951</span>), <span class="keyword">done</span>.
-</code></pre></li>
-</ol>
-<p>加入子模块后，运行git status, 会看到以下两项。</p>
-<pre><code>$ git status
-<span class="preprocessor"># On branch master</span>
-<span class="preprocessor"># Changes to be committed:</span>
-<span class="preprocessor">#   (use "git reset HEAD &lt;file&gt;..." to unstage)</span>
-<span class="preprocessor">#</span>
-<span class="preprocessor">#      new file:   .gitmodules</span>
-<span class="preprocessor">#      new file:   rack</span>
-<span class="preprocessor">#</span>
-</code></pre><p>会生成一个.gitmodules文件。这是一个配置文件，保存了项目 URL 和你拉取到的本地子目录。</p>
-<p>这个文件跟其他文件一样也是处于版本控制之下的，就像你的.gitignore文件一样。它跟项目里的其他文件一样可以被推送和拉取。这是其他克隆此项目的人获知子模块项目来源的途径。</p>
-<p>在看文件rack:</p>
-<pre><code>$ git diff <span class="comment">--cached rack</span>
-diff <span class="comment">--git a/rack b/rack</span>
-<span class="built_in">new</span> <span class="built_in">file</span> mode <span class="number">160000</span>
-index <span class="number">0000000.</span><span class="number">.08</span>d709f
-<span class="comment">--- /dev/null</span>
-+++ b/rack
-@@ -<span class="number">0</span>,<span class="number">0</span> +<span class="number">1</span> @@
-+Subproject commit <span class="number">08</span>d709f78b8c5b0fbeb7821e37fa53e69afcf433
-</code></pre><p>尽管rack是你工作目录里的子目录，但 Git 把它视作一个子模块，当你不在那个目录里时并不记录它的内容。取而代之的是，Git 将它记录成来自那个仓库的一个特殊的提交。当你在那个子目录里修改并提交时，子项目会通知那里的 HEAD 已经发生变更并记录你当前正在工作的那个提交；通过那样的方法，当其他人克隆此项目，他们可以重新创建一致的环境。</p>
-<p>这是关于子模块的重要一点：你记录他们当前确切所处的提交。你不能记录一个子模块的master或者其他的符号引用。</p>
-<ol>
-<li><p>克隆一个带子模块的项目<br>这里你将克隆一个带子模块的项目。当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件：</p>
-<p> $ git clone git://github.com/schacon/myproject.git<br> Initialized empty Git repository in /opt/myproject/.git/<br> remote: Counting objects: 6, done.<br> remote: Compressing objects: 100% (4/4), done.<br> remote: Total 6 (delta 0), reused 0 (delta 0)<br> Receiving objects: 100% (6/6), done.<br> $ cd myproject<br> $ ls -l<br> total 8<br> -rw-r—r—  1 schacon  admin   3 Apr  9 09:11 README<br> drwxr-xr-x  2 schacon  admin  68 Apr  9 09:11 rack<br> $ ls rack/<br> $</p>
-</li>
-</ol>
-<p>rack目录存在了，但是是空的。你必须运行两个命令：git submodule init来初始化你的本地配置文件，git submodule update来从那个项目拉取所有数据并检出你上层项目里所列的合适的提交</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/2014/10/29/Git子模块/" data-id="zuzr02a3ba2shyf2" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2081,7 +2471,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 15.00px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 15.00px;">program</a><a href="/tags/scala/" style="font-size: 17.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
     </div>
   </div>
 
@@ -2090,7 +2480,7 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -2102,23 +2492,23 @@ index <span class="number">0000000.</span><span class="number">.08</span>d709f
       <ul>
         
           <li>
+            <a href="/2015/03/27/ProgrammingScala/">ProgrammingScala</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/22/sbt学习/">sbt学习</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/22/ScalaInDepth/">ScalaInDepth</a>
+          </li>
+        
+          <li>
             <a href="/2015/03/19/代码的未来/">代码的未来</a>
           </li>
         
           <li>
             <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/14/Go并发编程实战/">Go并发编程实战</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
           </li>
         
       </ul>

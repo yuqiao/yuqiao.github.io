@@ -69,6 +69,422 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Programming-Erlang" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/21/Programming-Erlang/" class="article-date">
+  <time datetime="2014-11-21T00:09:31.000Z" itemprop="datePublished">11月 21 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/21/Programming-Erlang/">Programming Erlang</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言">前言</h1>
+<p>Erlang是函数式编程语言，在Erlang里，改变进程的状态是允许的，但一个进程改变另一个进程的状态则不行。<br>Erlang里没有互斥，没有同步方法，也没有内存共享式编程的各种设备。</p>
+<p>每个进程能且只能用一种方法交互，就是<strong>交换消息</strong> . </p>
+<p>编写Erlang程序时，实现的方式不是让单个进程执行所有任务， 而是生成大量只做简单事情的小进程，并让他们通信。</p>
+<p>本书介绍并发性，分布，容错和函数式编程，阐述如何编写一个没有锁和互斥，只是纯粹使用消息传到的分布式并发系统，<br>如何在多核CPU上自动加速程序， 如何编写让人们互相交流的分布式应用程序。<br>还介绍了如何编写容错和分布式系统的设计模式，如何给并发性建模,再把这些模型映射到计算机程序上。</p>
+<h1 id="1-_什么是并发">1. 什么是并发</h1>
+<h2 id="给并发建模">给并发建模</h2>
+<p>编程模型基于对现实世界的观察。</p>
+<h2 id="并发的益处">并发的益处</h2>
+<ol>
+<li>性能分析</li>
+<li>可扩展性</li>
+<li>容错性</li>
+<li>清晰性</li>
+</ol>
+<h1 id="2-_Erlang速览">2. Erlang速览</h1>
+<h2 id="进程，m模块和编译">进程，m模块和编译</h2>
+<p>例子(hello.erl)：</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(hello)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([start/<span class="number">0</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">start</span><span class="params">()</span> -&gt;</span></div><div class="line">    <span class="function_name">io:format</span>(<span class="string">"Hello world~n"</span>).</div></pre></td></tr></table></figure>
+
+<p>shell运行：</p>
+<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">hello</span>).
+{<span class="ok">ok</span>,<span class="function_or_atom">hello</span>}
+<span class="prompt">2&gt; </span><span class="function_or_atom">hello:start</span>().
+<span class="variable">Hello</span> <span class="function_or_atom">world</span>
+<span class="ok">ok</span>
+<span class="prompt">3&gt; </span>
+</code></pre><p>c(hello)命令编译hello.erl文件里的代码。</p>
+<p>编译:</p>
+<pre><code>$ erlc hello.erl                                                                                                  
+$ erl -noshell <span class="operator">-s</span> hello start <span class="operator">-s</span> init stop                                                                       
+Hello world
+</code></pre><p>$erl … 命令加载hello模块并执行hello:start()函数， 随后执行了init:stop(), 这个表达式终止了Erlang会话。</p>
+<p>Erlang的基本并发单元：进程。<br>一个进程是一个轻量级的虚拟机，只能通过发送和接收消息来与其他进程通信。</p>
+<h2 id="你好，并发">你好，并发</h2>
+<h3 id="文件服务器进程">文件服务器进程</h3>
+<p>文件服务器：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">-<span class="built_in">module</span>(afile_server).</div><div class="line">-<span class="reserved">export</span>([start/<span class="number">1</span>,<span class="keyword">loop</span>/<span class="number">1</span>]).</div><div class="line"></div><div class="line">start<span class="function"><span class="params">(Dir)</span> -&gt;</span> spawn(afile_server, <span class="keyword">loop</span>, [Dir]).</div><div class="line"></div><div class="line"><span class="keyword">loop</span><span class="function"><span class="params">(Dir)</span> -&gt;</span></div><div class="line">    receive</div><div class="line">        {Client, list_dir}<span class="function"> -&gt;</span></div><div class="line">            Client ! {self(), <span class="attribute">file</span>:list_dir(Dir)};</div><div class="line">        {Client, {get_file, File} }<span class="function"> -&gt;</span></div><div class="line">            Full = <span class="attribute">filename</span>:join(Dir, File),</div><div class="line">            Client ! {self(), <span class="attribute">file</span>:read_file(Full)}</div><div class="line">    end,</div><div class="line">    <span class="keyword">loop</span>(Dir).</div></pre></td></tr></table></figure>
+
+<p>模式：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">loop(Dir) -&gt;</div><div class="line">    %% 等待指令</div><div class="line">    receive</div><div class="line">        Command -&gt;</div><div class="line">            <span class="keyword">...</span> 做点什么 <span class="keyword">...</span></div><div class="line">    end,</div><div class="line">    loop(Dir).</div></pre></td></tr></table></figure>
+
+<p>shell测试：</p>
+<pre><code><span class="prompt">1&gt; </span><span class="function_or_atom">c</span>(<span class="function_or_atom">afile_server</span>).
+{<span class="ok">ok</span>,<span class="function_or_atom">afile_server</span>}
+<span class="prompt">2&gt; </span><span class="variable">FileServer</span> = <span class="function_or_atom">afile_server:start</span>(<span class="string">"."</span>)
+<span class="prompt">2&gt; </span>.
+&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;
+<span class="prompt">3&gt; </span><span class="variable">FileServer</span> <span class="exclamation_mark">!</span> {<span class="function_or_atom">self</span>(), <span class="function_or_atom">list_dir</span>}.
+{&lt;<span class="number">0.32</span>.<span class="number">0</span>&gt;,<span class="function_or_atom">list_dir</span>}
+<span class="prompt">4&gt; </span><span class="function_or_atom">receive</span> <span class="variable">X</span> <span class="arrow">-&gt;</span> <span class="variable">X</span> <span class="function_or_atom">end</span>.
+{&lt;<span class="number">0.39</span>.<span class="number">0</span>&gt;,
+{<span class="ok">ok</span>,[<span class="string">"afile_server.beam"</span>,<span class="string">"afile_server.erl"</span>,<span class="string">"hello.beam"</span>,
+    <span class="string">"hello.erl"</span>]}
+</code></pre><h3 id="客户端代码">客户端代码</h3>
+<p>客户端模块的目的：隐藏底层通信的细节。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="pp"><span class="keyword">-module</span><span class="params">(afile_client)</span></span>.</div><div class="line"><span class="pp"><span class="keyword">-export</span><span class="params">([ls/<span class="number">1</span>,get_file/<span class="number">2</span>])</span></span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">ls</span><span class="params">(<span class="variable">Server</span>)</span>-&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), list_dir}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">FileList</span>}</span> -&gt;</div><div class="line">            <span class="variable">FileList</span></div><div class="line">    <span class="keyword">end</span>.</div><div class="line"></div><div class="line"><span class="function"><span class="title">get_file</span><span class="params">(<span class="variable">Server</span>, <span class="variable">File</span>)</span> -&gt;</span></div><div class="line">    <span class="variable">Server</span> ! <span class="tuple">{<span class="function_name">self</span>(), <span class="tuple">{get_file, <span class="variable">File</span>}</span>}</span>,</div><div class="line">    <span class="keyword">receive</span></div><div class="line">        <span class="tuple">{<span class="variable">Server</span>, <span class="variable">Content</span>}</span> -&gt;</div><div class="line">            <span class="variable">Content</span></div><div class="line">    <span class="keyword">end</span>.</div></pre></td></tr></table></figure>
+
+<h1 id="3-_基本概念">3. 基本概念</h1>
+<p>Erlang的遍历不可变，一次性赋值变量。</p>
+<h2 id="停止Erlang_shell">停止Erlang shell</h2>
+<p>q().</p>
+<h2 id="简单的整数运算">简单的整数运算</h2>
+<h2 id="变量">变量</h2>
+<p>变量名必须以<strong>大写字母</strong>开头.</p>
+<p>Erlang的变量不会变。</p>
+<p>变量绑定和模式匹配。</p>
+<p>没有副作用意味着可以让程序并行。</p>
+<h2 id="浮点数">浮点数</h2>
+<h2 id="原子">原子</h2>
+<h2 id="元组">元组</h2>
+<h2 id="列表">列表</h2>
+<h2 id="字符串">字符串</h2>
+<h2 id="模式匹配">模式匹配</h2>
+<h1 id="4-_模块和函数">4. 模块和函数</h1>
+<h2 id="模块是存放代码的地方">模块是存放代码的地方</h2>
+<ul>
+<li>逗号(,)分隔函数调用，数据构造和模式中的参数。</li>
+<li>分号(;)分隔子句。</li>
+<li>句号(.)分各个函数整体。</li>
+</ul>
+<h2 id="fun:_基本的抽象单元">fun: 基本的抽象单元</h2>
+<h1 id="5-_记录与映射组">5. 记录与映射组</h1>
+<h1 id="6-_顺序程序的错误处理">6. 顺序程序的错误处理</h1>
+<h1 id="7-_二进制与位语法">7. 二进制与位语法</h1>
+<h1 id="8-_Erlang顺序编程补遗">8. Erlang顺序编程补遗</h1>
+<h1 id="9-_类型">9. 类型</h1>
+<h1 id="10-_编译和运行程序">10. 编译和运行程序</h1>
+<h1 id="11-_现实世界中的并发">11. 现实世界中的并发</h1>
+<h1 id="12-_并发编程">12. 并发编程</h1>
+<h1 id="13-_并发程序中的错误">13. 并发程序中的错误</h1>
+<h1 id="14-_分布式编程">14. 分布式编程</h1>
+<h1 id="15-_接口技术">15. 接口技术</h1>
+<h1 id="16-_文件编程">16. 文件编程</h1>
+<h1 id="17-_套接字编程">17. 套接字编程</h1>
+<h1 id="18-_用WebSocket和Erlang进行浏览">18. 用WebSocket和Erlang进行浏览</h1>
+<h1 id="19-_用ETS和DETS存储编程">19. 用ETS和DETS存储编程</h1>
+<h1 id="20-_Mnesia:_Erlang数据库">20. Mnesia: Erlang数据库</h1>
+<h1 id="21-_性能分析，调试与跟踪">21. 性能分析，调试与跟踪</h1>
+<h1 id="22-_OTP介绍">22. OTP介绍</h1>
+<h1 id="23-_用OTP构建系统">23. 用OTP构建系统</h1>
+<h1 id="24-_编程术语">24. 编程术语</h1>
+<h1 id="25-_第三方程序">25. 第三方程序</h1>
+<h1 id="26-_多核CPU编程">26. 多核CPU编程</h1>
+<h1 id="27-_福尔摩斯的最后一案">27. 福尔摩斯的最后一案</h1>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/11/21/Programming-Erlang/" data-id="so1gv6al5i4a57vi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Erlang/">Erlang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Pratical-Vim" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/17/Pratical-Vim/" class="article-date">
+  <time datetime="2014-11-17T13:33:49.000Z" itemprop="datePublished">11月 17 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/17/Pratical-Vim/">Pratical Vim</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_Vim解决问题的方式">1. Vim解决问题的方式</h1>
+<h2 id="不要自我重复">不要自我重复</h2>
+<p>使用.命令</p>
+<p>减少无关的移动：在行尾添加内容这些常见操作，提供一个专门的命令：A</p>
+<p>使移动可以重复： ;命令会重复上次f命令查找的字符</p>
+<h2 id="执行，重复，回退">执行，重复，回退</h2>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>操作</th>
+<th>重复</th>
+<th>回退</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>做出一个修改</td>
+<td>{edit}</td>
+<td>.</td>
+<td>u</td>
+</tr>
+<tr>
+<td>在行内操作下一指定字符</td>
+<td>f{char}/t{char}</td>
+<td>;</td>
+<td>,</td>
+</tr>
+<tr>
+<td>执行替换</td>
+<td>:s/target/replacement</td>
+<td>&amp;</td>
+<td>u</td>
+</tr>
+<tr>
+<td>执行一系列修改</td>
+<td>qx{changes}q</td>
+<td>@x</td>
+<td>u</td>
+</tr>
+</tbody>
+</table>
+<h1 id="2-_普通模式">2. 普通模式</h1>
+<h2 id="停顿时请移开画笔">停顿时请移开画笔</h2>
+<p>就像画家只花一小部分时间涂色一样， 程序员也只花一小部分时间编写代码。绝大多数时间用来思考，阅读已经在代码中穿梭浏览。<br>而且当确定需要修改时，也不一定要切换到插入模式，我们可以重新调整代码的格式，复制它们，移动其位置或是删除它们。<br>在普通模式中， 我们有众多的工具可以利用。</p>
+<h2 id="把撤销单元切成块">把撤销单元切成块</h2>
+<p>更喜欢用<esc>o, 而不是<cr></cr></esc></p>
+<h2 id="构造可重复的修改">构造可重复的修改</h2>
+<p>删除单词： dbx bdw daw</p>
+<p>daw 可以发挥.命令的最大威力， 推荐用daw.</p>
+<h2 id="用次数做简单的算术运算">用次数做简单的算术运算</h2>
+<p>180<c-x></c-x></p>
+<h2 id="能够重复，就别用次数">能够重复，就别用次数</h2>
+<p>删除两单词：d2w 2dw dw.</p>
+<p>只在必要时采用次数</p>
+<h2 id="双剑合璧，天下无敌">双剑合璧，天下无敌</h2>
+<p>vim的请打很多程度上源自操作符与动作命令相结合。</p>
+<p>操作符 + 动作命令 = 操作 </p>
+<pre><code>d<span class="list">{motion}</span>: dl daw dap
+c<span class="list">{motion}</span>:
+y<span class="list">{motion}</span>
+
+g~ gu gU
+</code></pre><p>vim的语法有个额外规则：当一个操作符命令被连续调用两次时，它会作用于当前行， 如dd, &gt;&gt;.<br>gU有个特殊的情况， gUU作用于当前行，而不用gUgU.</p>
+<p>操作符命令：</p>
+<pre><code>c
+d
+y
+g~
+gu
+gU
+&gt;
+&lt;
+<span class="header">=   自动缩进</span>
+!   使用外部程序过滤{motion}所跨越的行
+</code></pre><p>可以定义自己的操作符， Tim Pope的commentary.vim定义新的操作符\<br>参考： h :map-operator</p>
+<p>自定义动作命令, 参考Kana Natsuno的textobj-entire插件，增加了两文本对象ie和ae.<br>参考：h omap-info</p>
+<p>操作符待决模式</p>
+<h1 id="3-_插入模式">3. 插入模式</h1>
+<p>在插入模式中即时更正错误：</p>
+<pre><code><span class="input"><span class="prompt">&lt;C-h&gt;</span> 删除前一个字符</span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> 删除前一个单词</span>
+<span class="input"><span class="prompt">&lt;C-u&gt;</span> 删到行首</span>
+</code></pre><p>返回普通模式：</p>
+<pre><code><span class="input"><span class="prompt">&lt;Esc&gt;</span> </span>
+<span class="input"><span class="prompt">&lt;C-[&gt;</span> 切换到普通模式</span>
+<span class="input"><span class="prompt">&lt;C-o&gt;</span> 切换到插入-普通模式</span>
+</code></pre><p>插入普通模式：能让我妈执行一次普通模式的命令. (重新回到插入模式）</p>
+<p>不离开插入模式，粘贴寄存器中的文本： <c-r>0<br>问题：会出现不必要的缩进或换行。 —&gt; <c-r><c-p>{register}</c-p></c-r></c-r></p>
+<p>随时随地做计算：<c-r>=6*35<cr></cr></c-r></p>
+<p>用字符编码插入非常用字符:</p>
+<pre><code>按键               | 用途
+-------------------|------------------------------------
+&lt;<span class="keyword">C</span>-v&gt;<span class="list">{123}</span>         | 以十进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;<span class="number">65</span> A
+&lt;<span class="keyword">C</span>-v&gt;u<span class="list">{1234}</span>       | 以十六进制编码插入字符 例如: &lt;<span class="keyword">C</span>-v&gt;u00bf  ¿ 
+&lt;<span class="keyword">C</span>-v&gt;<span class="list">{nondigit}</span>    | 按原意插入非数字字符
+&lt;<span class="keyword">C</span>-k&gt;<span class="list">{char1}</span><span class="list">{char2}</span>| 插入以二合字母表示的字符. &lt;<span class="keyword">C</span>-k&gt;<span class="number">12</span> ½
+</code></pre><p>c查询字符编码： 在字符上按命令ga</p>
+<p>二合字符集：h digraphs-default</p>
+<p>命令：:digraphs查看可用的二合字母列表。 :h digraphs-table</p>
+<p>t替换模式替换又有文本: R命令（由普通模式进入替换模式）</p>
+<p>虚拟替换模式：gR命令。会把制表符当做一组空格进行处理。</p>
+<p>单次版本：r和gr.</p>
+<h1 id="4-_可视模式">4. 可视模式</h1>
+<p>三种不同的可视模式： 操作字符文本， 行文本，块文本。</p>
+<p>激活可视模式：</p>
+<pre><code>按键  <span class="string">| 用途</span>
+------<span class="string">|------------------------</span>
+v     <span class="string">| 激活面向字符的可视模式</span>
+V     <span class="string">| 激活面向行的可视模式</span>
+&lt;C-v&gt; <span class="string">| 激活面向列块的可视模式</span>
+gv    <span class="string">| 重选上次的高亮选区</span>
+</code></pre><p>在可视模式间切换:</p>
+<pre><code><span class="input"><span class="prompt">按键          | 用途
+--------------|----------------
+&lt;Esc&gt;</span> / &lt;<span class="constant">C</span>-[&gt; | 回到普通模式</span>
+<span class="input"><span class="prompt">v / V / &lt;C-v&gt;</span> | 切换到普通模式</span>
+<span class="input"><span class="prompt">v             | 
+V             |
+&lt;C-v&gt;</span>         |
+o             | 切换高亮选区的活动端</span>
+</code></pre><p>vit 选择标签里的内容, gUit</p>
+<p>只要可能，最好用操作符命令，而不是可视命令。</p>
+<p>用面向内部的可视模式编辑表格数据。</p>
+<h1 id="5-_命令行模式">5. 命令行模式</h1>
+<p>Ex命令， :h ex-cmd-index 可获取完整列表</p>
+<p>特殊按键: <c-w>, <c-u>, <c-v>, <c-k>, <c-r>{register}</c-r></c-k></c-v></c-u></c-w></p>
+<p>使用’:t’和’:m’命令复制和移动行</p>
+<p>在指定范围上执行普通模式命令. :%normal A;</p>
+<p>重复上次的Ex命令： @：</p>
+<p>把当前单词插入到命令行中：<c-r><c-w></c-w></c-r></p>
+<p>回溯历史命令。 在.vimrc可以设置保存的上限： set history=200</p>
+<h1 id="6-_管理多个文件">6. 管理多个文件</h1>
+<p>缓冲区相关命令:</p>
+<pre><code><span class="symbol">:ls</span> 列出载入到内存中的缓冲区的列表。
+<span class="symbol">:bn</span>  切换到下一个缓冲区
+<span class="symbol">:bprev</span> 
+<span class="symbol">:bfirst</span>
+<span class="symbol">:blast</span>
+<span class="symbol">:b</span> <span class="constant">N</span>
+<span class="symbol">:bd</span> 
+</code></pre><p>用参数列表将缓冲区分组： :args</p>
+<pre><code>:args <span class="keyword">*</span><span class="keyword">*</span>/<span class="keyword">*</span>.md
+</code></pre><p>将工作区切分成窗口：</p>
+<pre><code><span class="input"><span class="prompt">&lt;C-w&gt;</span> s  水平切分</span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> v  垂直切分</span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> c  g关闭当前窗口. <span class="symbol">:clo</span>[se] </span>
+<span class="input"><span class="prompt">&lt;C-w&gt;</span> o  只保留当前窗口. <span class="symbol">:on</span>[ly]</span>
+<span class="symbol">:sp</span> {file} 水平切分，并在新窗口载入{file}
+<span class="symbol">:vsp</span> {file} 垂直切分，并在新窗口载入{file}
+</code></pre><p>用标签页将窗口分组</p>
+<h1 id="7-_打开和保存文件">7. 打开和保存文件</h1>
+<p>使用netrw管理文件系统.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/11/17/Pratical-Vim/" data-id="8eby20mex83fqb1i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vim/">Vim</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Git子模块" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/29/Git子模块/" class="article-date">
+  <time datetime="2014-10-29T01:46:39.000Z" itemprop="datePublished">10月 29 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/29/Git子模块/">Git子模块</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://git-scm.com/book/zh/v1/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97" target="_blank" rel="external">参考</a></p>
+<h1 id="子模块">子模块</h1>
+<p>经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。这个场景下一个常见的问题产生了：你想将两个项目单独处理但是又需要在其中一个中使用另外一个。</p>
+<p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
+<h1 id="初步">初步</h1>
+<ol>
+<li><p>添加子模块。 通过git submodule add将外部项目加为子模块:</p>
+<pre><code> $ git submodule add git:<span class="comment">//github.com/chneukirchen/rack.git rack</span>
+ Initialized empty Git repository <span class="keyword">in</span> /opt/subtest/rack/.git/
+ remote: Counting objects: <span class="number">3181</span>, <span class="keyword">done</span>.
+ remote: Compressing objects: <span class="number">100</span>% (<span class="number">1534</span>/<span class="number">1534</span>), <span class="keyword">done</span>.
+ remote: Total <span class="number">3181</span> (delta <span class="number">1951</span>), reused <span class="number">2623</span> (delta <span class="number">1603</span>)
+ Receiving objects: <span class="number">100</span>% (<span class="number">3181</span>/<span class="number">3181</span>), <span class="number">675.42</span> KiB | <span class="number">422</span> KiB/s, <span class="keyword">done</span>.
+ Resolving deltas: <span class="number">100</span>% (<span class="number">1951</span>/<span class="number">1951</span>), <span class="keyword">done</span>.
+</code></pre></li>
+</ol>
+<p>加入子模块后，运行git status, 会看到以下两项。</p>
+<pre><code>$ git status
+<span class="preprocessor"># On branch master</span>
+<span class="preprocessor"># Changes to be committed:</span>
+<span class="preprocessor">#   (use "git reset HEAD &lt;file&gt;..." to unstage)</span>
+<span class="preprocessor">#</span>
+<span class="preprocessor">#      new file:   .gitmodules</span>
+<span class="preprocessor">#      new file:   rack</span>
+<span class="preprocessor">#</span>
+</code></pre><p>会生成一个.gitmodules文件。这是一个配置文件，保存了项目 URL 和你拉取到的本地子目录。</p>
+<p>这个文件跟其他文件一样也是处于版本控制之下的，就像你的.gitignore文件一样。它跟项目里的其他文件一样可以被推送和拉取。这是其他克隆此项目的人获知子模块项目来源的途径。</p>
+<p>在看文件rack:</p>
+<pre><code>$ git diff <span class="comment">--cached rack</span>
+diff <span class="comment">--git a/rack b/rack</span>
+<span class="built_in">new</span> <span class="built_in">file</span> mode <span class="number">160000</span>
+index <span class="number">0000000.</span><span class="number">.08</span>d709f
+<span class="comment">--- /dev/null</span>
++++ b/rack
+@@ -<span class="number">0</span>,<span class="number">0</span> +<span class="number">1</span> @@
++Subproject commit <span class="number">08</span>d709f78b8c5b0fbeb7821e37fa53e69afcf433
+</code></pre><p>尽管rack是你工作目录里的子目录，但 Git 把它视作一个子模块，当你不在那个目录里时并不记录它的内容。取而代之的是，Git 将它记录成来自那个仓库的一个特殊的提交。当你在那个子目录里修改并提交时，子项目会通知那里的 HEAD 已经发生变更并记录你当前正在工作的那个提交；通过那样的方法，当其他人克隆此项目，他们可以重新创建一致的环境。</p>
+<p>这是关于子模块的重要一点：你记录他们当前确切所处的提交。你不能记录一个子模块的master或者其他的符号引用。</p>
+<ol>
+<li><p>克隆一个带子模块的项目<br>这里你将克隆一个带子模块的项目。当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件：</p>
+<p> $ git clone git://github.com/schacon/myproject.git<br> Initialized empty Git repository in /opt/myproject/.git/<br> remote: Counting objects: 6, done.<br> remote: Compressing objects: 100% (4/4), done.<br> remote: Total 6 (delta 0), reused 0 (delta 0)<br> Receiving objects: 100% (6/6), done.<br> $ cd myproject<br> $ ls -l<br> total 8<br> -rw-r—r—  1 schacon  admin   3 Apr  9 09:11 README<br> drwxr-xr-x  2 schacon  admin  68 Apr  9 09:11 rack<br> $ ls rack/<br> $</p>
+</li>
+</ol>
+<p>rack目录存在了，但是是空的。你必须运行两个命令：git submodule init来初始化你的本地配置文件，git submodule update来从那个项目拉取所有数据并检出你上层项目里所列的合适的提交</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuqiao.github.io/2014/10/29/Git子模块/" data-id="zuzr02a3ba2shyf2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tool/">tool</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Understanding-the-JVM" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/29/Understanding-the-JVM/" class="article-date">
@@ -399,7 +815,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 15.00px;">program</a><a href="/tags/scala/" style="font-size: 12.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
+      <a href="/tags/Erlang/" style="font-size: 12.50px;">Erlang</a><a href="/tags/Ice/" style="font-size: 12.50px;">Ice</a><a href="/tags/Vim/" style="font-size: 12.50px;">Vim</a><a href="/tags/golang/" style="font-size: 12.50px;">golang</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hbase/" style="font-size: 12.50px;">hbase</a><a href="/tags/java/" style="font-size: 17.50px;">java</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/node/" style="font-size: 12.50px;">node</a><a href="/tags/program/" style="font-size: 15.00px;">program</a><a href="/tags/scala/" style="font-size: 17.50px;">scala</a><a href="/tags/scalao/" style="font-size: 10.00px;">scalao</a><a href="/tags/think/" style="font-size: 12.50px;">think</a><a href="/tags/tool/" style="font-size: 15.00px;">tool</a><a href="/tags/分布式系统/" style="font-size: 12.50px;">分布式系统</a><a href="/tags/如何记笔记/" style="font-size: 12.50px;">如何记笔记</a><a href="/tags/笔记/" style="font-size: 20.00px;">笔记</a><a href="/tags/管理/" style="font-size: 12.50px;">管理</a><a href="/tags/读书笔记/" style="font-size: 12.50px;">读书笔记</a>
     </div>
   </div>
 
@@ -408,7 +824,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -420,23 +836,23 @@
       <ul>
         
           <li>
+            <a href="/2015/03/27/ProgrammingScala/">ProgrammingScala</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/22/sbt学习/">sbt学习</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/22/ScalaInDepth/">ScalaInDepth</a>
+          </li>
+        
+          <li>
             <a href="/2015/03/19/代码的未来/">代码的未来</a>
           </li>
         
           <li>
             <a href="/2015/03/17/深入理解JVM虚拟机/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/15/思考，快与慢/">思考，快与慢</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/14/Go并发编程实战/">Go并发编程实战</a>
-          </li>
-        
-          <li>
-            <a href="/2015/03/12/javascript高级程序设计/">javascript高级程序设计</a>
           </li>
         
       </ul>

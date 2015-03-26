@@ -3,17 +3,29 @@
 <head>
   <meta charset="utf-8">
   
-  <title>about | Joe&#39;s Blog</title>
+  <title>ProgrammingScala | Joe&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="余乔的博客，阅读，学习记录。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://yuqiao.github.io/about/index.html">
+  <meta name="description" content="1. Zero to Sixty: Introducing Scala
+A Taste of Concurrency
+
+Shape class
+ case class Point(x:Double=0.0, y:Double=0.0) abstract class Shape(){ def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ProgrammingScala">
+<meta property="og:url" content="http://yuqiao.github.io/2015/03/27/ProgrammingScala/">
 <meta property="og:site_name" content="Joe's Blog">
-<meta property="og:description" content="余乔的博客，阅读，学习记录。">
+<meta property="og:description" content="1. Zero to Sixty: Introducing Scala
+A Taste of Concurrency
+
+Shape class
+ case class Point(x:Double=0.0, y:Double=0.0) abstract class Shape(){ def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="余乔的博客，阅读，学习记录。">
+<meta name="twitter:title" content="ProgrammingScala">
+<meta name="twitter:description" content="1. Zero to Sixty: Introducing Scala
+A Taste of Concurrency
+
+Shape class
+ case class Point(x:Double=0.0, y:Double=0.0) abstract class Shape(){ def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toS">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -67,10 +79,10 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="page-undefined" class="article article-type-page" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-ProgrammingScala" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/about/index.html" class="article-date">
-  <time datetime="2014-10-29T01:28:35.000Z" itemprop="datePublished">10月 29 2014</time>
+    <a href="/2015/03/27/ProgrammingScala/" class="article-date">
+  <time datetime="2015-03-26T23:45:26.000Z" itemprop="datePublished">3月 27 2015</time>
 </a>
     
   </div>
@@ -81,7 +93,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      about
+      ProgrammingScala
     </h1>
   
 
@@ -89,18 +101,77 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>余乔的博客，阅读，学习记录。</p>
+        <h1 id="1-_Zero_to_Sixty:_Introducing_Scala">1. Zero to Sixty: Introducing Scala</h1>
+<h2 id="A_Taste_of_Concurrency">A Taste of Concurrency</h2>
+<ol>
+<li><p>Shape class</p>
+<p> case class Point(x:Double=0.0, y:Double=0.0)<br> abstract class Shape(){<br> def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toString}”)<br> }<br> case class Circle(center:Point, radius: Double) extends Shape<br> case class Rectangle(lowerLeft:Point, height: Double, width: Double) extends Shape<br> case class Triangle(point1:Point, point2:Point, point3:Point) extends Shape</p>
+</li>
+<li><p>biz Actor</p>
+<p> object Messages {<br> object Exit<br> object Finished<br> case class Response(message:String)<br> }</p>
+<p> import akka.actor.Actor</p>
+<p> class DrawingActor extends Actor{</p>
+<pre><code> <span class="keyword">import</span> <span class="type">Messages</span>.<span class="number">_</span>
+ <span class="keyword">override</span> def receive = {
+     <span class="keyword">case</span> s:<span class="type">Shape</span> =&gt;
+     s.draw(str =&gt; <span class="built_in">println</span>(s<span class="string">"DrawingActor: $str"</span>))
+     sender ! <span class="type">Response</span>(s<span class="string">"DrawingActor: $s draw"</span>)
+     <span class="keyword">case</span> <span class="type">Exit</span> =&gt;
+     <span class="built_in">println</span>(s<span class="string">"DrawingActor: exiting ..."</span>)
+     sender ! <span class="type">Finished</span>
+     <span class="keyword">case</span> unexpected =&gt;
+     val res = <span class="type">Response</span>(s<span class="string">"ERROR: Unkwown Message: $unexpected"</span>)
+     <span class="built_in">println</span>(s<span class="string">"DrawingActor: $unexpected"</span>)
+     sender ! res
+ }
+</code></pre><p> }</p>
+</li>
+<li><p>actor driver :</p>
+<p> private object Start<br> object ActorDriver {<br>   def main(args: Array[String]) {</p>
+<pre><code> val <span class="keyword">system</span> = ActorSystem(<span class="string">"DrawingActorSystem"</span>, ConfigFactory.<span class="built_in">load</span>())
+ val drawer = <span class="keyword">system</span>.actorOf(Props(<span class="built_in">new</span> DrawingActor),<span class="string">"drawingActore"</span>)
+ val driver = <span class="keyword">system</span>.actorOf(Props(<span class="built_in">new</span> ActorDriver(drawer)), <span class="string">"drawingService"</span>)
+ driver ! Start
+</code></pre><p>   }<br> }<br> class ActorDriver(drawActor: ActorRef) extends Actor{<br>   import Messages._<br>   override def receive = {</p>
+<pre><code> <span class="keyword">case</span> Start =&gt;
+   drawActor ! Circle(Point(<span class="number">0</span>,<span class="number">0</span>), <span class="number">1.0</span>)
+   drawActor ! Rectangle(Point(<span class="number">0</span>,<span class="number">0</span>), <span class="number">2</span>, <span class="number">5</span>)
+   drawActor ! <span class="number">3.14159</span>
+   drawActor ! Triangle(Point(<span class="number">0</span>,<span class="number">0</span>), Point(<span class="number">2</span>,<span class="number">0</span>), Point(<span class="number">1</span>,<span class="number">2</span>))
+   drawActor ! <span class="keyword">Exit</span>
+ <span class="keyword">case</span> Finished =&gt;
+   println(<span class="string">"ShapeDrawingDriver: cleaning up..."</span>)
+   context.system.shutdown()
+ <span class="keyword">case</span> response: Response =&gt;
+   println(<span class="string">"ShapeDrawingDriver Response = "</span> + response)
+ <span class="keyword">case</span> unexpected =&gt;
+   println(<span class="string">"ShapeDrawingDriver: ERROR: Received an unexpected message ="</span> + unexpected)
+</code></pre><p>   }<br> }</p>
+</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yuqiao.github.io/about/index.html" data-id="ms76elhhu3ec4nhb" class="article-share-link">Share</a>
+      <a data-url="http://yuqiao.github.io/2015/03/27/ProgrammingScala/" data-id="wq3b6ptmlpm3px1f" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔记/">笔记</a></li></ul>
+
     </footer>
   </div>
   
     
+<nav id="article-nav">
+  
+  
+    <a href="/2015/03/22/sbt学习/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">sbt学习</div>
+    </a>
+  
+</nav>
+
   
 </article>
 
