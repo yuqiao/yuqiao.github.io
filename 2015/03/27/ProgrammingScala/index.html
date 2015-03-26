@@ -9,7 +9,8 @@
 A Taste of Concurrency
 
 Shape class
- case class Point(x:Double=0.0, y:Double=0.0) abstract class Shape(){ def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toS">
+
+1234567case class Point(x:Double=0.0, y:Double=0.0)abstract class Shape(){def draw(f:String =&gt; Unit): Unit = f(s'draw: ${thi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ProgrammingScala">
 <meta property="og:url" content="http://yuqiao.github.io/2015/03/27/ProgrammingScala/">
@@ -18,14 +19,16 @@ Shape class
 A Taste of Concurrency
 
 Shape class
- case class Point(x:Double=0.0, y:Double=0.0) abstract class Shape(){ def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toS">
+
+1234567case class Point(x:Double=0.0, y:Double=0.0)abstract class Shape(){def draw(f:String =&gt; Unit): Unit = f(s'draw: ${thi">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ProgrammingScala">
 <meta name="twitter:description" content="1. Zero to Sixty: Introducing Scala
 A Taste of Concurrency
 
 Shape class
- case class Point(x:Double=0.0, y:Double=0.0) abstract class Shape(){ def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toS">
+
+1234567case class Point(x:Double=0.0, y:Double=0.0)abstract class Shape(){def draw(f:String =&gt; Unit): Unit = f(s'draw: ${thi">
 
   
     <link rel="alternative" href="/atom.xml" title="Joe&#39;s Blog" type="application/atom+xml">
@@ -104,51 +107,20 @@ Shape class
         <h1 id="1-_Zero_to_Sixty:_Introducing_Scala">1. Zero to Sixty: Introducing Scala</h1>
 <h2 id="A_Taste_of_Concurrency">A Taste of Concurrency</h2>
 <ol>
-<li><p>Shape class</p>
-<p> case class Point(x:Double=0.0, y:Double=0.0)<br> abstract class Shape(){<br> def draw(f:String =&gt; Unit): Unit = f(s”draw: ${this.toString}”)<br> }<br> case class Circle(center:Point, radius: Double) extends Shape<br> case class Rectangle(lowerLeft:Point, height: Double, width: Double) extends Shape<br> case class Triangle(point1:Point, point2:Point, point3:Point) extends Shape</p>
-</li>
-<li><p>biz Actor</p>
-<p> object Messages {<br> object Exit<br> object Finished<br> case class Response(message:String)<br> }</p>
-<p> import akka.actor.Actor</p>
-<p> class DrawingActor extends Actor{</p>
-<pre><code> <span class="keyword">import</span> <span class="type">Messages</span>.<span class="number">_</span>
- <span class="keyword">override</span> def receive = {
-     <span class="keyword">case</span> s:<span class="type">Shape</span> =&gt;
-     s.draw(str =&gt; <span class="built_in">println</span>(s<span class="string">"DrawingActor: $str"</span>))
-     sender ! <span class="type">Response</span>(s<span class="string">"DrawingActor: $s draw"</span>)
-     <span class="keyword">case</span> <span class="type">Exit</span> =&gt;
-     <span class="built_in">println</span>(s<span class="string">"DrawingActor: exiting ..."</span>)
-     sender ! <span class="type">Finished</span>
-     <span class="keyword">case</span> unexpected =&gt;
-     val res = <span class="type">Response</span>(s<span class="string">"ERROR: Unkwown Message: $unexpected"</span>)
-     <span class="built_in">println</span>(s<span class="string">"DrawingActor: $unexpected"</span>)
-     sender ! res
- }
-</code></pre><p> }</p>
-</li>
-<li><p>actor driver :</p>
-<p> private object Start<br> object ActorDriver {<br>   def main(args: Array[String]) {</p>
-<pre><code> val <span class="keyword">system</span> = ActorSystem(<span class="string">"DrawingActorSystem"</span>, ConfigFactory.<span class="built_in">load</span>())
- val drawer = <span class="keyword">system</span>.actorOf(Props(<span class="built_in">new</span> DrawingActor),<span class="string">"drawingActore"</span>)
- val driver = <span class="keyword">system</span>.actorOf(Props(<span class="built_in">new</span> ActorDriver(drawer)), <span class="string">"drawingService"</span>)
- driver ! Start
-</code></pre><p>   }<br> }<br> class ActorDriver(drawActor: ActorRef) extends Actor{<br>   import Messages._<br>   override def receive = {</p>
-<pre><code> <span class="keyword">case</span> Start =&gt;
-   drawActor ! Circle(Point(<span class="number">0</span>,<span class="number">0</span>), <span class="number">1.0</span>)
-   drawActor ! Rectangle(Point(<span class="number">0</span>,<span class="number">0</span>), <span class="number">2</span>, <span class="number">5</span>)
-   drawActor ! <span class="number">3.14159</span>
-   drawActor ! Triangle(Point(<span class="number">0</span>,<span class="number">0</span>), Point(<span class="number">2</span>,<span class="number">0</span>), Point(<span class="number">1</span>,<span class="number">2</span>))
-   drawActor ! <span class="keyword">Exit</span>
- <span class="keyword">case</span> Finished =&gt;
-   println(<span class="string">"ShapeDrawingDriver: cleaning up..."</span>)
-   context.system.shutdown()
- <span class="keyword">case</span> response: Response =&gt;
-   println(<span class="string">"ShapeDrawingDriver Response = "</span> + response)
- <span class="keyword">case</span> unexpected =&gt;
-   println(<span class="string">"ShapeDrawingDriver: ERROR: Received an unexpected message ="</span> + unexpected)
-</code></pre><p>   }<br> }</p>
-</li>
+<li>Shape class</li>
 </ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Point</span><span class="params">(x:Double=0.0, y:Double=0.0)</span></span></div><div class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span><span class="params">()</span></span>{</div><div class="line"><span class="keyword">def</span> draw(f:String =&gt; Unit): Unit = f(s<span class="string">"draw: ${this.toString}"</span>)</div><div class="line">}</div><div class="line"><span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Circle</span><span class="params">(center:Point, radius: Double)</span> <span class="keyword">extends</span> <span class="title">Shape</span></span></div><div class="line"><span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(lowerLeft:Point, height: Double, width: Double)</span> <span class="keyword">extends</span> <span class="title">Shape</span></span></div><div class="line"><span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Triangle</span><span class="params">(point1:Point, point2:Point, point3:Point)</span> <span class="keyword">extends</span> <span class="title">Shape</span></span></div></pre></td></tr></table></figure>
+
+<ol>
+<li>biz Actor</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">Messages</span> </span>{</div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">Exit</span></span></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">Finished</span></span></div><div class="line"><span class="class"><span class="keyword">case</span> <span class="keyword">class</span> <span class="title">Response</span><span class="params">(message:String)</span></span></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">import</span> akka.actor.Actor</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DrawingActor</span> <span class="keyword">extends</span> <span class="title">Actor</span></span>{</div><div class="line">    <span class="keyword">import</span> Messages._</div><div class="line">    <span class="keyword">override</span> <span class="keyword">def</span> receive = {</div><div class="line">        <span class="keyword">case</span> s:Shape =&gt;</div><div class="line">        s.draw(str =&gt; println(s<span class="string">"DrawingActor: $str"</span>))</div><div class="line">        sender ! Response(s<span class="string">"DrawingActor: $s draw"</span>)</div><div class="line">        <span class="keyword">case</span> Exit =&gt;</div><div class="line">        println(s<span class="string">"DrawingActor: exiting ..."</span>)</div><div class="line">        sender ! Finished</div><div class="line">        <span class="keyword">case</span> unexpected =&gt;</div><div class="line">        <span class="keyword">val</span> res = Response(s<span class="string">"ERROR: Unkwown Message: $unexpected"</span>)</div><div class="line">        println(s<span class="string">"DrawingActor: $unexpected"</span>)</div><div class="line">        sender ! res</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<ol>
+<li>actor driver :</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">object</span> <span class="title">Start</span></span></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">ActorDriver</span> </span>{</div><div class="line">  <span class="keyword">def</span> main(args: Array[String]) {</div><div class="line">    <span class="keyword">val</span> system = ActorSystem(<span class="string">"DrawingActorSystem"</span>, ConfigFactory.load())</div><div class="line">    <span class="keyword">val</span> drawer = system.actorOf(Props(<span class="keyword">new</span> DrawingActor),<span class="string">"drawingActore"</span>)</div><div class="line">    <span class="keyword">val</span> driver = system.actorOf(Props(<span class="keyword">new</span> ActorDriver(drawer)), <span class="string">"drawingService"</span>)</div><div class="line">    driver ! Start</div><div class="line">  }</div><div class="line">}</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ActorDriver</span><span class="params">(drawActor: ActorRef)</span> <span class="keyword">extends</span> <span class="title">Actor</span></span>{</div><div class="line">  <span class="keyword">import</span> Messages._</div><div class="line">  <span class="keyword">override</span> <span class="keyword">def</span> receive = {</div><div class="line">    <span class="keyword">case</span> Start =&gt;</div><div class="line">      drawActor ! Circle(Point(<span class="number">0</span>,<span class="number">0</span>), <span class="number">1.0</span>)</div><div class="line">      drawActor ! Rectangle(Point(<span class="number">0</span>,<span class="number">0</span>), <span class="number">2</span>, <span class="number">5</span>)</div><div class="line">      drawActor ! <span class="number">3.14159</span></div><div class="line">      drawActor ! Triangle(Point(<span class="number">0</span>,<span class="number">0</span>), Point(<span class="number">2</span>,<span class="number">0</span>), Point(<span class="number">1</span>,<span class="number">2</span>))</div><div class="line">      drawActor ! Exit</div><div class="line">    <span class="keyword">case</span> Finished =&gt;</div><div class="line">      println(<span class="string">"ShapeDrawingDriver: cleaning up..."</span>)</div><div class="line">      context.system.shutdown()</div><div class="line">    <span class="keyword">case</span> response: Response =&gt;</div><div class="line">      println(<span class="string">"ShapeDrawingDriver Response = "</span> + response)</div><div class="line">    <span class="keyword">case</span> unexpected =&gt;</div><div class="line">      println(<span class="string">"ShapeDrawingDriver: ERROR: Received an unexpected message ="</span> + unexpected)</div><div class="line">  }</div><div class="line">}</div></pre></td></tr></table></figure>
+
 
       
     </div>
